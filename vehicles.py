@@ -8,11 +8,11 @@ class Vehicle:
     def speed_up(self,value):
         self.speed += value
 
-    def edition(self):
+    def execute(self):
         print("Speed:",self.speed)
 
 
 if __name__ == "__main__":
 
     opel = Vehicle()
-    opel.edition()
+    opel.execute()
