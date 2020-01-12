@@ -11,5 +11,8 @@ class Vehicle:
     def edition(self):
         print("Speed:",self.speed)
 
-opel = Vehicle()
-opel.edition()
+
+if __name__ == "__main__":
+
+    opel = Vehicle()
+    opel.edition()
