@@ -3,7 +3,15 @@
 # Definition of the class Vehicle
 class Vehicle:
     """docstring for Vehicle."""
-    speed=0 #Attribute
+
+    # constructor
+    def __init__(self, desc, spe):
+        """
+        Contructor function
+        """
+        self.description = desc
+        self.speed = spe
+
     # Methods
     def speed_up(self,value):
         self.speed += value
@@ -13,8 +21,7 @@ class Vehicle:
 
 
 if __name__ == "__main__":
-
-    opel = Vehicle()
+    opel = Vehicle("Opel",60)
     opel.execute()
     opel.speed_up(20)
     opel.execute()
