@@ -16,3 +16,5 @@ if __name__ == "__main__":
 
     opel = Vehicle()
     opel.execute()
+    opel.speed_up(20)
+    opel.execute()
