@@ -22,6 +22,16 @@ class Vehicle:
 
 if __name__ == "__main__":
     opel = Vehicle("Opel",60)
+    volvo = Vehicle("Volvo",70)
+    
     opel.execute()
     opel.speed_up(20)
     opel.execute()
+    
+    # Compare objects
+    if opel > volvo:
+        print("Opel is faster")
+    elif opel == volvo:
+        print("Both cars have the same speed!")
+    else: 
+        print("Volvo is faster")
