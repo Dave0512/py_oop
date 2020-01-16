@@ -38,9 +38,16 @@ class Vehicle:
         """
         return self.speed == other.speed
 
+    def __del__(self):
+        """
+        destructor method
+        """
+        print("Object: " + self.description + " deleted")
+
+
 
 if __name__ == "__main__":
-    opel = Vehicle("Opel",31)
+    opel = Vehicle("Opel",11)
     volvo = Vehicle("Volvo",50)
 
     opel.execute()
@@ -54,3 +61,6 @@ if __name__ == "__main__":
         print("Both cars have the same speed!")
     else:
         print("Volvo is faster")
+
+    del volvo
+    del opel
