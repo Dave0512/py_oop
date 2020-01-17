@@ -2,8 +2,28 @@
 # py_oop
 # ######
 
-# The project contains some classes with functions to understand the oop # in python
+What is the project about?
 
-# The user can start the project and use classes and the functions within # to understand the functionality while observe the output in the terminal
+The project contains some classes with functions to understand the oop in python
 
-# The user may send me a pn if problems occur
+
+How does the project work?
+
+Different classes are created to make it easier to understand this topic.
+
+
+Who uses the project?
+
+Everbody who wants to start with programming from scratch.
+
+
+What is the goal?
+
+To give small but useful insights.
+
+
+How can you benefit from that project?
+
+The user can start the project and use classes and the functions within to understand the functionality while observing the output in the terminal
+
+The user may send me a pn if problems occur
