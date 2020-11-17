@@ -21,3 +21,11 @@ class Note:
         global last_id
         last_id += 1
         self.id = last_id 
+
+    def match(self,filter):
+        """
+        Determine if this note matches the filter text. 
+        Return true if it matches. False otherwise.
+        Search is case sensitive an matches both text and tags
+        """
+        return filter in self.memo or filter in self.tags
