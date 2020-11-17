@@ -29,3 +29,10 @@ class Note:
         Search is case sensitive an matches both text and tags
         """
         return filter in self.memo or filter in self.tags
+
+class Notebook:
+    """
+    Represents a collection if Notes,
+    that can be tagged, modified and searched.
+    """
+    pass
