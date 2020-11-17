@@ -35,10 +35,15 @@ class Notebook:
     Represents a collection if Notes,
     that can be tagged, modified and searched.
     """
-    def __init__(self.):
+    def __init__(self):
         """
         Initialize a notebook with an empty list
         """
         self.notes = []
     
-    
+    def new_note(self,memo,tags=''):
+        """
+        Create an new note and add it to the notebook list
+        """
+        self.notes.append(Note(memo,tags))
+        
