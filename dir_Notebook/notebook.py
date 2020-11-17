@@ -46,4 +46,14 @@ class Notebook:
         Create an new note and add it to the notebook list
         """
         self.notes.append(Note(memo,tags))
-        
+
+    def modify_memo(self,note_id,memo):
+        """
+        Find the note with the given id and change its memo 
+        to the given value.
+        """
+        for note in self.notes:
+            if note.id == note_id:
+                note.memo = memo 
+                break
+
