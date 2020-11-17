@@ -66,3 +66,10 @@ class Notebook:
             if note.id == note_id:
                 note.tags = tags
                 break
+    
+    def search(self,filter):
+        """
+        Find all notes that matches the given filter string.
+        """
+        return [note for note in self.notes if note.match(filter)]
+        
