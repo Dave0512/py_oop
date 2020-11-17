@@ -35,4 +35,10 @@ class Notebook:
     Represents a collection if Notes,
     that can be tagged, modified and searched.
     """
-    pass
+    def __init__(self.):
+        """
+        Initialize a notebook with an empty list
+        """
+        self.notes = []
+    
+    
