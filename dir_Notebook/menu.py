@@ -5,4 +5,16 @@ class Menu:
     """
     Display a menu and respond to choices when run.
     """
-    pass
+    def __init__(self):
+        """
+        Initiate the Menu class with attributes notebook and choices
+        """
+        self.notebook = Notebook()
+        self.choices = {
+             "1": self.show_notes
+            ,"2": self.search_notes
+            ,"3": self.add_note
+            ,"4": self.modify_note
+            ,"5": self.quit
+        }
+        
