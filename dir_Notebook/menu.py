@@ -18,3 +18,16 @@ class Menu:
             ,"5": self.quit
         }
         
+    def display_menu(self):
+        """
+        Show Menu Options to the User
+        """
+        print("""
+        Notebook Menu 
+        
+        1. Show all notes
+        2. Search Notes
+        3. Add note
+        4. Modify Note
+        5. Quit
+        """)
