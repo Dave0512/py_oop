@@ -52,10 +52,11 @@ class Notebook:
         Find the note with the given id and change its memo 
         to the given value.
         """
-        for note in self.notes:
-            if note.id == note_id:
-                note.memo = memo 
-                break
+        self._find_note(note_id).memo = memo
+        # for note in self.notes:
+        #     if note.id == note_id:
+        #         note.memo = memo 
+        #         break
 
     def modify_tags(self,note_id,tags):
         """
