@@ -79,3 +79,8 @@ class Menu:
         id = input("Enter a note id: ")
         memo = input("Enter a memo: ")
         tags = input("Enter tags: ")
+
+        if memo:
+            self.notebook.modify_memo(id, memo)
+        if tags:
+            self.notebook.modify_tags(id, tags)
