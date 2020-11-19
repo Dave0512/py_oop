@@ -44,3 +44,14 @@ class Menu:
                 action()
             else:
                 print("{0} is not a valid choice".format(choice))
+
+    def show_notes(self,notes=Note):
+        """
+        Show all notes
+        """
+        if not notes:
+            notes = self.notebook.notes
+        for note in notes:
+            print("{0}: {1}\n{2}".format(
+                note.id, note.tags, note.memo
+            ))
