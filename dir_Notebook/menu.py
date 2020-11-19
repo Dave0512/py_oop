@@ -63,3 +63,12 @@ class Menu:
         filter = input("Search for: ")
         notes = self.notebook.search(filter)
         self.show_notes(notes)
+
+    def add_note(self):
+        """
+        Add a new note to the notebook
+        """
+        memo = input("Enter a memo: ")
+        self.notebook.new_note(memo)
+        print("Your note has been added.")
+
