@@ -84,3 +84,12 @@ class Menu:
             self.notebook.modify_memo(id, memo)
         if tags:
             self.notebook.modify_tags(id, tags)
+
+    def quit(self):
+        """
+        Exit the Notebook-Menu
+        """
+        print("Thank you for using your notebook today")
+        sys.exit()
+
+        
