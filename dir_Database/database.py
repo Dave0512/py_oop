@@ -4,6 +4,19 @@ class Database:
     """
     Class to connect, and interact with several types of relational dbms
     like ms sql server, mySQL, PostgreSQL, SQLite
+
+    Documentation:
+        Database Handler Class
+        1) Open Database (Using "with" to easy handle db_connection)
+        2) Set a cursor
+        3) Commit data 
+            "Each SQL command is in a transaction and the transaction 
+             must be committed to write the transaction 
+             to the SQL Server so that it can be read by other SQL commands.
+
+             Under MS SQL Server Management Studio the default is to allow 
+             auto-commit which means each SQL command immediately 
+             works and you cannot rollback."
     """
     def __init__(self,driver, server, database,tr_conn):
         """
@@ -47,4 +60,8 @@ class Database:
         """
         return self._cursor
 
-    
+    def commit(self):
+        """
+        Commit SQL command as a transaction.
+        """
+        self.connection.commit()
