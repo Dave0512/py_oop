@@ -33,3 +33,11 @@ class Database:
         """
         self.close()
     
+    @property
+    def cursor(self):
+        """
+        built-in function property
+        """
+        return self._cursor
+
+
