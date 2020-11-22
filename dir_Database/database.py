@@ -34,10 +34,17 @@ class Database:
         self.close()
     
     @property
+    def connection(self):
+        """
+        built-in function property
+        """
+        return self._conn
+
+    @property
     def cursor(self):
         """
         built-in function property
         """
         return self._cursor
 
-
+    
