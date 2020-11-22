@@ -27,4 +27,9 @@ class Database:
         """
         return self
 
-        
+    def __exit__(self,exc_type,exc_val,exc_tb):
+        """
+        Magic method to let the class use the with statement
+        """
+        self.close()
+    
