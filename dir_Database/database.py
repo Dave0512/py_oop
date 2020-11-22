@@ -21,4 +21,10 @@ class Database:
                                            "DATABASE={2};"
                                            "Trusted_Connection={3};".format(driver, server, database,tr_conn))
 
-    
+    def __enter__(self):
+        """
+        Magic method to let the class use the with statement.
+        """
+        return self
+
+        
