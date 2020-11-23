@@ -76,8 +76,16 @@ class Database:
             self.commit()
         self._db_conn.close()
 
-    def execute(self,sql):
+    def execute(self,sql): # evtl params=None
         """
         Handle sql querys
         """
-        self._cursor.execute(sql)
+        self._cursor.execute(sql) # evtl params or ()
+
+    def fetchall(self):
+        """
+        Retrieve all rows
+        """
+        return self._cursor.fetchall()
+
+    
