@@ -65,3 +65,10 @@ class Database:
         Commit SQL command as a transaction.
         """
         self.connection.commit()
+
+    def close(self,commit=True):
+        if commit:
+            self.commit()
+    self.connection.close()
+
+    
