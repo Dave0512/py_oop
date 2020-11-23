@@ -88,4 +88,8 @@ class Database:
         """
         return self._cursor.fetchall()
 
-    
+    def fetchone(self):
+        """
+        Retrieve one row
+        """
+        return self._cursor.fetchone()
