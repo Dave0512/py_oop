@@ -34,6 +34,8 @@ class Database:
                                            "DATABASE={2};"
                                            "Trusted_Connection={3};".format(driver, server, database,tr_conn))
 
+        self._cursor = self._db_conn.cursor()
+
     def __enter__(self):
         """
         Magic method to let the class use the with statement.
@@ -67,8 +69,15 @@ class Database:
         self.connection.commit()
 
     def close(self,commit=True):
+        """
+        Close the connection to db
+        """
         if commit:
             self.commit()
-    self.connection.close()
+        self._db_conn.close()
 
-    
+    def execute(self,sql):
+        """
+        Handle sql querys
+        """
+        self._cursor.execute(sql)
