@@ -93,3 +93,11 @@ class Database:
         Retrieve one row
         """
         return self._cursor.fetchone()
+
+    def query(self,sql): # evtl params=None
+        """
+        Handle sql querys
+        """
+        self._cursor.execute(sql) # evtl params or ()
+        return self.fetchall()
+        
