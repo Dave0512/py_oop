@@ -17,6 +17,11 @@ class Database:
              Under MS SQL Server Management Studio the default is to allow 
              auto-commit which means each SQL command immediately 
              works and you cannot rollback."
+    Example:
+
+    with Database("...") as db:
+    # do stuff
+
     """
     def __init__(self,driver, server, database,tr_conn):
         """
