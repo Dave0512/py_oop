@@ -58,7 +58,7 @@ class Database:
         """
         built-in function property
         """
-        return self._conn
+        return self._db_conn
 
     @property
     def cursor(self):
