@@ -1,26 +1,44 @@
 from database import Database
 import pyodbc
 import urllib
+from queryTemplate import Conn_DB
+import sqlalchemy
+from sqlalchemy import create_engine
+from sqlStrings import headLieferanten
+import pandas as pd
 
+datenBank = Conn_DB(driver="{SQL Server Native Client 11.0}",
+                    server="192.168.16.124",
+                    database="Vorlauf_DB",
+                    Trusted_Connection="yes")
+            
+server_verbindung = datenBank.create_server_conn()
 
-db_verb = Database(driver=r"{SQL Server Native Client 11.0};",
-                   server=r"192.168.16.124;",
-                   database=r"Vorlauf_DB;",
-                   tr_conn=r"yes;")
+def main():
+    
+    print(datenBank.sqlExecuter)
+    print(isinstance(datenBank.create_server_conn(),sqlalchemy.engine.base.Connection))
+    
+    resultsqlExecuter = datenBank.sqlExecuter(headLieferanten)
+    print(resultsqlExecuter.fetchall())
 
+    df_hcsr = pd.read_excel('01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm'
+                       ,sheet_name='Bewegungsdaten',dtype=str)
+    
+    for row in range(df_hcsr.shape[0]): 
+        for col in range(df_hcsr.shape[1]):
+            if df_hcsr.iat[row,col] == 'L_Quelle_Name*':
+                row_start = row
+                break
 
-cur = db_verb.cursor()
-print(type(cur))
-
-# def main():
-#     with db_verb as db:
-#         cur = db_verb.cursor()
-
-#         # top5 = cur.execute(""" SELECT TOP 5 * from [Vorlauf_DB].[dbo].tbl_lieferanten """)
-#         print(type(cur))
-
-# if __name__ == "__main__":
-#     main()
+    new_header = df_hcsr.iloc[row_start] #grab the first row for the header
+    df_hcsr = df_hcsr[1:] #take the data less the header row
+    df_hcsr.columns = new_header #set the header row as the df header
+    df_hcsr = df_hcsr.rename(columns = {c: c.replace('*','_MUSS_FELD_') for c in df_hcsr.columns})
+    df_hcsr.to_sql("hcsr",con=server_verbindung,if_exists='append',index=False)
+    
+if __name__ == "__main__":
+    main()
 
 
 
