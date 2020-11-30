@@ -49,7 +49,18 @@ class Conn_DB:
         server_verbindung = server_engine.connect()
         return server_verbindung
 
-
+    # Umlagern in QueryTemplate
+    def sqlExecuter(self,sqlString):
+        """
+        Run SQL Querys 
+        """
+        dbVerb = self.create_server_conn()
+        return dbVerb.execute(sqlString)
+        # with self.create_server_conn() as dbVerb:
+        # # dbVerb = self.create_server_conn()
+            # sqlExecution = dbVerb.execute(sqlString)
+            # return sqlExecution
+            
 
 
 
