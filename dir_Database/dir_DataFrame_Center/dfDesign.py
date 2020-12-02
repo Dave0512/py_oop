@@ -37,7 +37,7 @@ class DfDesigner:
                     break
         
 
-    def modifyHeaderDF(self):
+    def modifyHeaderDf(self):
         """
         Input: Raw Df, row_start
         Output: DF with new header 
