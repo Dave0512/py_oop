@@ -55,14 +55,20 @@ class DfDesigner:
         return df
 
     def _clearSpecialCharacters(self,dfSeries):
+        """
+        Input: DF and dfSeries-Name of the df, which has to be cleaned
+        Output: Cleaned Series 
+
+        """
         df = self._modifyHeaderDf()
-        
-        # df.dfSeries = df.dfSeries.str.replace(r'\W','')
         dfSeries = df[dfSeries].str.replace(r'\W','') 
-        # dfSeries = dfSeries.rename(str(dfSeries.name) + "_NORMALIZED")
         return dfSeries
     
     def _addSuffixToColName(self,dfSeries):
+        """
+        Input: Recieved cleaned dfSeries-Name
+        Output: SeriesName with suffix added
+        """
         dfSeries = self._clearSpecialCharacters(dfSeries)
         dfSeries = dfSeries.rename(str(dfSeries.name) + "_NORMALIZED")
         return dfSeries
@@ -70,17 +76,21 @@ class DfDesigner:
         
 
     def _addColumns(self):
+        """
+        Input: DF 
+        Output: DF supplemented by columns with and without content
+        """
         df = self._modifyHeaderDf()
         
         df['_date_inload_'] = dt.datetime.now()
-        # self._clearSpecialCharacters(df["H_Art_Nr_MUSS_FELD_"]) 
-        df["H_Art_Nr_Normalized"] = df["H_Art_Nr_MUSS_FELD_"].str.replace(r'\W','')
-        return df
+        df[self._addSuffixToColName("H_Art_Nr_MUSS_FELD_").name] = self._addSuffixToColName("H_Art_Nr_MUSS_FELD_") 
+        return df[["H_Art_Nr_MUSS_FELD_","H_Art_Nr_MUSS_FELD__NORMALIZED"]]
 
         
 # TEST
 
 dfCore = DfDesigner("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
 DF = dfCore._addColumns()
+print(DF.head(100))
 # print(DF[['L_Art_Nr_MUSS_FELD_','H_Art_Nr_MUSS_FELD_']].head())
-print(dfCore._addSuffixToColName("L_WGRP_Intern"))
+# print(dfCore._addSuffixToColName("L_WGRP_Intern"))
