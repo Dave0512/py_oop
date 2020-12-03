@@ -86,8 +86,21 @@ class DfDesigner:
         df['_date_inload_'] = dt.datetime.now()
         for col in self._lstColToClean:
             df[self._addSuffixToColName(col).name] = self._addSuffixToColName(col) 
-        return df # df[["H_Art_Nr_MUSS_FELD_","H_Art_Nr_MUSS_FELD__NORMALIZED"]]
-    
+        return df 
+
+    def _extractTables(self):
+        """
+        Create different df extracts to gain other sql tables 
+        Input: modified df
+        
+        Output: extracted dfs
+        Ex.: 
+            - Pivot-tables, 
+            - Extracted content of the df 
+              df[["H_Art_Nr_MUSS_FELD_","H_Art_Nr_MUSS_FELD__NORMALIZED"]]
+
+        """ 
+        pass
 
 
     def createFinalDf(self):
