@@ -17,6 +17,7 @@ class DfDesigner:
         self._fileToTransform = fileToTransform
         self._sheetName = sheetName
         self._headerCell = headerCell
+        self._lstColToClean = ["L_Quelle_ID_MUSS_FELD_","L_Quelle_Name_MUSS_FELD_","L_Art_ID_MUSS_FELD_","H_Quelle_ID","H_Art_Nr_MUSS_FELD_","H_Art_ID_MUSS_FELD_"]
 
     def _fileToDf(self):
         """
@@ -72,9 +73,8 @@ class DfDesigner:
         dfSeries = self._clearSpecialCharacters(dfSeries)
         dfSeries = dfSeries.rename(str(dfSeries.name) + "_NORMALIZED")
         return dfSeries
-        
-        
-
+            
+    
     def _addColumns(self):
         """
         Input: DF 
@@ -83,14 +83,16 @@ class DfDesigner:
         df = self._modifyHeaderDf()
         
         df['_date_inload_'] = dt.datetime.now()
-        df[self._addSuffixToColName("H_Art_Nr_MUSS_FELD_").name] = self._addSuffixToColName("H_Art_Nr_MUSS_FELD_") 
-        return df[["H_Art_Nr_MUSS_FELD_","H_Art_Nr_MUSS_FELD__NORMALIZED"]]
+        for col in self._lstColToClean:
+            df[self._addSuffixToColName(col).name] = self._addSuffixToColName(col) 
+            # df[self._addSuffixToColName("H_Art_Nr_MUSS_FELD_").name] = self._addSuffixToColName("H_Art_Nr_MUSS_FELD_") 
+        return df # df[["H_Art_Nr_MUSS_FELD_","H_Art_Nr_MUSS_FELD__NORMALIZED"]]
 
         
 # TEST
 
 dfCore = DfDesigner("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
 DF = dfCore._addColumns()
-print(DF.head(100))
+print(DF.head(), DF.info())
 # print(DF[['L_Art_Nr_MUSS_FELD_','H_Art_Nr_MUSS_FELD_']].head())
 # print(dfCore._addSuffixToColName("L_WGRP_Intern"))
