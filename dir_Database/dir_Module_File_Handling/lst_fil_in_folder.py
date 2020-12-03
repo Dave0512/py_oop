@@ -2,6 +2,7 @@ from glob import glob
 import os
 import glob
 import pandas as pd
+import sys
 
 
 class FileList(list):
@@ -40,23 +41,34 @@ class FileList(list):
         input: List of files in folder-tree
         output: Filtered list of files. Condition is the file has a Sheet named = "wichtigesBlatt"
         """
-        # 3) Identifiziere Tabelle "Bewegungsdaten"
-        filterKriterium = self._kriteriumIdentifikationDatei
-        lstAllg = self.createFileList()
-        lstHCSRFiles = []
-        for file in lstAllg:
-            xl = pd.ExcelFile(file) 
+        try:
+            # 3) Identifiziere Tabelle "Bewegungsdaten"
+            filterKriterium = self._kriteriumIdentifikationDatei
+            lstAllg = self.createFileList()
+            lstHCSRFiles = []
+            for file in lstAllg:
+                xl = pd.ExcelFile(file) 
 
-            lstWs = xl.sheet_names
-            for sheet in lstWs:
-                if str(sheet) == filterKriterium:
-                    lstHCSRFiles.append(file.split("\\")[-1])  
+                lstWs = xl.sheet_names
+                for sheet in lstWs:
+                    if str(sheet) == filterKriterium:
+                        # lstHCSRFiles.append(file.split("\\")[-1]) 
+                        lstHCSRFiles.append(file) 
+
+            return lstHCSRFiles
         
-        return lstHCSRFiles
+        except ValueError as val:
+            print(val)
+            print("Error with returning the list.")
+        
+        except PermissionError as per: 
+            print(per)
+            print("Eine ExcelDatei ist geöffnet. Bitte schließen und neu starten.")
+            sys.exit("\nSys: Programm wurde abgrochen, damit Neustart eingeleitet werden kann.")
+            
 
     def designFilteredFileList(self):
         pass
-        # lstFilt = filterFileList
 
 
 
