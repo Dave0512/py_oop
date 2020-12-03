@@ -1,3 +1,4 @@
+from typing import final
 import pandas as pd
 import datetime as dt
 pd.set_option('display.max_columns', None)
@@ -85,14 +86,25 @@ class DfDesigner:
         df['_date_inload_'] = dt.datetime.now()
         for col in self._lstColToClean:
             df[self._addSuffixToColName(col).name] = self._addSuffixToColName(col) 
-            # df[self._addSuffixToColName("H_Art_Nr_MUSS_FELD_").name] = self._addSuffixToColName("H_Art_Nr_MUSS_FELD_") 
         return df # df[["H_Art_Nr_MUSS_FELD_","H_Art_Nr_MUSS_FELD__NORMALIZED"]]
+    
 
+
+    def createFinalDf(self):
+        """
+        Main def to execute. Def to be called by an outside client
+        Output: Modified df
+        """
+        finalDf = self._addColumns()
+        return finalDf
+
+        
         
 # TEST
 
-dfCore = DfDesigner("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
-DF = dfCore._addColumns()
-print(DF.head(), DF.info())
+# dfCore = DfDesigner("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
+# DF = dfCore._addColumns()
+# print(DF.head(), DF.info())
+
 # print(DF[['L_Art_Nr_MUSS_FELD_','H_Art_Nr_MUSS_FELD_']].head())
 # print(dfCore._addSuffixToColName("L_WGRP_Intern"))
