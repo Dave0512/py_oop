@@ -1,6 +1,10 @@
 from typing import final
+import numpy
 import pandas as pd
 import datetime as dt
+import numpy as np
+
+from pandas.core.arrays.integer import Int64Dtype
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
@@ -13,12 +17,15 @@ class DfDesigner:
 
     def __init__(self,fileToTransform,sheetName, headerCell):
         """
-        docstring
+        Input:  Class Attributes
+                Mandatory Informations to create an instance
         """
         self._fileToTransform = fileToTransform
         self._sheetName = sheetName
         self._headerCell = headerCell
         self._lstColToClean = ["L_Quelle_ID_MUSS_FELD_","L_Quelle_Name_MUSS_FELD_","L_Art_ID_MUSS_FELD_","H_Quelle_ID","H_Art_Nr_MUSS_FELD_","H_Art_ID_MUSS_FELD_"]
+        # self._lstColToInt = ["Umsatz_MUSS_FELD_"] #,"Steuersatz_MUSS_FELD_","L_VPE_Menge_MUSS_FELD_","BASISME_Auswahl_MUSS_FELD_","Faktor_BASISME_VPE_MUSS_FELD_"]
+        self._lstColToInt = ["Steuersatz_MUSS_FELD_","Umsatz_MUSS_FELD_"]
 
     def _fileToDf(self):
         """
@@ -86,6 +93,8 @@ class DfDesigner:
         df['_date_inload_'] = dt.datetime.now()
         for col in self._lstColToClean:
             df[self._addSuffixToColName(col).name] = self._addSuffixToColName(col) 
+        for colInt in self._lstColToInt:
+            df[colInt] = df[colInt].astype('float')
         return df 
 
     def _extractTables(self):
@@ -100,8 +109,10 @@ class DfDesigner:
               df[["H_Art_Nr_MUSS_FELD_","H_Art_Nr_MUSS_FELD__NORMALIZED"]]
 
         """ 
-        pass
-
+        df = self._addColumns()
+        dfPiv = pd.pivot_table(df,values="Umsatz_MUSS_FELD_",columns="L_Quelle_Name_MUSS_FELD_", aggfunc=np.sum)
+        return dfPiv
+        
 
     def createFinalDf(self):
         """
@@ -115,9 +126,11 @@ class DfDesigner:
         
 # TEST
 
-# dfCore = DfDesigner("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
-# DF = dfCore._addColumns()
-# print(DF.head(), DF.info())
+dfCore = DfDesigner("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
+# DF = dfCore.createFinalDf()
+DF = dfCore._extractTables()
+print(DF.info())
+print(DF.head())
 
 # print(DF[['L_Art_Nr_MUSS_FELD_','H_Art_Nr_MUSS_FELD_']].head())
 # print(dfCore._addSuffixToColName("L_WGRP_Intern"))
