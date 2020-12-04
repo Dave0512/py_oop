@@ -9,8 +9,49 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
 
+class DFBase: # Basis Struktur
+    """
+    Base Class for DF Design
+    """
+    def __init__(self): # Vorbelegte Basis-Attribute
+        pass
+    
+    # 1
+    def _fileToDf(self): # .xls, .csv, .xml
+        pass
 
-class DfDesigner:
+    # 2
+    def _identifyHeaderRow(self):
+        pass
+
+    # 3
+    def _modifyHeaderDf(self):
+        pass
+
+    # 4
+    def _clearSpecialCharacters(self,dfSeries):
+        pass
+    
+    # 5
+    def _addSuffixToColName(self,dfSeries):
+        pass
+    
+    # 6 
+    def _addColumns(self):
+        pass
+
+    # 7
+    def _extractTables(self):
+        raise NotImplementedError()
+        pass
+
+    # 8
+    def createFinalDf(self):
+        pass
+    
+    
+
+class DfDesigner: # Basis
     """
     Class to modify imported file to desired df
     """
@@ -26,6 +67,11 @@ class DfDesigner:
         self._lstColToClean = ["L_Quelle_ID_MUSS_FELD_","L_Quelle_Name_MUSS_FELD_","L_Art_ID_MUSS_FELD_","H_Quelle_ID","H_Art_Nr_MUSS_FELD_","H_Art_ID_MUSS_FELD_"]
         # self._lstColToInt = ["Umsatz_MUSS_FELD_"] #,"Steuersatz_MUSS_FELD_","L_VPE_Menge_MUSS_FELD_","BASISME_Auswahl_MUSS_FELD_","Faktor_BASISME_VPE_MUSS_FELD_"]
         self._lstColToInt = ["L_VPE_Menge_MUSS_FELD_","Umsatz_MUSS_FELD_"]
+        self._pivValCols = ["L_VPE_Menge_MUSS_FELD_","Umsatz_MUSS_FELD_"]
+        self._pivIndexCols = ["L_Quelle_Name_MUSS_FELD_"
+                        ,"L_Quelle_ID_MUSS_FELD_"
+                        ,"L_Art_Nr_MUSS_FELD_"
+                        ,"Einrichtung_MUSS_FELD_"]
 
     def _fileToDf(self):
         """
@@ -109,17 +155,8 @@ class DfDesigner:
               df[["H_Art_Nr_MUSS_FELD_","H_Art_Nr_MUSS_FELD__NORMALIZED"]]
 
         """ 
-        df = self._addColumns()
-        dfPiv = pd.pivot_table(df,values=["L_VPE_Menge_MUSS_FELD_","Umsatz_MUSS_FELD_"],index=["L_Quelle_Name_MUSS_FELD_"
-                                                                                               ,"L_Quelle_ID_MUSS_FELD_"
-                                                                                            #    ,"L_Art_Nr_MUSS_FELD_"
-                                                                                               ,"Einrichtung_MUSS_FELD_"], aggfunc=np.sum).reset_index()
-  
-        return dfPiv      
+        raise NotImplementedError() 
                     
-                    
-        
-
     def createFinalDf(self):
         """
         Main def to execute. Def to be called by an outside client
@@ -128,15 +165,53 @@ class DfDesigner:
         finalDf = self._addColumns()
         return finalDf
 
+# ###########
+# Inheritance
+# ###########
+
+class DfDesignerPiv(DfDesigner):
+    """
+    Inheritance of Base Class DfDesigner
+    Recieves all Bas-Class Attributes with default values
+    """
+    def _extractTables(self):
+        """
+        Create different df extracts to gain other sql tables 
+        Input: modified df
         
-        
-# TEST
+        Output: extracted dfs
+        Ex.: 
+            - Pivot-tables, 
+            - Extracted content of the df 
+              df[["H_Art_Nr_MUSS_FELD_","H_Art_Nr_MUSS_FELD__NORMALIZED"]]
+
+        """ 
+        df = self._addColumns()
+        dfPiv = pd.pivot_table(df,values=self._pivValCols,index=self._pivIndexCols, aggfunc=np.sum).reset_index()  
+        return dfPiv          
+
+
+# ###############################################
+
+# #################
+# TEST Basis Klasse
+# #################
 
 # dfCore = DfDesigner("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
 # # DF = dfCore.createFinalDf()
 # DF = dfCore._extractTables()
 # print(DF.info())
 # print(DF.head())
+
+# ###################
+# TEST Geerbte Klasse
+# ###################
+
+# dfCoreErbe = PivDF("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
+# DFErbe = dfCoreErbe._extractTables()
+
+# print(DFErbe.info())
+# print(DFErbe.head())
 
 # print(DF[['L_Art_Nr_MUSS_FELD_','H_Art_Nr_MUSS_FELD_']].head())
 # print(dfCore._addSuffixToColName("L_WGRP_Intern"))
