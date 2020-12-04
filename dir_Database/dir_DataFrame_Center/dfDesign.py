@@ -25,7 +25,7 @@ class DfDesigner:
         self._headerCell = headerCell
         self._lstColToClean = ["L_Quelle_ID_MUSS_FELD_","L_Quelle_Name_MUSS_FELD_","L_Art_ID_MUSS_FELD_","H_Quelle_ID","H_Art_Nr_MUSS_FELD_","H_Art_ID_MUSS_FELD_"]
         # self._lstColToInt = ["Umsatz_MUSS_FELD_"] #,"Steuersatz_MUSS_FELD_","L_VPE_Menge_MUSS_FELD_","BASISME_Auswahl_MUSS_FELD_","Faktor_BASISME_VPE_MUSS_FELD_"]
-        self._lstColToInt = ["Steuersatz_MUSS_FELD_","Umsatz_MUSS_FELD_"]
+        self._lstColToInt = ["L_VPE_Menge_MUSS_FELD_","Umsatz_MUSS_FELD_"]
 
     def _fileToDf(self):
         """
@@ -110,8 +110,14 @@ class DfDesigner:
 
         """ 
         df = self._addColumns()
-        dfPiv = pd.pivot_table(df,values="Umsatz_MUSS_FELD_",columns="L_Quelle_Name_MUSS_FELD_", aggfunc=np.sum)
-        return dfPiv
+        dfPiv = pd.pivot_table(df,values=["L_VPE_Menge_MUSS_FELD_","Umsatz_MUSS_FELD_"],index=["L_Quelle_Name_MUSS_FELD_"
+                                                                                               ,"L_Quelle_ID_MUSS_FELD_"
+                                                                                            #    ,"L_Art_Nr_MUSS_FELD_"
+                                                                                               ,"Einrichtung_MUSS_FELD_"], aggfunc=np.sum).reset_index()
+  
+        return dfPiv      
+                    
+                    
         
 
     def createFinalDf(self):
@@ -126,11 +132,11 @@ class DfDesigner:
         
 # TEST
 
-dfCore = DfDesigner("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
-# DF = dfCore.createFinalDf()
-DF = dfCore._extractTables()
-print(DF.info())
-print(DF.head())
+# dfCore = DfDesigner("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
+# # DF = dfCore.createFinalDf()
+# DF = dfCore._extractTables()
+# print(DF.info())
+# print(DF.head())
 
 # print(DF[['L_Art_Nr_MUSS_FELD_','H_Art_Nr_MUSS_FELD_']].head())
 # print(dfCore._addSuffixToColName("L_WGRP_Intern"))
