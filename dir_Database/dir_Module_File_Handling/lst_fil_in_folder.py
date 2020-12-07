@@ -33,7 +33,8 @@ class FileList(list):
         returns list of all fileNames that contains the suffix in the tree-folders
         """
         fileList = []
-        fileList = glob.glob("{0}**/*{1}*".format(self._pfad,self._suffix),recursive=True)
+        fileList = glob.glob("{0}**/*{1}?".format(self._pfad,self._suffix),recursive=True)
+
         return fileList
 
     def filterFileList(self):
@@ -41,36 +42,48 @@ class FileList(list):
         input: List of files in folder-tree
         output: Filtered list of files. Condition is the file has a Sheet named = "wichtigesBlatt"
         """
-        try:
-            # 3) Identifiziere Tabelle "Bewegungsdaten"
-            filterKriterium = self._kriteriumIdentifikationDatei
-            lstAllg = self.createFileList()
-            lstHCSRFiles = []
-            for file in lstAllg:
-                xl = pd.ExcelFile(file) 
-
+        # 3) Identifiziere Tabelle "Bewegungsdaten"
+        filterKriterium = self._kriteriumIdentifikationDatei
+        lstAllg = self.createFileList()
+        lstHCSRFiles = []
+        for file in lstAllg:
+            try:
+                # if file[-1] == "b":
+                    # print("It is a binary Excel file.")
+                    # xl = pd.read_excel(file,sheet_name=None, engine='pyxlsb')
+                # else:    
+                xl = pd.ExcelFile(file) # xlrd ersetzen df = pd.read_excel(,sheet_name=None) !!!!!!!!!!!!!!!!!!!!!!!!
                 lstWs = xl.sheet_names
                 for sheet in lstWs:
                     if str(sheet) == filterKriterium:
                         # lstHCSRFiles.append(file.split("\\")[-1]) 
                         lstHCSRFiles.append(file) 
-
-            return lstHCSRFiles
-        
-        except ValueError as val:
-            print(val)
-            print("Error with returning the list.")
-        
-        except PermissionError as per: 
-            print(per)
-            print("Eine ExcelDatei ist geöffnet. Bitte schließen und neu starten.")
-            sys.exit("\nSys: Programm wurde abgrochen, damit Neustart eingeleitet werden kann.")
+            except Exception as e:
+                print(e)
+                pass
+            # except ValueError as val:
+                # print(val)
+                # print("Error with returning the list.")
+            
+            # except PermissionError as per: 
+                # print(per)
+                # print("Eine ExcelDatei ist geöffnet. Bitte schließen und neu starten.")
+                # sys.exit("\nSys: Programm wurde abgrochen, damit Neustart eingeleitet werden kann.")
+    
+            # except Exception as e:
+                # print(e)
+                # # sys.exc_clear()
+        return lstHCSRFiles
             
 
     def designFilteredFileList(self):
         pass
 
 
+# Lister = FileList()
+# ergebnis = Lister.filterFileList()
+
+# print(ergebnis)
 
 # 1) Liste Exceldateien in spezifischen Ordner - ERLEDIGT
 # 2) Öffne Excel (Oder xml, csv)
