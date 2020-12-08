@@ -43,42 +43,40 @@ class FileList(list):
         output: Filtered list of files. Condition is the file has a Sheet named = "wichtigesBlatt"
         """
         # 3) Identifiziere Tabelle "Bewegungsdaten"
-        filterKriterium = self._kriteriumIdentifikationDatei
-        lstAllg = self.createFileList()
-        lstxls = []
-        lstxlsBinary = []
-        lstxlsCombined = []
-        for file in lstAllg:
-            try:
-                if file[-1] == "b": 
+        try:
+            filterKriterium = self._kriteriumIdentifikationDatei
+            lstAllg = self.createFileList()
+            lstxls = []
+            lstxlsBinary = []
+            for file in lstAllg:
+                if file[-1] == "b":
                     xl = pd.read_excel(file,sheet_name=None, engine='pyxlsb')
                     lstWs = xl.keys()
                     for sheet in lstWs:
-                        if str(sheet) == filterKriterium:  
+                        if str(sheet) == filterKriterium:
                             lstxlsBinary.append(file)
-                
+
                 else:
                     xl = pd.read_excel(file,sheet_name=None)
                     lstWs = xl.keys()
                     for sheet in lstWs:
-                        if str(sheet) == filterKriterium:  
+                        if str(sheet) == filterKriterium:
                             lstxls.append(file)
-            except ValueError as val:
-                print(val)
-                print("Error with returning the list.")
-            
-            except PermissionError as per: 
-                print(per)
-                print("Eine ExcelDatei ist geöffnet. Bitte schließen und neu starten.")
-                sys.exit("\nSys: Programm wurde abgrochen, damit Neustart eingeleitet werden kann.")
 
-            except Exception as e:
-                print(e)
-                pass # oder sys.exc_clear()
-                
-        lstxlsCombined = lstxlsBinary + lstxls
-        return lstxlsCombined
-            
+            return lstxlsBinary + lstxls   
+        except ValueError as val:
+            print(val)
+            print("Error with returning the list.")
+        
+        except PermissionError as per: 
+            print(per)
+            print("Eine ExcelDatei ist geöffnet. Bitte schließen und neu starten.")
+            sys.exit("\nSys: Programm wurde abgrochen, damit Neustart eingeleitet werden kann.")
+
+        except Exception as e:
+            print(e)
+            pass # oder sys.exc_clear()
+
 
     def designFilteredFileList(self):
         pass
