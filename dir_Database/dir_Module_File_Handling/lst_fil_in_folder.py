@@ -28,7 +28,7 @@ class FileList(list):
         self._suffix = suffix
         self._kriteriumIdentifikationDatei = kriteriumIdentifikationDatei
 
-    def createFileList(self): # , tableName, headerCell):
+    def createFileList(self): 
         """
         returns list of all fileNames that contains the suffix in the tree-folders
         """
@@ -45,35 +45,39 @@ class FileList(list):
         # 3) Identifiziere Tabelle "Bewegungsdaten"
         filterKriterium = self._kriteriumIdentifikationDatei
         lstAllg = self.createFileList()
-        lstHCSRFiles = []
+        lstxls = []
+        lstxlsBinary = []
+        lstxlsCombined = []
         for file in lstAllg:
             try:
-                # if file[-1] == "b":
-                    # print("It is a binary Excel file.")
-                    # xl = pd.read_excel(file,sheet_name=None, engine='pyxlsb')
-                # else:    
-                xl = pd.ExcelFile(file) # xlrd ersetzen df = pd.read_excel(,sheet_name=None) !!!!!!!!!!!!!!!!!!!!!!!!
-                lstWs = xl.sheet_names
-                for sheet in lstWs:
-                    if str(sheet) == filterKriterium:
-                        # lstHCSRFiles.append(file.split("\\")[-1]) 
-                        lstHCSRFiles.append(file) 
+                if file[-1] == "b": 
+                    xl = pd.read_excel(file,sheet_name=None, engine='pyxlsb')
+                    lstWs = xl.keys()
+                    for sheet in lstWs:
+                        if str(sheet) == filterKriterium:  
+                            lstxlsBinary.append(file)
+                
+                else:
+                    xl = pd.read_excel(file,sheet_name=None)
+                    lstWs = xl.keys()
+                    for sheet in lstWs:
+                        if str(sheet) == filterKriterium:  
+                            lstxls.append(file)
+            except ValueError as val:
+                print(val)
+                print("Error with returning the list.")
+            
+            except PermissionError as per: 
+                print(per)
+                print("Eine ExcelDatei ist geöffnet. Bitte schließen und neu starten.")
+                sys.exit("\nSys: Programm wurde abgrochen, damit Neustart eingeleitet werden kann.")
+
             except Exception as e:
                 print(e)
-                pass
-            # except ValueError as val:
-                # print(val)
-                # print("Error with returning the list.")
-            
-            # except PermissionError as per: 
-                # print(per)
-                # print("Eine ExcelDatei ist geöffnet. Bitte schließen und neu starten.")
-                # sys.exit("\nSys: Programm wurde abgrochen, damit Neustart eingeleitet werden kann.")
-    
-            # except Exception as e:
-                # print(e)
-                # # sys.exc_clear()
-        return lstHCSRFiles
+                pass # oder sys.exc_clear()
+                
+        lstxlsCombined = lstxlsBinary + lstxls
+        return lstxlsCombined
             
 
     def designFilteredFileList(self):
