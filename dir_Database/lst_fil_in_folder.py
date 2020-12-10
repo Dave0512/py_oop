@@ -3,6 +3,7 @@ import os
 import glob
 import pandas as pd
 import sys
+from pandas.core.series import Series
 
 from pandas.io.stata import excessive_string_length_error
 
@@ -23,13 +24,14 @@ class FileList(list): # Basis
     """
     # Tabellen-Indentifikation: Wenn nicht Bewegungsdaten & Kopfdaten
     # Dann prüfe auf Feldnamen in allen Tabellen 'CC01_S01'
-    def __init__(self,pfad="", suffix="xls",kriteriumIdentifikationDatei="Bewegungsdaten"): 
+    def __init__(self,pfad="", suffix="xls",kriteriumIdentifikationDatei="Bewegungsdaten"): # Bewegungsdaten
         """
 
         """
         self._pfad = pfad
         self._suffix = suffix
         self._kriteriumIdentifikationDatei = kriteriumIdentifikationDatei
+        
 
     def createFileList(self): 
         """
@@ -53,20 +55,25 @@ class FileList(list): # Basis
             lstxlsBinary = []
             for file in lstAllg:
                 if file[-1] == "b":
-                    xl = pd.read_excel(file,sheet_name=None, engine='pyxlsb')
+                    xl = pd.read_excel(file,sheet_name=None, engine='pyxlsb') # Type: Dict
                     lstWs = xl.keys()
-                    for sheet in lstWs:
-                        if str(sheet) == filterKriterium:
-                            lstxlsBinary.append(file)
-
+                    dfWs = pd.DataFrame.from_dict(lstWs) # Convert to DF
+                    result = dfWs.isin([filterKriterium]).any().any() & dfWs.isin(['Kopfdaten']).any().any() # Check if tableNames in df  - Returns true/false for every file
+                    if result: # If tableNames exists append
+                       
+                        lstxlsBinary.append(file)
+                        
                 else:
-                    xl = pd.read_excel(file,sheet_name=None)
+                    xl = pd.read_excel(file,sheet_name=None) # Type: Dict
                     lstWs = xl.keys()
-                    for sheet in lstWs:
-                        if str(sheet) == filterKriterium:
-                            lstxls.append(file)
+                    dfWs = pd.DataFrame.from_dict(lstWs) # Convert to DF                    
+                    result = dfWs.isin([filterKriterium]).any().any() & dfWs.isin(['Kopfdaten']).any().any() # Check if tableNames in df - Returns true/false for every file
+                    if result: # If tableNames exists append
+                       
+                        lstxls.append(file)
 
             return lstxlsBinary + lstxls   
+
         except ValueError as val:
             print(val)
             print("Error while returning the list.")
@@ -78,7 +85,7 @@ class FileList(list): # Basis
 
         except Exception as e:
             print(e)
-            pass # oder sys.exc_clear()
+            # pass # oder sys.exc_clear()
 
     def excludedFiles(self):
         """
@@ -94,9 +101,9 @@ class FileList(list): # Basis
 # #########################################
 # Identifikation Nicht eingeladener Dateien
 # #########################################
-# Lister = FileList()
-# ergebnis = Lister.excludedFiles()
-# print(ergebnis)
+Lister = FileList()
+ergebnis = Lister.filterFileList()
+print(ergebnis)
 
 # 1) Liste Exceldateien in spezifischen Ordner - ERLEDIGT
 # 2) Öffne Excel (Oder xml, csv)
