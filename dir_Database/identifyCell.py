@@ -30,6 +30,14 @@ class CellIdentifier:
             print(e)
             print("Value not found in first column of table / dataFrame.")
 
+    def _valueExists(self):
+        if self._locateCellByValue() is None:
+            return False
+        else:
+            return True
+            
+        
+
 # #####################
 # TEST
 # #####################
@@ -37,7 +45,7 @@ class CellIdentifier:
 # pdTest = pd.read_excel("Z:\\1_AGKAMED_Arbeit\\0_GIT_REPOS\py_oop\\dir_Database\\dir_Module_File_Handling\\HCSR_Daten_TEST\\02_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm",sheet_name="Bewegungsdaten",dtype=str) # header=1,
 # # pdTest.info()
 
-# CellIdentObject = CellIndentifier(pdTest,"L_Quelle_Name*")#._locateCellByValue()
+# CellIdentObject = CellIdentifier(pdTest,"L_Quelle_Name*")#._locateCellByValue()
 # # print(type(CellIdentObject._desiredCellValue))
 # # print(CellIdentObject._desiredCellValue)
 
@@ -47,3 +55,6 @@ class CellIdentifier:
 # Zelle = CellIdentObject._locateCellByValue()
 # print(type(Zelle))
 # print(Zelle)
+
+# WahrFalsch = CellIdentObject._valueExists()
+# print(WahrFalsch)
