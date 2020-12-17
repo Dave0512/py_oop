@@ -25,16 +25,13 @@ class FileList(list): # Basis
     """
     # Tabellen-Indentifikation: Wenn nicht Bewegungsdaten & Kopfdaten
     # Dann prüfe auf Feldnamen in allen Tabellen 'CC01_S01'
-    def __init__(self,pfad="", suffix="xls",kriteriumIdentifikationDatei="Bewegungsdaten",criteriasToIdentifyFile=["Bewegungsdaten","Kopfdaten"]): # Bewegungsdaten
+    def __init__(self,pfad="", suffix="xls",criteriasToIdentifyFile=["Bewegungsdaten","Kopfdaten"]): # Bewegungsdaten
         """
-
+        Constructor Method
         """
         self._pfad = pfad
         self._suffix = suffix
-        self._kriteriumIdentifikationDatei = kriteriumIdentifikationDatei
         self._criteriasToIdentifyFile = criteriasToIdentifyFile
-
-        
 
     def createFileList(self): 
         """
@@ -50,9 +47,10 @@ class FileList(list): # Basis
         input: List of files in folder-tree
         output: Filtered list of files. Condition is the file has a Sheet named = "wichtigesBlatt"
         """
-        # 3) Identifiziere Tabelle "Bewegungsdaten"
+        # 3) Identify tables "Bewegungsdaten / Kopfdaten" in file
         try:
-            filterKriterium = self._kriteriumIdentifikationDatei
+            filterKriterien = self._criteriasToIdentifyFile
+
             lstAllg = self.createFileList()
             lstxls = []
             lstxlsBinary = []
@@ -61,18 +59,16 @@ class FileList(list): # Basis
                     xl = pd.read_excel(file,sheet_name=None, engine='pyxlsb') # Type: Dict
                     lstWs = xl.keys()
                     dfWs = pd.DataFrame.from_dict(lstWs) # Convert to DF
-                    result = dfWs.isin([filterKriterium]).any().any() & dfWs.isin(['Kopfdaten']).any().any() # Check if tableNames in df  - Returns true/false for every file
-                    if result: # If tableNames exists append
-                       
+                    result = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Check if tableNames in df  - Returns true/false for every file
+                    if result: # If tableNames exists append                       
                         lstxlsBinary.append(file)
                         
                 else:
                     xl = pd.read_excel(file,sheet_name=None) # Type: Dict
                     lstWs = xl.keys()
                     dfWs = pd.DataFrame.from_dict(lstWs) # Convert to DF               
-                    result = dfWs.isin([filterKriterium]).any().any() & dfWs.isin(['Kopfdaten']).any().any() # Check if tableNames in df - Returns true/false for every file
-                    if result: # If tableNames exists append
-                       
+                    result = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Check if tableNames in df - Returns true/false for every file
+                    if result: # If tableNames exists append                       
                         lstxls.append(file)
 
             return lstxlsBinary + lstxls   
