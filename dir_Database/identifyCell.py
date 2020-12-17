@@ -1,7 +1,7 @@
 
 import pandas as pd
 
-class CellIndentifier:
+class CellIdentifier:
     """
     Class to find a specific cell e. g. in a Excel Spreetsheet
     """
@@ -11,35 +11,24 @@ class CellIndentifier:
 
     def _locateCellByValue(self):
         """
-        Identify Cell by value in dataFrame
+        Identify Cell by value in dataFrame Col 1. 
         Input: Df
         Output: int
         Ex.: As row_start for header
         """
-        df = pd.DataFrame(self._tableAsDF)
+        try:
+            df = pd.DataFrame(self._tableAsDF)
 
-        for row in range(df.shape[0]):
-            for col in range(df.shape[1]):
-                if df.iat[row,col] == self._desiredCellValue:
-                    row_start = row
-                    return row_start
-                    break
-
-
-    # def _identifyHeaderRow(self):
-        # """
-        # Input: Raw Df
-        # Output: Identified Header Cell as row_start
-        # """
-        # df = self._fileToDf()
-        # for row in range(df.shape[0]):
-            # for col in range(df.shape[1]):
-                # if df.iat[row,col] == self._headerCell:
-                    # row_start = row
-                    # return row_start
-                    # # return df.shape[1]
-                    # break
-
+            for row in range(df.shape[0]):
+                for col in range(df.shape[1]):
+                    if df.iat[row,col] == self._desiredCellValue:
+                        row_start = row
+                        return row_start
+                        break
+        
+        except Exception as e:
+            print(e)
+            print("Value not found in first column of table / dataFrame.")
 
 # #####################
 # TEST
