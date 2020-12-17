@@ -9,8 +9,9 @@ import pandas as pd
 import datetime as dt
 
 from queryTemplate import Conn_DB
-from dir_Module_File_Handling.lst_fil_in_folder import FileList
-from dir_DataFrame_Center.dfDesign import DfDesigner
+from lst_fil_in_folder import FileList
+from dfDesign import TableToDF, DfDesignerPiv
+from dfFromList import ListToDF
 
 # #################################
 # 1) Liste potentielle HCSR Dateien 
@@ -18,6 +19,12 @@ from dir_DataFrame_Center.dfDesign import DfDesigner
 
 Lister = FileList()
 lstHCSR = Lister.filterFileList()
+print(len(lstHCSR))
+print(len(Lister.createFileList()))
+
+fehlerhafteDateien = list(set(Lister.createFileList()) - set(lstHCSR))
+print(fehlerhafteDateien)
+
 
 # #################################
 # 2) SQL Abruf
@@ -41,19 +48,35 @@ def main():
     # #################################
     # 3) Erstelle DataFrames aus identifizierten HCSR Dateien
     # #################################
+    sheetName=Lister._criteriasToIdentifyFile[0]
+    
+
     for hcsrFile in lstHCSR:
-        dfHcsr = DfDesigner(fileToTransform=hcsrFile,sheetName=Lister._kriteriumIdentifikationDatei,headerCell='L_Quelle_Name*')
-        realDF = dfHcsr.createFinalDf() # Erstellung modifizierter DF
-        pivDF = dfHcsr._extractTables()
+        fileToTransform=hcsrFile
+        headerCell='L_Quelle_Name*'
+        # # BaseClass
+        dfHcsr = TableToDF(fileToTransform=fileToTransform,sheetName=sheetName,headerCell=headerCell)
+        realDF = dfHcsr._createFinalDf() # Erstellung modifizierter DF
+        
+        # # Inheritance
+        dfCoreErbe = DfDesignerPiv(fileToTransform=fileToTransform,sheetName=sheetName,headerCell=headerCell)
+        DFErbe = dfCoreErbe._extractTables()
         # print(hcsrFile)
         # print(dfHcsr._extractTables().info())
+
+    
 
     # #################################
     # 5) SQLImport
     # #################################
         datenBank.tblImporter(realDF,"hcsr")
-        datenBank.tblImporter(pivDF,"hcsrAggr")
+        datenBank.tblImporter(DFErbe,"hcsrAggr")
 
+dfCoreExcluded = ListToDF()
+dfExcluded = dfCoreExcluded._extractTables()
+
+datenBank.tblImporter(dfExcluded,"hcsrFilesExcluded")
+    
     
 if __name__ == "__main__":
     main()
