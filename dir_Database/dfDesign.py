@@ -7,6 +7,7 @@ import sys
 
 from pandas.tseries.offsets import Day
 from lst_fil_in_folder import FileList
+from identifyCell import CellIdentifier
 
 
 # from pandas.core.arrays.integer import Int64Dtype
@@ -92,28 +93,14 @@ class TableToDF: # Basis
             df = pd.read_excel(self._fileToTransform,sheet_name=self._sheetName,dtype=str)
         return df
 
-    def _identifyHeaderRow(self):
-        """
-        Input: Raw Df
-        Output: Identified Header Cell as row_start
-        """
-        df = self._fileToDf()
-        for row in range(df.shape[0]):
-            for col in range(df.shape[1]):
-                if df.iat[row,col] == self._headerCell:
-                    row_start = row
-                    return row_start
-                    # return df.shape[1]
-                    break
-
-
     def _modifyHeaderDf(self):
         """
         Input: Raw Df, row_start
         Output: DF with new header 
         """
-        row_start = self._identifyHeaderRow()
+        
         df = self._fileToDf()
+        row_start = CellIdentifier(df,self._headerCell)._locateCellByValue()
         # if row_start is not None:           
         new_header = df.iloc[row_start] #grab the first row for the header
         df = df[row_start+1:] #take the data less the header row
