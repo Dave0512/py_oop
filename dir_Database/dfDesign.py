@@ -51,7 +51,7 @@ class DFBase: # Basis Struktur
         pass
 
     # 8
-    def createFinalDf(self):
+    def _createFinalDf(self):
         pass
     
 
@@ -103,7 +103,9 @@ class TableToDF: # Basis
                 if df.iat[row,col] == self._headerCell:
                     row_start = row
                     return row_start
+                    # return df.shape[1]
                     break
+
 
     def _modifyHeaderDf(self):
         """
@@ -159,6 +161,10 @@ class TableToDF: # Basis
         return df 
 
     def _nameRelCols(self):
+        """
+        Input: _addColumns DF
+        Output: DF with selected columns
+        """
         df = self._addColumns()
         df = df[["L_Quelle_Name_MUSS_FELD_",
                 "L_Quelle_IDTyp_Auswahl_MUSS_FELD_",
@@ -211,7 +217,7 @@ class TableToDF: # Basis
         """ 
         raise NotImplementedError() 
                     
-    def createFinalDf(self):
+    def _createFinalDf(self):
         """
         Main def to execute. Def to be called by an outside client
         Output: Modified df
@@ -266,7 +272,10 @@ class DfDesignerPiv(TableToDF):
 
 # dfCore = TableToDF("dir_DataFrame_Center\\HCSR_Daten_kurz\\05_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm", "Bewegungsdaten", "L_Quelle_Name*")
 
+# col = dfCore._identifyHeaderRow()
 
+# print(col)
+# print(df.info())
 
 
 
@@ -292,7 +301,7 @@ class DfDesignerPiv(TableToDF):
 
 
 # dfCore = DfDesigner("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm","Bewegungsdaten",'L_Quelle_Name*')
-# DF = dfCore.createFinalDf()
+# DF = dfCore._createFinalDf()
 # print(DF.info())
 # print(DF.head())
 
