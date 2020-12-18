@@ -7,6 +7,7 @@ from pandas.core.series import Series
 
 from pandas.io.stata import excessive_string_length_error
 # from isInCheckDf import isInChecker
+from identifyCell import CellIdentifier
 
 
 class FileList(list): # Basis
@@ -25,13 +26,15 @@ class FileList(list): # Basis
     """
     # Tabellen-Indentifikation: Wenn nicht Bewegungsdaten & Kopfdaten
     # Dann prüfe auf Feldnamen in allen Tabellen 'CC01_S01'
-    def __init__(self,pfad="", suffix="xls",criteriasToIdentifyFile=["Bewegungsdaten","Kopfdaten"]): # Bewegungsdaten
+    def __init__(self,pfad="", suffix="xls",criteriasToIdentifyFile=["Bewegungsdaten","Kopfdaten"],headerCell='L_Quelle_Name*'): # Bewegungsdaten
         """
         Constructor Method
         """
         self._pfad = pfad
         self._suffix = suffix
         self._criteriasToIdentifyFile = criteriasToIdentifyFile
+        self._headerCell = headerCell
+
 
     def createFileList(self): 
         """
@@ -54,24 +57,30 @@ class FileList(list): # Basis
             lstAllg = self.createFileList()
             lstxls = []
             lstxlsBinary = []
+            
             for file in lstAllg:
                 if file[-1] == "b":
-                    xl = pd.read_excel(file,sheet_name=None, engine='pyxlsb') # Type: Dict
+                    xl = pd.read_excel(file,sheet_name=None)
                     lstWs = xl.keys()
-                    dfWs = pd.DataFrame.from_dict(lstWs) # Convert to DF
-                    result = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Check if tableNames in df  - Returns true/false for every file
-                    if result: # If tableNames exists append                       
-                        lstxlsBinary.append(file)
-                        
-                else:
-                    xl = pd.read_excel(file,sheet_name=None) # Type: Dict
+                    dfWs = pd.DataFrame.from_dict(lstWs)
+                    wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
+                    if wsTest:
+                        dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str,engine='pyxlsb')
+                        valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
+                        if valueTest == True:
+                            lstxlsBinary.append(file)
+                else: 
+                    xl = pd.read_excel(file,sheet_name=None)
                     lstWs = xl.keys()
-                    dfWs = pd.DataFrame.from_dict(lstWs) # Convert to DF               
-                    result = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Check if tableNames in df - Returns true/false for every file
-                    if result: # If tableNames exists append                       
-                        lstxls.append(file)
+                    dfWs = pd.DataFrame.from_dict(lstWs)
+                    wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
+                    if wsTest:
+                        dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
+                        valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
+                        if valueTest == True:
+                            lstxls.append(file) 
+            return lstxlsBinary + lstxls  
 
-            return lstxlsBinary + lstxls   
 
         except ValueError as val:
             print(val)
