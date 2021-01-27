@@ -7,6 +7,7 @@ import urllib
 class Conn_DB:
     """
     Choose DB Connection-Framework 
+    Choose between different Dialects, will be implemented
     """
     def __init__(self,db_conn_lib="sqlalchemy",driver="",server="",database="",Trusted_Connection=""):
         """
@@ -19,6 +20,7 @@ class Conn_DB:
         self._server = server
         self._database = database
         self._Trusted_Connection = Trusted_Connection
+        # self._relevanteFiles = 
   
 
     def design_login_string(self): 
@@ -49,20 +51,22 @@ class Conn_DB:
         server_verbindung = server_engine.connect()
         return server_verbindung
 
-    # Umlagern in QueryTemplate
     def sqlExecuter(self,sqlString):
         """
         Run SQL Querys 
         """
         dbVerb = self.create_server_conn()
-        return dbVerb.execute(sqlString)
-        # with self.create_server_conn() as dbVerb:
-        # # dbVerb = self.create_server_conn()
-            # sqlExecution = dbVerb.execute(sqlString)
-            # return sqlExecution
-            
+        sqlExecution = dbVerb.execute(sqlString)
+        return sqlExecution
+
+    def tblImporter(self,tblDataFrame,tableName="hcsr"):
+        if tblDataFrame is not None:       
+            tblDataFrame.to_sql(tableName,con=self.create_server_conn(),if_exists='append',index=False)
+        else:
+            print(str(tableName) + " ist leer. Hier wird nichts in die Datenbank übergeben.")
 
 
+# #######################################################################################################################
 
 class QueryTemplate:
     """
@@ -70,14 +74,17 @@ class QueryTemplate:
     """
     
     def __init__(self, *args):
-        _verbindungsAufbau = Conn_DB.create_server_conn()
+        DB_Connector = Conn_DB()
+        _datenbankVerbindung = DB_Connector.create_server_conn()
 
-    def connect(self):
+    # def connect(self):
 
-        if isinstance(self._verbindungsAufbau,sqlalchemy.engine.base.Connection) == True:
-            pass
+        # if isinstance(self._verbindungsAufbau,sqlalchemy.engine.base.Connection) == True:
+            # pass
+
+    def tblImporter(self,tblDataFrame,tableName="hcsr"):
+        pass
         
-
     def construct_query(self):
         pass
 
