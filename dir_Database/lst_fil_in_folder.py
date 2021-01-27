@@ -101,7 +101,10 @@ class FileList(list): # Basis
         Output: List of files with hcsr excluded
         """
         lstExcludedFiles = list(set(self.createFileList()) - set(self.filterFileList()))
-        return lstExcludedFiles
+        if lstExcludedFiles:
+            return lstExcludedFiles
+        else:
+            print("Liste ist leer, da keine \nfehlerhaften Dateien vorhanden sind.")
 
     def designFilteredFileList(self):
         pass
