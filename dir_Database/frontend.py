@@ -19,3 +19,19 @@ from queryTemplate import Conn_DB
 from lst_fil_in_folder import FileList
 from dfDesign import TableToDF, DfDesignerPiv
 from dfFromList import ListToDF
+
+import main
+from main import ausfuehren
+
+
+
+
+def importStart():
+    main.ausfuehren()
+
+
+    
+importStart()
+
+
+
