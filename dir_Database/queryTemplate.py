@@ -59,6 +59,30 @@ class Conn_DB:
         sqlExecution = dbVerb.execute(sqlString)
         return sqlExecution
 
+    def sqlExecuter_ResultProxyToDict(self,sqlString):
+        """
+
+        The db_session.execute(query) (sqlExecuter) returns a ResultProxy object
+        The ResultProxy object is made up of RowProxy objects
+        The RowProxy object has an .items() method that returns: 
+            key, value tuples of all the items in the row, which can be unpacked as key, value in a for operation.
+        Input: 
+            ResultProxy Object
+        Output: 
+            Dict 
+        """
+        sqlExec_ResultProxyObj = self.sqlExecuter(sqlString)
+
+        d, a = {}, []
+        for rowproxy in sqlExec_ResultProxyObj:
+            for column, value in rowproxy.items():
+                # build up the dictionary
+                d = {**d, **{column: value}}
+            a.append(d)
+        return a    
+
+        
+
     def tblImporter(self,tblDataFrame,tableName="hcsr"):
         if tblDataFrame is not None:       
             tblDataFrame.to_sql(tableName,con=self.create_server_conn(),if_exists='append',index=False)
