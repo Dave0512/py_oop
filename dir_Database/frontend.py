@@ -46,6 +46,11 @@ class Fenster(QWidget):
         self.lstbox_hcsr.setColumnCount(8)  
         self.lstbox_hcsr.setGeometry(50,150,1800,700) 
 
+        self.btn_map_warenkorb=QPushButton("Katalog Mapping starten",self)
+        self.btn_map_warenkorb.setGeometry(950,70,200,25) 
+        self.btn_map_warenkorb.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen.")
+        # self.btn_map_warenkorb.clicked.connect() # ETL Warenkorbmapping DEF anbinden
+
         # self.lstbox_hcsr.setHorizontalHeaderItem(0,QTableWidgetItem("Lieferant"))
         # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)
 
