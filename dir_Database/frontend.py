@@ -17,9 +17,10 @@ class Fenster(QWidget):
     def initMe(self):
         self.btn_import=QPushButton("HCSR Import starten",self) 
         self.btn_import.move(50,110)
-        self.btn_import.setGeometry(50,70,200,25)   
-        # self.btn_import.clicked.connect(self._call_msg)
+        self.btn_import.setGeometry(50,70,200,25) 
+
         self.btn_import.clicked.connect(self._importHCSR)
+        self.btn_import.clicked.connect(self._call_msg)
 
         self.btn_import=QPushButton("HCSR Export starten",self) 
         self.btn_import.move(50,110)
@@ -66,7 +67,8 @@ class Fenster(QWidget):
         main.ausfuehren()
 
     def _call_msg(self):
-        QMessageBox.information(self,"HSCR Import durchgeführt.")
+        QMessageBox.information(self,"HSCR",
+                                "\nImport wurde erfolgreich durchgeführt.")
 
 
         
