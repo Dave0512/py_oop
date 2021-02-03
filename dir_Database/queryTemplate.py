@@ -52,6 +52,18 @@ class Conn_DB:
         server_verbindung = server_engine.connect()
         return server_verbindung
 
+    def create_cursor(self):
+        """
+        Cursor from db object 
+        Input: 
+            db object
+        Output: 
+            cursor
+        """
+        server_verbindung = self.create_server_conn()
+        cur = server_verbindung.cursor()
+        return cur
+
     def sqlExecuter(self,sqlString):
         """
         Run SQL Querys 
@@ -78,7 +90,6 @@ class Conn_DB:
         dfOfQueryResult = pd.DataFrame(a)
         return dfOfQueryResult    
 
-               
 
     def tblImporter(self,tblDataFrame,tableName="hcsr"):
         if tblDataFrame is not None:       
