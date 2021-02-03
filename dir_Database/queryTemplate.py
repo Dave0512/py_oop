@@ -2,6 +2,7 @@
 import sqlalchemy
 from sqlalchemy import create_engine
 import urllib
+import pandas as pd
 
 
 class Conn_DB:
@@ -59,7 +60,7 @@ class Conn_DB:
         sqlExecution = dbVerb.execute(sqlString)
         return sqlExecution
 
-    def sqlExecuter_ResultProxyToDict(self,sqlString):
+    def sqlExecuterResultProxyToDF(self,sqlString): # sqlExecuterResultProxyToDF
         """
 
         The db_session.execute(query) (sqlExecuter) returns a ResultProxy object
@@ -69,19 +70,15 @@ class Conn_DB:
         Input: 
             ResultProxy Object
         Output: 
-            Dict 
+            DataFrame 
         """
         sqlExec_ResultProxyObj = self.sqlExecuter(sqlString)
 
-        d, a = {}, []
-        for rowproxy in sqlExec_ResultProxyObj:
-            for column, value in rowproxy.items():
-                # build up the dictionary
-                d = {**d, **{column: value}}
-            a.append(d)
-        return a    
+        a = [{column: value for column, value in rowproxy.items()} for rowproxy in sqlExec_ResultProxyObj]
+        dfOfQueryResult = pd.DataFrame(a)
+        return dfOfQueryResult    
 
-        
+               
 
     def tblImporter(self,tblDataFrame,tableName="hcsr"):
         if tblDataFrame is not None:       
