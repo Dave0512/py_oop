@@ -52,17 +52,17 @@ class Conn_DB:
         server_verbindung = server_engine.connect()
         return server_verbindung
 
-    def create_cursor(self):
-        """
-        Cursor from db object 
-        Input: 
-            db object
-        Output: 
-            cursor
-        """
-        server_verbindung = self.create_server_conn()
-        cur = server_verbindung.cursor()
-        return cur
+    # def create_cursor(self):
+    #     """
+    #     Cursor from db object 
+    #     Input: 
+    #         db object
+    #     Output: 
+    #         cursor
+    #     """
+    #     server_verbindung = self.create_server_conn()
+    #     cur = server_verbindung.cursor()
+    #     return cur
 
     def sqlExecuter(self,sqlString):
         """
@@ -86,9 +86,19 @@ class Conn_DB:
         """
         sqlExec_ResultProxyObj = self.sqlExecuter(sqlString)
 
+        # d, a = {}, []
+        # for rowproxy in sqlExec_ResultProxyObj:
+        #     # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
+        #     for column, value in rowproxy.items():
+        #         # build up the dictionary
+        #         d = {**d, **{column: value}}
+        #     a.append(d)
+
         a = [{column: value for column, value in rowproxy.items()} for rowproxy in sqlExec_ResultProxyObj]
-        dfOfQueryResult = pd.DataFrame(a)
-        return dfOfQueryResult    
+        return a
+
+        # dfOfQueryResult = pd.DataFrame(a)
+        # return dfOfQueryResult    
 
 
     def tblImporter(self,tblDataFrame,tableName="hcsr"):
