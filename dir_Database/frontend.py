@@ -69,11 +69,13 @@ class Fenster(QWidget):
         self.lstbox_hcsr.setRowCount(0)
 
         for d in result:
-            for row_number, row_data in enumerate(d.values()): 
-                self.lstbox_hcsr.insertRow(row_number)  # Hier muss die Anzahl der Dicts in der Liste Result stehen              
+            for x in range(len(result)):
+                print(x)
+                self.lstbox_hcsr.insertRow(x)  # Hier muss die Anzahl der Dicts in der Liste Result stehen                             
+            for row_number, row_data in enumerate(d.values()):               
                 for column_number, data in enumerate(d.values()):
-                    self.lstbox_hcsr.setItem(row_number,column_number,QtWidgets.QTableWidgetItem(str(data)))
-            
+                    self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
+                
 
         # # Überschriften
         # for i in result[0]:
