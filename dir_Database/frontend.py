@@ -65,23 +65,15 @@ class Fenster(QWidget):
     def _loadDataFromDB(self):
         result = dfFromSQLHcsrFilesImported()
         AnzahlDictsInList = len(result)
-        for d in result:
+        # print(AnzahlDictsInList)
+        self.lstbox_hcsr.setRowCount(0)
 
-        #     # print(d['L_Quelle_Name_MUSS_FELD_'])
-            for i in d:
-                print(i) #, d[i])
-            
-            # for i in reversed(range(self.lstbox_hcsr.rowCount())):
-            #     self.lstbox_hcsr.removeRow(i)    
-            # for zeilenZahl in len(result):
-            #     self.lstbox_hcsr.insertRow(zeilenZahl)
-            for row_number, row_data in enumerate(d.values()):  
-                self.lstbox_hcsr.insertRow(row_number)                
+        for d in result:
+            for row_number, row_data in enumerate(d.values()): 
+                self.lstbox_hcsr.insertRow(row_number)  # Hier muss die Anzahl der Dicts in der Liste Result stehen              
                 for column_number, data in enumerate(d.values()):
-                # # Daten in Tabelle in GUI einladen
-                    # self.lstbox_hcsr.insertRow(AnzahlDictsInList)
                     self.lstbox_hcsr.setItem(row_number,column_number,QtWidgets.QTableWidgetItem(str(data)))
-        
+            
 
         # # Überschriften
         # for i in result[0]:
@@ -117,8 +109,7 @@ class Fenster(QWidget):
     def initMe(self):
         self.lstbox_hcsr=QTableWidget(self)
         self.lstbox_hcsr.setColumnCount(4) 
-        self.lstbox_hcsr.setRowCount(4)  
-        self.lstbox_hcsr.setGeometry(50,150,1800,700) 
+        self.lstbox_hcsr.setGeometry(50,150,700,700) 
 
         self.btn_show_hcsr_in_tbl=QPushButton("Zeige HCSR",self) 
         self.btn_show_hcsr_in_tbl.setGeometry(650,70,200,25)   
@@ -142,9 +133,9 @@ class Fenster(QWidget):
         self.setWindowIcon(QIcon("agkamed.jpg")) 
 
         self.btn_exit=QPushButton("Tool schließen",self) 
-        self.btn_exit.move(50,1000) 
+        # self.btn_exit.move(50,1000) 
         self.btn_exit.clicked.connect(QtCore.QCoreApplication.instance().quit)
-        self.btn_exit.setGeometry(50,1000,200,25)
+        self.btn_exit.setGeometry(50,900,200,25)
 
         self.txt_suche=QLineEdit(self) 
         self.txt_suche.setGeometry(50,100,900,25)
