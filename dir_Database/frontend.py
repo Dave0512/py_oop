@@ -63,51 +63,22 @@ class Fenster(QWidget):
         self.initMe()
 
     def _loadDataFromDB(self):
+        """
+        Displays DB Informations in GUI Table
+        Input: List of Dicts of DB result of SQL Query
+        Output: Values in QTableWidget 
+        """
         result = dfFromSQLHcsrFilesImported()
-        AnzahlDictsInList = len(result)
-        # print(AnzahlDictsInList)
+        anzahlDictsInList = range(len(result)) # Dicts are DB values with headers
         self.lstbox_hcsr.setRowCount(0)
-
+         
         for d in result:
-            for x in range(len(result)):
-                print(x)
-                self.lstbox_hcsr.insertRow(x)  # Hier muss die Anzahl der Dicts in der Liste Result stehen                             
-            for row_number, row_data in enumerate(d.values()):               
-                for column_number, data in enumerate(d.values()):
-                    self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
-                
-
-        # # Überschriften
-        # for i in result[0]:
-        #     print(i)
-
-
-        # for row_number, row_data in enumerate(result[0]):
-        #     for column_number, data in enumerate(row_data):
-        #         print(row_number)  
-        #         print(type(row_data)) 
-        #         print(row_data)
-                           
-        # # Variante 1
-        # self.lstbox_hcsr.setRowCount(0)
-        # for row_number, row_data in enumerate(result):
-        #     self.lstbox_hcsr.insertRow(row_number)
-        #     for column_number, data in enumerate(row_data):
-        #         # Daten in Tabelle in GUI einladen
-        #         self.lstbox_hcsr.setItem(row_number,column_number,QtWidgets.QTableWidgetItem(str(data)))
+            for x in anzahlDictsInList:
+                x-=1
+                self.lstbox_hcsr.insertRow(x)  
+            for column_number, data in enumerate(d.values()):
+                self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
         
-        # # Variante 2
-        # for i in reversed(range(self.lstbox_hcsr.rowCount())):
-            # self.lstbox_hcsr.removeRow(i)
-        # for row_data in result:
-        #     row_number=self.lstbox_hcsr.rowCount()
-        #     self.lstbox_hcsr.insertRow(row_number)
-        #     for column_number,data in enumerate(row_data):
-        #         self.lstbox_hcsr.setItem(row_number,column_number,QTableWidgetItem(str(data)))
- 
-
-        
-
     def initMe(self):
         self.lstbox_hcsr=QTableWidget(self)
         self.lstbox_hcsr.setColumnCount(4) 
