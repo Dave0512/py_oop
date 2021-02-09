@@ -20,22 +20,31 @@ ws_openpyxl = wb_openpyxl['Kopfdaten']
 # Kopfdaten Variablen
 # ###################
 
-datumVon = ws_openpyxl['E8'].value
-datumBis = ws_openpyxl['E10'].value
-senderName = ws_openpyxl['E32'].value
-senderIdAuswahl = ws_openpyxl['E34'].value
-senderId =  ws_openpyxl['E36'].value
+dictKopfdatenCells = {"datumVon":"E8"
+                  ,"datumBis":"E10"
+                  ,"senderName":"E32"
+                  ,"senderIdAuswahl":"E34"
+                  ,"senderId":"E36"}
 
-if datumBis > datumVon:
-    print("Prüfung der Datumswerte {0} {1} ist erfolgreich verlaufen.\n\nProzess -Kopfdatenprüfung- kann vorgesetzt werden.".format(datumVon,datumBis))
-else:
-    print("Daten fehlerhaft. Datei wird mit Fehlercode (Datum) in DB geschrieben.")
-    # print(type(datumVon))
-    # print(datumVon)
+# Auslesen der Exceltabelle - erstellen der Variablen
+for keyval, val in dictKopfdatenCells.items():
+    inhaltAusZelle = ws_openpyxl[val].value
+    dictKopfdatenValues = {keyval:inhaltAusZelle}
+    # print(dictKopfdatenValues)
+ 
+    
 
-    # print(type(datumBis))
-    # print(datumBis)
+# datumVon = ws_openpyxl['E8'].value
+# datumBis = ws_openpyxl['E10'].value
+# senderName = ws_openpyxl['E32'].value
+# senderIdAuswahl = ws_openpyxl['E34'].value
+# senderId =  ws_openpyxl['E36'].value
 
+# if datumBis > datumVon:
+#     print("Prüfung der Datumswerte {0} {1} ist erfolgreich verlaufen.\n\nProzess -Kopfdatenprüfung- kann vorgesetzt werden.".format(datumVon,datumBis))
+# else:
+#     print("Daten fehlerhaft. Datei wird mit Fehlercode (Datum) in DB geschrieben.")
+  
 
 # ws_openpyxl = wb_openpyxl.get_sheet_by_name('Sheet1')
 
