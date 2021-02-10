@@ -9,7 +9,8 @@ excelDatei = "dir_DataFrame_Center\\01_2020_Health Care Sales Report V2.1_Abbott
 
 excelBlatt = "Kopfdaten"
 
-excelZelle = "E8"
+excelZelle1 = "E8"
+excelZelle2 = "E10"
 
 
 class CellValueFromExcel:
@@ -38,29 +39,45 @@ class CellValueFromExcel:
 
 
 class CompareCellValues(Bool):
+    """
+    Vergleiche 2 Werte.
+    Konkreter Anwendungsfall: HCSR Datei Tabelle Kopfdaten enthält Beginn und Enddatum.
+    """
     def __init__(self,value1,value2):
+        """
+        Um ein Objekt erstellen zu können müssen die beiden zu vergleichenden Werte 
+        bei der Initialisierung angegeben werden.
+        """
         self._value1 = value1
         self._value2 = value2
     
     def _compare(self):
-        if self._value1 == self._value2:
+        """
+        Funktion um das Bool-Objekt auszugeben. 
+
+        Der 1. Wert ist im konkrekten Anwendungsfall = Beginndate
+        Einsatzgebiet: Prüfinstanz für Bestimmung valider HCSR Dateien 
+        Input: 
+            Zu vergleichende Zellinhalte
+        Output: 
+            Bool True / False (True wenn 2. Wert größer 1. Wert)
+        """
+        if str(self._value1) < str(self._value2):
             return True
         else:
             return False
 
-# TEST 
+# # TEST 
+# zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle1)
+# ausgelesenerZellWert1 = zelleInWb._zelleAuslesen()
 
-# boolTestObj = CompareCellValues(2,"2")
+# zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle2)
+# ausgelesenerZellWert2 = zelleInWb._zelleAuslesen()
+
+# print(ausgelesenerZellWert1)
+# print(ausgelesenerZellWert2)
+
+# boolTestObj = CompareCellValues(ausgelesenerZellWert1,ausgelesenerZellWert2)
 # test = boolTestObj._compare()
 # print(test)
-        
-# TEST
-
-# wb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle)
-# ausgelesenerZellWert = wb._zelleAuslesen()
-# print(ausgelesenerZellWert)
-
-        
-
-
-        
+                
