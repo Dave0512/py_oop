@@ -13,6 +13,9 @@ excelZelle = "E8"
 
 
 class CellValueFromExcel:
+    """
+    Class to extract Cell Values from an excelfile, excelsheet
+    """
     def __init__(self, dateiName,blattName,zelle):
         self._dateiName = dateiName
         self._blattName = blattName
@@ -33,13 +36,28 @@ class CellValueFromExcel:
         myCellValue = myCell.value
         return myCellValue
 
+
+class CompareCellValues(Bool):
+    def __init__(self,value1,value2):
+        self._value1 = value1
+        self._value2 = value2
+    
+    def _compare(self):
+        if self._value1 == self._value2:
+            return True
+        else:
+            return False
+
+# TEST 
+
+# boolTestObj = CompareCellValues(2,"2")
+# test = boolTestObj._compare()
+# print(test)
         
 # TEST
 
 # wb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle)
-
 # ausgelesenerZellWert = wb._zelleAuslesen()
-
 # print(ausgelesenerZellWert)
 
         
