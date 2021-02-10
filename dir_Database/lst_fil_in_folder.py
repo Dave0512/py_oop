@@ -47,8 +47,14 @@ class FileList(list): # Basis
 
     def filterFileList(self):
         """
-        input: List of files in folder-tree
-        output: Filtered list of files. Condition is the file has a Sheet named = "wichtigesBlatt"
+        Create a list of, which meets the following specifications:
+            - Tables Bewegungsdaten, Kopfdaten exist
+            - Table Kopfdaten: datumBis > datumVon
+            - Table Bewegungsdaten: Überschrift 'L_Quelle_Name*'exists
+        input: 
+            List of files in folder-tree
+        output: 
+            Filtered list of files. Condition is the file has a Sheet named = "wichtigesBlatt"
         """
         # 3) Identify tables "Bewegungsdaten / Kopfdaten" in file
         try:
