@@ -15,14 +15,19 @@ from datetime import datetime
 
 dateiName = "01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm"
 
-# ##############
-# TESTE openpyxl
-# ##############
+# Tabellenblatt via openpyxl einladen
 
 wb_openpyxl = openpyxl.load_workbook(dateiName)
 ws_openpyxl = wb_openpyxl['Kopfdaten']
-# print(type(wb_openpyxl))
-# [print(type(ws)) for ws in wb_openpyxl.sheetnames if ws == "Kopfdaten"]
+
+# # Class
+# Openpyxl Workbook aus Datei erstellen
+# Openpyxl aus Sheet in Datei erstellen (Vorbelegen mit "Kopfdaten")
+# Variablen für Informationen welche aus Tabelle extrahiert werden müssen
+# # Class Method
+# Prüfung, ob datumBis > datumVon -> Indikator für valide HCSR Datei
+# - TRUE -> in HCSR Tab einladen
+# - FALSE -> Mit Fehlercode in Tab hcsrFilesExcluded
 
 # ###################
 # Kopfdaten Variablen
@@ -41,10 +46,12 @@ for keyval, val in dictKopfdatenCells.items():
     inhaltAusZelle = ws_openpyxl[val].value
     dictKopfdatenValues[keyval] = inhaltAusZelle
 
-
 if dictKopfdatenValues['datumBis'] > dictKopfdatenValues['datumVon']:
-    print("Prüfung der Datumswerte {0} {1} ist erfolgreich verlaufen.\n\nProzess -Kopfdatenprüfung- kann vorgesetzt werden.".format(dictKopfdatenValues['datumBis'],dictKopfdatenValues['datumVon']))
-
+    # print("Prüfung der Datumswerte {0} {1} ist erfolgreich verlaufen.\n\nProzess -Kopfdatenprüfung- kann vorgesetzt werden.".format(dictKopfdatenValues['datumBis'],dictKopfdatenValues['datumVon']))
+    for k, v in dictKopfdatenValues.items():
+        print(k)
 else:
     print("Daten fehlerhaft. Datei wird mit Fehlercode (Datum) in DB geschrieben.")
   
+
+
