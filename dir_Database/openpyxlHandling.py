@@ -22,6 +22,12 @@ class CellValueFromExcel:
         self._dateiName = dateiName
         self._blattName = blattName
         self._zelle = zelle
+        self._dictKopfdatenCells = {"datumVon":"E8"
+                            ,"datumBis":"E10"
+                            ,"senderName":"E32"
+                            ,"senderIdAuswahl":"E34"
+                            ,"senderId":"E36"}
+        self._dictKopfdatenValues = {}
     
     def _ladeDatei(self):
         mywb = openpyxl.load_workbook(self._dateiName)
@@ -74,26 +80,24 @@ class CompareCellValues(Bool):
         Output: 
             Bool True / False (True wenn 2. Wert größer 1. Wert)
         """
-
         try:
             boolWert = self._value1 < self._value2
             return boolWert
         except TypeError:
-                print("Fehlerhafte Formate.\nKann nicht berechnet werden.")
+                print("Fehlerhafte Formate.\nEin Vergleich kann nicht durchgeführt werden.")
 
 
 
 # # TEST 
 
+# zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle1)
+# ausgelesenerZellWert1 = zelleInWb._zelleAuslesen()
 
-zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle1)
-ausgelesenerZellWert1 = zelleInWb._zelleAuslesen()
+# zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle2)
+# ausgelesenerZellWert2 = zelleInWb._zelleAuslesen()
 
-zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle2)
-ausgelesenerZellWert2 = zelleInWb._zelleAuslesen()
-
-print(ausgelesenerZellWert1)
-print(ausgelesenerZellWert2)
+# print(ausgelesenerZellWert1)
+# print(ausgelesenerZellWert2)
 
 # boolTestObj = CompareCellValues(ausgelesenerZellWert1,ausgelesenerZellWert2)
 # test = boolTestObj._compare()
