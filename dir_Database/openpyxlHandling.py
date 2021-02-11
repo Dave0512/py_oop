@@ -65,12 +65,13 @@ class CompareCellValues(Bool):
         """
 
         try:
-            if self._value1 < self._value2:
-                return True
+            boolWert = self._value1 < self._value2
+            return boolWert
         except TypeError:
                 return "Fehlerhafte Formate.\nKann nicht berechnet werden."
-        finally:
-            return False
+        # else:
+        #     return True
+
 
 
 # # TEST 
