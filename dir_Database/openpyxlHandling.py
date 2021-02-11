@@ -16,6 +16,7 @@ excelZelle2 = "E10"
 class CellValueFromExcel:
     """
     Class to extract Cell Values from an excelfile, excelsheet
+    Based on openpyxl module to handle excel sheets
     """
     def __init__(self, dateiName,blattName,zelle):
         self._dateiName = dateiName
@@ -50,7 +51,7 @@ class CompareCellValues(Bool):
         """
         self._value1 = value1
         self._value2 = value2
-    
+ 
     def _compare(self):
         """
         Funktion um das Bool-Objekt auszugeben. 
@@ -62,22 +63,27 @@ class CompareCellValues(Bool):
         Output: 
             Bool True / False (True wenn 2. Wert größer 1. Wert)
         """
-        if str(self._value1) < str(self._value2):
-            return True
-        else:
+
+        try:
+            if self._value1 < self._value2:
+                return True
+        except TypeError:
+                return "Fehlerhafte Formate.\nKann nicht berechnet werden."
+        finally:
             return False
 
+
 # # TEST 
-# zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle1)
-# ausgelesenerZellWert1 = zelleInWb._zelleAuslesen()
+zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle1)
+ausgelesenerZellWert1 = zelleInWb._zelleAuslesen()
 
-# zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle2)
-# ausgelesenerZellWert2 = zelleInWb._zelleAuslesen()
+zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle2)
+ausgelesenerZellWert2 = zelleInWb._zelleAuslesen()
 
-# print(ausgelesenerZellWert1)
-# print(ausgelesenerZellWert2)
+print(ausgelesenerZellWert1)
+print(ausgelesenerZellWert2)
 
-# boolTestObj = CompareCellValues(ausgelesenerZellWert1,ausgelesenerZellWert2)
-# test = boolTestObj._compare()
-# print(test)
+boolTestObj = CompareCellValues(ausgelesenerZellWert1,ausgelesenerZellWert2)
+test = boolTestObj._compare()
+print(test)
                 
