@@ -6,13 +6,12 @@ import openpyxl
 from openpyxl import load_workbook
 from datetime import datetime
 
-excelDatei = "dir_DataFrame_Center\\Test_Datumswerte_1.xlsm"
+# excelDatei = "dir_DataFrame_Center\\Test_Datumswerte_1.xlsm"
 
-excelBlatt = "Kopfdaten"
+# excelBlatt = "Kopfdaten"
 
-excelZelle1 = "E8"
-excelZelle2 = "E10"
-
+# excelZelle1 = "E8"
+# excelZelle2 = "E10"
 
 class ExcelTable:
     def __init__(self, dateiName,blattName):
@@ -53,12 +52,12 @@ class XlsxDatenSauger(Dict):
         Output:
             Dict mit Überschrift und Inhalt aus Zellen
         """
-        quellDict = self._dictKopfdatenCells   
-        zielDict =  self._dictKopfdatenValues
-        for keyval, val in quellDict.items():
-            inhaltAusZelle = self._blattName[val].value
+        quellDict = self._dictKopfdatenCells   # ggfs. umbenennen
+        zielDict =  self._dictKopfdatenValues # ggfs. umbenennen
+        for keyval, val in quellDict.items(): # Schleife durch Dict mit Zellkennung
+            inhaltAusZelle = self._blattName[val].value # Auslesen des Zellinhaltes
             zielDict[keyval] = inhaltAusZelle   
-        return zielDict   
+        return zielDict   # Erstellung Zieldict mit gleichen Überschriften und augelesenen Inhalten
 
 class CompareCellValues(Bool):
     """
@@ -88,22 +87,23 @@ class CompareCellValues(Bool):
             boolWert = self._value1 < self._value2
             return boolWert
         except TypeError:
-                print("Fehlerhafte Formate.\nEin Vergleich kann nicht durchgeführt werden.")
+            print("Fehlerhafte Formate.\nEin Vergleich kann nicht durchgeführt werden.")
+            return False
 
 
 
 # # TEST 
 
-initBlattObj = ExcelTable(excelDatei,excelBlatt)
-blattKopfdaten = initBlattObj._ladeBlatt()
+# initBlattObj = ExcelTable(excelDatei,excelBlatt)
+# blattKopfdaten = initBlattObj._ladeBlatt()
 
-SaugerInitObj = XlsxDatenSauger(blattKopfdaten)
-GesaugtesDict =  SaugerInitObj._erstelleZielDict()
+# SaugerInitObj = XlsxDatenSauger(blattKopfdaten)
+# GesaugtesDict =  SaugerInitObj._erstelleZielDict()
     
-for k, v in GesaugtesDict.items():
-    print(k,v)
+# for k, v in GesaugtesDict.items():
+#     print(k,v)
 
-boolInit = CompareCellValues(GesaugtesDict["datumVon"],GesaugtesDict["datumBis"])
-boolTest = boolInit._compare()
-print(boolTest)
+# boolInit = CompareCellValues(GesaugtesDict["datumVon"],GesaugtesDict["datumBis"])
+# boolTest = boolInit._compare()
+# print(boolTest)
                 
