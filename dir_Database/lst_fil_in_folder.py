@@ -9,6 +9,8 @@ from pandas.io.stata import excessive_string_length_error
 # from isInCheckDf import isInChecker
 from identifyCell import CellIdentifier
 
+from openpyxlHandling import ExcelTable, XlsxDatenSauger, CompareCellValues
+
 
 class FileList(list): # Basis
     """
@@ -67,6 +69,14 @@ class FileList(list): # Basis
             lstxlsBinary = []
             
             for file in lstAllg:
+                initBlattObj = ExcelTable(file,self._criteriasToIdentifyFile[1])
+                blattKopfdaten = initBlattObj._ladeBlatt()
+
+                SaugerInitObj = XlsxDatenSauger(blattKopfdaten)
+                GesaugtesDict =  SaugerInitObj._erstelleZielDict()
+        
+                boolInit = CompareCellValues(GesaugtesDict["datumVon"],GesaugtesDict["datumBis"])
+                boolTest = boolInit._compare()
                 # if file[-1] == "b":
                 #     xl = pd.read_excel(file,sheet_name=None)
                 #     lstWs = xl.keys()
@@ -81,7 +91,7 @@ class FileList(list): # Basis
                 xl = pd.read_excel(file,sheet_name=None)
                 lstWs = xl.keys()
                 dfWs = pd.DataFrame.from_dict(lstWs)
-                wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
+                wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() & boolTest # Prüfe, ob beide Tabellenblätter vorhanden
                 if wsTest:
                     dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
                     valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
@@ -119,9 +129,9 @@ class FileList(list): # Basis
 # #########################################
 # Identifikation Nicht eingeladener Dateien
 # #########################################
-# Lister = FileList()
-# ergebnis = Lister.filterFileList()
-# print(ergebnis)
+Lister = FileList()
+ergebnis = Lister.filterFileList()
+print(ergebnis)
 
 # 1) Liste Exceldateien in spezifischen Ordner - ERLEDIGT
 # 2) Öffne Excel (Oder xml, csv)
