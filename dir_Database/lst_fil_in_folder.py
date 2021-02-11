@@ -59,47 +59,48 @@ class FileList(list): # Basis
         # 3) Identify tables "Bewegungsdaten / Kopfdaten" in file
         try:
             filterKriterien = self._criteriasToIdentifyFile
-
             lstAllg = self.createFileList()
+        except:
+            print("Irgendwas stimmt mit den angegebenen Daten in criteriasToIdentifyFile nicht.\nOder die Gesamtliste der Dateien fehlerhaft.")
+        else:
             lstxls = []
             lstxlsBinary = []
             
             for file in lstAllg:
-                if file[-1] == "b":
-                    xl = pd.read_excel(file,sheet_name=None)
-                    lstWs = xl.keys()
-                    dfWs = pd.DataFrame.from_dict(lstWs)
-                    wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
-                    if wsTest:
-                        dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str,engine='pyxlsb')
-                        valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
-                        if valueTest == True:
-                            lstxlsBinary.append(file)
-                else: 
-                    xl = pd.read_excel(file,sheet_name=None)
-                    lstWs = xl.keys()
-                    dfWs = pd.DataFrame.from_dict(lstWs)
-                    wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
-                    if wsTest:
-                        dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
-                        valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
-                        if valueTest == True:
-                            lstxls.append(file) 
+                # if file[-1] == "b":
+                #     xl = pd.read_excel(file,sheet_name=None)
+                #     lstWs = xl.keys()
+                #     dfWs = pd.DataFrame.from_dict(lstWs)
+                #     wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
+                #     if wsTest:
+                #         dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str,engine='pyxlsb')
+                #         valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
+                #         if valueTest == True:
+                #             lstxlsBinary.append(file)
+                # else: 
+                xl = pd.read_excel(file,sheet_name=None)
+                lstWs = xl.keys()
+                dfWs = pd.DataFrame.from_dict(lstWs)
+                wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
+                if wsTest:
+                    dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
+                    valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
+                    if valueTest == True:
+                        lstxls.append(file) 
             return lstxlsBinary + lstxls  
 
 
-        except ValueError as val:
-            print(val)
-            print("Error while returning the list.")
+        # except ValueError as val:
+        #     return "Error while returning the list."
         
-        except PermissionError as per: 
-            print(per)
-            print("Eine ExcelDatei ist geöffnet. Bitte schließen und neu starten.")
-            sys.exit("\nSys: Programm wurde abgrochen, damit Neustart eingeleitet werden kann.")
+        # except PermissionError as per: 
+        #     print(per)
+        #     print("Eine ExcelDatei ist geöffnet. Bitte schließen und neu starten.")
+        #     sys.exit("\nSys: Programm wurde abgrochen, damit Neustart eingeleitet werden kann.")
 
-        except Exception as e:
-            print(e)
-            # pass # oder sys.exc_clear()
+        # except Exception as e:
+        #     print(e)
+        #     # pass # oder sys.exc_clear()
 
     def excludedFiles(self):
         """
