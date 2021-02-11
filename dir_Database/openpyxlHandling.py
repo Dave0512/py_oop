@@ -5,7 +5,7 @@ import openpyxl
 from openpyxl import load_workbook
 from datetime import datetime
 
-excelDatei = "dir_DataFrame_Center\\01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm"
+excelDatei = "dir_DataFrame_Center\\Test_Datumswerte.xlsm"
 
 excelBlatt = "Kopfdaten"
 
@@ -28,16 +28,27 @@ class CellValueFromExcel:
         return mywb
 
     def _ladeBlatt(self):
+        """
+        Input: openpyxl-workbook-object
+        Output: openpyxl-worksheet-object
+        """
         mywb = self._ladeDatei()
         myws = mywb[self._blattName]
         return myws
 
     def _zelleAuslesen(self):
-        myws = self._ladeBlatt()
-        myCell = myws[self._zelle]
-        myCellValue = myCell.value
-        return myCellValue
-
+        """
+        Input: openpyxl-worksheet-object
+        Output: Zellinhalt der ausgewählten Zelle. Datentyp entspricht Datentyp in Zelle.
+        """
+        try:
+            myws = self._ladeBlatt()
+            myCell = myws[self._zelle]
+            myCellValue = myCell.value
+            print(type(myCellValue))
+            return myCellValue
+        except FileNotFoundError:
+            print("Keine Excel-Datei im gesetzten Ordner vorhanden.\nFehler entsteht in _ladeDatei.\nWird in _zelleAuslesen abgefangen.\n")
 
 class CompareCellValues(Bool):
     """
@@ -68,13 +79,13 @@ class CompareCellValues(Bool):
             boolWert = self._value1 < self._value2
             return boolWert
         except TypeError:
-                return "Fehlerhafte Formate.\nKann nicht berechnet werden."
-        # else:
-        #     return True
+                print("Fehlerhafte Formate.\nKann nicht berechnet werden.")
 
 
 
 # # TEST 
+
+
 zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle1)
 ausgelesenerZellWert1 = zelleInWb._zelleAuslesen()
 
@@ -84,7 +95,7 @@ ausgelesenerZellWert2 = zelleInWb._zelleAuslesen()
 print(ausgelesenerZellWert1)
 print(ausgelesenerZellWert2)
 
-boolTestObj = CompareCellValues(ausgelesenerZellWert1,ausgelesenerZellWert2)
-test = boolTestObj._compare()
-print(test)
+# boolTestObj = CompareCellValues(ausgelesenerZellWert1,ausgelesenerZellWert2)
+# test = boolTestObj._compare()
+# print(test)
                 
