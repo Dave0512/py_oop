@@ -1,4 +1,5 @@
 
+from typing import Dict
 from openpyxl.descriptors.base import Bool
 import pandas as pd
 import openpyxl
@@ -16,13 +17,7 @@ excelZelle2 = "E10"
 class ExcelTable:
     def __init__(self, dateiName,blattName):
         self._dateiName = dateiName
-        self._blattName = blattName
-        self._dictKopfdatenCells = {"datumVon":"E8"
-                            ,"datumBis":"E10"
-                            ,"senderName":"E32"
-                            ,"senderIdAuswahl":"E34"
-                            ,"senderId":"E36"}
-        self._dictKopfdatenValues = {}        
+        self._blattName = blattName    
 
     def _ladeDatei(self):
         mywb = openpyxl.load_workbook(self._dateiName)
@@ -37,28 +32,33 @@ class ExcelTable:
         myws = mywb[self._blattName]
         return myws
 
-class CellValueFromExcel:
+class XlsxDatenSauger(Dict):
     """
-    Class to extract Cell Values from an excelfile, excelsheet
-    Based on openpyxl module to handle excel sheets
+    Einsatz um gezielt Inhalte aus Excelzellen auszulesen
     """
-    def __init__(self, blattName,zelle):
-        self._blattName = blattName
-        self._zelle = zelle
+    def __init__(self,blattName):
+        self._dictKopfdatenCells = {"datumVon":"E8"
+                            ,"datumBis":"E10"
+                            ,"senderName":"E32"
+                            ,"senderIdAuswahl":"E34"
+                            ,"senderId":"E36"}
+        self._dictKopfdatenValues = {}  
+        self._blattName = blattName      
 
-    def _einzelneZelleAuslesen(self):
+    def _erstelleZielDict(self):
         """
-        Input: openpyxl-worksheet-object
-        Output: Zellinhalt der ausgewählten Zelle. Datentyp entspricht Datentyp in Zelle.
+        Liest Zellen in ExcelBlatt und erstellt Dict mit ZellInhalt
+        Input: 
+            ExcelBlattName
+        Output:
+            Dict mit Überschrift und Inhalt aus Zellen
         """
-        try:
-            myws = self._blattName
-            myCell = myws[self._zelle]
-            myCellValue = myCell.value
-            print(type(myCellValue))
-            return myCellValue
-        except FileNotFoundError:
-            print("Keine Excel-Datei im gesetzten Ordner vorhanden.\nFehler entsteht in _ladeDatei.\nWird in _zelleAuslesen abgefangen.\n")
+        quellDict = self._dictKopfdatenCells   
+        zielDict =  self._dictKopfdatenValues
+        for keyval, val in quellDict.items():
+            inhaltAusZelle = self._blattName[val].value
+            zielDict[keyval] = inhaltAusZelle   
+        return zielDict   
 
 class CompareCellValues(Bool):
     """
@@ -97,41 +97,13 @@ class CompareCellValues(Bool):
 initBlattObj = ExcelTable(excelDatei,excelBlatt)
 blattKopfdaten = initBlattObj._ladeBlatt()
 
-# initCellObj = CellValueFromExcel(blattKopfdaten,excelZelle1)
-# datum1 = initCellObj._einzelneZelleAuslesen()
+SaugerInitObj = XlsxDatenSauger(blattKopfdaten)
+GesaugtesDict =  SaugerInitObj._erstelleZielDict()
+    
+for k, v in GesaugtesDict.items():
+    print(k,v)
 
-dict1 = initBlattObj._dictKopfdatenCells
-dict2 = initBlattObj._dictKopfdatenValues
-
-for keyval, val in dict1.items():
-    inhaltAusZelle = blattKopfdaten[val].value
-    dict2[keyval] = inhaltAusZelle
-
-print(dict2["datumVon"])
-print(dict2["datumBis"])
-
-# for k, v in dict2.items():
-#     print(k,v)
-
-# def _alleKopfdatenZellenAuslesen(self):
-#     myws = self._ladeBlatt()
-#     myCell = myws[self._zelle]
-#     for keyval, val in self._dictKopfdatenCells.items():
-#         myCellValue = myCell.value
-#         self._dictKopfdatenValues[keyval] = myCellValue
-#     return self._dictKopfdatenValues
-
-
-# zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle1)
-# ausgelesenerZellWert1 = zelleInWb._einzelneZelleAuslesen()
-
-# zelleInWb = CellValueFromExcel(excelDatei,excelBlatt,excelZelle2)
-# ausgelesenerZellWert2 = zelleInWb._einzelneZelleAuslesen()
-
-# print(ausgelesenerZellWert1)
-# print(ausgelesenerZellWert2)
-
-# boolTestObj = CompareCellValues(ausgelesenerZellWert1,ausgelesenerZellWert2)
-# test = boolTestObj._compare()
-# print(test)
+boolInit = CompareCellValues(GesaugtesDict["datumVon"],GesaugtesDict["datumBis"])
+boolTest = boolInit._compare()
+print(boolTest)
                 
