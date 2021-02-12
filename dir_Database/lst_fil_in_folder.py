@@ -40,7 +40,6 @@ class FileList(list): # Basis
         self._suffix = suffix
         self._criteriasToIdentifyFile = criteriasToIdentifyFile
         self._headerCell = headerCell
-        self._bigDataFrame = pd.DataFrame()
 
 
     def createFileList(self): 
@@ -109,12 +108,6 @@ class FileList(list): # Basis
                         valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() 
                         if valueTest == True:
                             lstxls.append(file) 
-                            ## Extrahierte Kopfdaten Infos in DF schreiben
-                            ## Auslagern in eigene Klasse
-                            gesaugtesDf = pd.DataFrame(gesaugtesDict, index=[0])
-                            gesaugtesDf['_date_inload_'] = dt.datetime.now()
-                            gesaugtesDf['_DateiName_'] = file.split("\\")[-1]
-                            self._bigDataFrame = self._bigDataFrame.append(gesaugtesDf,ignore_index=True)
 
             return lstxlsBinary + lstxls
 
@@ -148,11 +141,11 @@ class FileList(list): # Basis
 # #########################################
 # Identifikation Nicht eingeladener Dateien
 # #########################################
-Lister = FileList()
-ergebnis = Lister.filterFileList()
-bigdf = Lister._bigDataFrame
-print(ergebnis)
-print(bigdf.head())
+# Lister = FileList()
+# ergebnis = Lister.filterFileList()
+
+# print(ergebnis)
+
 
 # ergebnisAusschluss = Lister.excludedFiles()
 # print(ergebnisAusschluss)
