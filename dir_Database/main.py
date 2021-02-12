@@ -12,7 +12,10 @@ from queryTemplate import Conn_DB
 from lst_fil_in_folder import FileList
 from dfDesign import TableToDF, DfDesignerPiv
 from dfFromList import ListToDF
+from openpyxlHandling import ExcelTable, XlsxDatenSauger
 
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
 # #################################
 # 1) Liste potentielle HCSR Dateien
 # #################################
@@ -45,7 +48,7 @@ server_verbindung = datenBank.create_server_conn()
 
 # SQlAusf = datenBank.sqlExecuter(sql_gui_tab_hcsr_import_erfolgreich)
 
-
+# dfKopfdatenValues = pd.DataFrame()
 
 def ausfuehren():
     # #################################
@@ -53,7 +56,7 @@ def ausfuehren():
     # #################################
     sheetName=Lister._criteriasToIdentifyFile[0]
 
-
+    dfKopfdatenValues = pd.DataFrame()
     for hcsrFile in lstHCSR:
         fileToTransform=hcsrFile
         headerCell='L_Quelle_Name*'
@@ -67,6 +70,12 @@ def ausfuehren():
         # print(hcsrFile)
         # print(dfHcsr._extractTables().info())
 
+        blattKopfdaten = ExcelTable(hcsrFile,Lister._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
+        gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
+        gesaugtesDf = pd.DataFrame(gesaugtesDict, index=[0])
+        gesaugtesDf['_date_inload_'] = dt.datetime.now()
+        gesaugtesDf['_DateiName_'] = hcsrFile.split("\\")[-1]
+        dfKopfdatenValues = dfKopfdatenValues.append(gesaugtesDf,ignore_index=True)
 
 
 # #################################
@@ -74,6 +83,7 @@ def ausfuehren():
 # #################################
         datenBank.tblImporter(realDF,"hcsr")
         datenBank.tblImporter(DFErbe,"hcsrAggr")
+        datenBank.tblImporter(dfKopfdatenValues,"hcsrKopfdaten")
 
 dfCoreExcluded = ListToDF()
 dfExcluded = dfCoreExcluded._extractTables()
@@ -97,6 +107,8 @@ def dfFromSQLHcsrFilesImported():
     """
     df_of_resultproxy = datenBank.sqlExecuterResultProxyToDF(sql_gui_tab_hcsr_import_erfolgreich)
     return df_of_resultproxy
+
+# ausfuehren()
 
 
 # print(type(datenBank.create_cursor()))
