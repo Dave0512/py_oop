@@ -73,9 +73,9 @@ class FileList(list): # Basis
                 blattKopfdaten = initBlattObj._ladeBlatt()
 
                 SaugerInitObj = XlsxDatenSauger(blattKopfdaten)
-                GesaugtesDict =  SaugerInitObj._erstelleZielDict()
+                gesaugtesDict =  SaugerInitObj._erstelleZielDict()
         
-                boolInit = CompareCellValues(GesaugtesDict["datumVon"],GesaugtesDict["datumBis"])
+                boolInit = CompareCellValues(gesaugtesDict["datumVon"],gesaugtesDict["datumBis"])
                 boolTest = boolInit._compare()
                 # if file[-1] == "b":
                 #     xl = pd.read_excel(file,sheet_name=None)
@@ -97,6 +97,11 @@ class FileList(list): # Basis
                     valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
                     if valueTest == True:
                         lstxls.append(file) 
+                        print(file)
+                        gesaugtesDf = pd.DataFrame(gesaugtesDict, index=[0])
+                        print(gesaugtesDf.head())
+                        # for k, v in GesaugtesDict.items():
+                        #     print(k,v)
             return lstxlsBinary + lstxls  
 
 
@@ -132,6 +137,9 @@ class FileList(list): # Basis
 Lister = FileList()
 ergebnis = Lister.filterFileList()
 print(ergebnis)
+
+# ergebnisAusschluss = Lister.excludedFiles()
+# print(ergebnisAusschluss)
 
 # 1) Liste Exceldateien in spezifischen Ordner - ERLEDIGT
 # 2) Öffne Excel (Oder xml, csv)
