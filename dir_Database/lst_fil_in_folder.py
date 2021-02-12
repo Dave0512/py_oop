@@ -2,6 +2,7 @@ from glob import glob
 import os
 import glob
 import pandas as pd
+import datetime as dt
 import sys
 from pandas.core.series import Series
 
@@ -10,6 +11,9 @@ from pandas.io.stata import excessive_string_length_error
 from identifyCell import CellIdentifier
 
 from openpyxlHandling import ExcelTable, XlsxDatenSauger, CompareCellValues
+
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
 
 
 class FileList(list): # Basis
@@ -36,6 +40,7 @@ class FileList(list): # Basis
         self._suffix = suffix
         self._criteriasToIdentifyFile = criteriasToIdentifyFile
         self._headerCell = headerCell
+        self._bigDataFrame = pd.DataFrame()
 
 
     def createFileList(self): 
@@ -69,14 +74,7 @@ class FileList(list): # Basis
             lstxlsBinary = []
             
             for file in lstAllg:
-                initBlattObj = ExcelTable(file,self._criteriasToIdentifyFile[1])
-                blattKopfdaten = initBlattObj._ladeBlatt()
 
-                SaugerInitObj = XlsxDatenSauger(blattKopfdaten)
-                gesaugtesDict =  SaugerInitObj._erstelleZielDict()
-        
-                boolInit = CompareCellValues(gesaugtesDict["datumVon"],gesaugtesDict["datumBis"])
-                boolTest = boolInit._compare()
                 # if file[-1] == "b":
                 #     xl = pd.read_excel(file,sheet_name=None)
                 #     lstWs = xl.keys()
@@ -91,18 +89,34 @@ class FileList(list): # Basis
                 xl = pd.read_excel(file,sheet_name=None)
                 lstWs = xl.keys()
                 dfWs = pd.DataFrame.from_dict(lstWs)
-                wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() & boolTest # Prüfe, ob beide Tabellenblätter vorhanden
+        ## ###############################
+        ## Prüfschritt: Tabellen vorhanden
+        ## ###############################
+                wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
                 if wsTest:
-                    dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
-                    valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
-                    if valueTest == True:
-                        lstxls.append(file) 
-                        print(file)
-                        gesaugtesDf = pd.DataFrame(gesaugtesDict, index=[0])
-                        print(gesaugtesDf.head())
-                        # for k, v in GesaugtesDict.items():
-                        #     print(k,v)
-            return lstxlsBinary + lstxls  
+                    blattKopfdaten = ExcelTable(file,self._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
+                    gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
+                    boolInit = CompareCellValues(gesaugtesDict["datumVon"],gesaugtesDict["datumBis"])
+        ## ##################################
+        ## Prüfschritt: Datumswerte Vergleich
+        ## ##################################
+                    datumsVgl = boolInit._compare() # Datumswerte Vergleich
+                    if datumsVgl:
+                        dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
+        ## #################################################
+        ## Prüfschritt: Prüfe, ob 'L_Quelle_Name*' vorhanden
+        ## #################################################
+                        valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() 
+                        if valueTest == True:
+                            lstxls.append(file) 
+                            ## Extrahierte Kopfdaten Infos in DF schreiben
+                            ## Auslagern in eigene Klasse
+                            gesaugtesDf = pd.DataFrame(gesaugtesDict, index=[0])
+                            gesaugtesDf['_date_inload_'] = dt.datetime.now()
+                            gesaugtesDf['_DateiName_'] = file.split("\\")[-1]
+                            self._bigDataFrame = self._bigDataFrame.append(gesaugtesDf,ignore_index=True)
+
+            return lstxlsBinary + lstxls
 
 
         # except ValueError as val:
@@ -136,7 +150,9 @@ class FileList(list): # Basis
 # #########################################
 Lister = FileList()
 ergebnis = Lister.filterFileList()
+bigdf = Lister._bigDataFrame
 print(ergebnis)
+print(bigdf.head())
 
 # ergebnisAusschluss = Lister.excludedFiles()
 # print(ergebnisAusschluss)
