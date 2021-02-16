@@ -29,20 +29,23 @@ class Fenster(QWidget):
         Input: List of Dicts of DB result of SQL Query
         Output: Values in QTableWidget 
         """
-        result = dfFromSQLHcsrFilesImported()
-        rngDictsInList = range(len(result)) # Dicts are DB values with headers
-        print(len(result))
-        print(len(result)-1)
-        self.lstbox_hcsr.setRowCount(0)
+        try:
+            result = dfFromSQLHcsrFilesImported()
+        except Exception as e:
+            print(e)
+            print("Tabelle 'hcsr' existiert nicht.")            
+        else:
+            rngDictsInList = range(len(result)) # Dicts are DB values with headers
+            self.lstbox_hcsr.setRowCount(0)
 
-        for d in result:
-            for x in rngDictsInList:
-                x-=len(result)-1 # Die Anzahl der zu "löschenden" Zeilen, damit die Zeilen ohne Leerzeilen angezeigt werden
-                self.lstbox_hcsr.insertRow(x)                
-            for column_number, data in enumerate(d.values()):
-                self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
-        self.lstbox_hcsr.resizeColumnsToContents()
-        self.lstbox_hcsr.resizeRowsToContents()
+            for d in result:
+                for x in rngDictsInList:
+                    x-=len(result)-1 # Dynamisch: Die Anzahl der zu "löschenden" Zeilen, damit die Zeilen ohne Leerzeilen angezeigt werden
+                    self.lstbox_hcsr.insertRow(x)                
+                for column_number, data in enumerate(d.values()):
+                    self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
+            self.lstbox_hcsr.resizeColumnsToContents()
+            self.lstbox_hcsr.resizeRowsToContents()
  
     def initMe(self):
         self.lstbox_hcsr=QTableWidget(self)
