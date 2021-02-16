@@ -87,11 +87,14 @@ class TableToDF: # Basis
         Input: File, which should be modified to a DataFrame
         Output: DataFrame
         """
-        if self._fileToTransform[-1] == "b": 
-            df = pd.read_excel(self._fileToTransform,sheet_name=self._sheetName,dtype=str, engine='pyxlsb')
-        else:
-            df = pd.read_excel(self._fileToTransform,sheet_name=self._sheetName,dtype=str)
-        return df
+        try:
+            if self._fileToTransform[-1] == "b":          
+                df = pd.read_excel(self._fileToTransform,sheet_name=self._sheetName,dtype=str, engine='pyxlsb')
+            else:
+                df = pd.read_excel(self._fileToTransform,sheet_name=self._sheetName,dtype=str)
+            return df
+        except Exception as e:
+            print(e)
 
     def _modifyHeaderDf(self):
         """
@@ -141,6 +144,7 @@ class TableToDF: # Basis
         
         df['_date_inload_'] = dt.datetime.now()
         df['_DateiName_'] = self._fileToTransform.split("\\")[-1]
+        df['_DateiNameCompKey_'] = df['_DateiName_'].astype(str) + "°" + df['_date_inload_'].astype(str)
         for col in self._lstColToClean:
             df[self._addSuffixToColName(col).name] = self._addSuffixToColName(col) 
         for colInt in self._lstColToInt:
@@ -152,6 +156,7 @@ class TableToDF: # Basis
         Input: _addColumns DF
         Output: DF with selected columns
         """
+        
         df = self._addColumns()
         df = df[["L_Quelle_Name_MUSS_FELD_",
                 "L_Quelle_IDTyp_Auswahl_MUSS_FELD_",
