@@ -25,7 +25,6 @@ import py_migriere_zip_handling_Entwicklung
 from ipynb.fs.full.py_migriere_zip_handling_Entwicklung import main
 
 
-
 class Fenster(QWidget):
     
     def __init__(self):
