@@ -75,7 +75,7 @@ def ausfuehren():
         gesaugtesDf = pd.DataFrame(gesaugtesDict, index=[0])
         gesaugtesDf['_date_inload_'] = dt.datetime.now()
         gesaugtesDf['_DateiName_'] = hcsrFile.split("\\")[-1]
-        gesaugtesDf['_LieferantCompKey_'] = gesaugtesDf['senderName'].astype(str) + "°" + gesaugtesDf['datumVon'].astype(str) + "°" + gesaugtesDf['datumBis'].astype(str)                                
+        gesaugtesDf['_LieferantCompKey_'] = gesaugtesDf['senderId'].astype(str) + "°" + gesaugtesDf['datumVon'].astype(str) + "°" + gesaugtesDf['datumBis'].astype(str)                                
         gesaugtesDf['_DateiNameCompKey_'] = gesaugtesDf['_DateiName_'].astype(str) + "°" + gesaugtesDf['_date_inload_'].astype(str)
         dfKopfdatenValues = dfKopfdatenValues.append(gesaugtesDf,ignore_index=True)
 
