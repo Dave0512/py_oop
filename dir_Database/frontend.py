@@ -14,8 +14,6 @@ from main import ausfuehren, dfFromSQLHcsrFilesImported #, pandasModel
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtCore import QAbstractTableModel, Qt
 
-df = dfFromSQLHcsrFilesImported() # Ergebnis aus DB Query 
-
 class Fenster(QWidget):
     
     def __init__(self):
@@ -31,9 +29,11 @@ class Fenster(QWidget):
         """
         try:
             result = dfFromSQLHcsrFilesImported()
-        except Exception as e:
-            print(e)
-            print("Tabelle 'hcsr' existiert nicht.")            
+        except:         
+            QMessageBox.information(self,"HCSR-Importer",
+                                    "Tabelle 'HCSR' existiert noch nicht."                                
+                                    "\nBitte zunächst Daten importieren, damit"
+                                    "\nInfos angezeigt werden können.")
         else:
             rngDictsInList = range(len(result)) # Dicts are DB values with headers
             self.lstbox_hcsr.setRowCount(0)
@@ -108,7 +108,7 @@ class Fenster(QWidget):
         main.ausfuehren()
 
     def _call_msg(self):
-        QMessageBox.information(self,"HSCR",
+        QMessageBox.information(self,"HCSR-Importer",
                                 "\nImport wurde erfolgreich durchgeführt.")
 
 
