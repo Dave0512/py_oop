@@ -14,6 +14,18 @@ from main import ausfuehren, dfFromSQLHcsrFilesImported #, pandasModel
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtCore import QAbstractTableModel, Qt
 
+# ####################
+# Import eigene Klasse
+# ####################
+# import py_etl_sql_funktionen
+# from ipynb.fs.full.py_etl_sql_funktionen import sql_ausfuehrung
+import ipynb
+import import_ipynb
+import py_migriere_zip_handling_Entwicklung
+from ipynb.fs.full.py_migriere_zip_handling_Entwicklung import main
+
+
+
 class Fenster(QWidget):
     
     def __init__(self):
