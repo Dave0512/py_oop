@@ -22,7 +22,7 @@ from PyQt5.QtCore import QAbstractTableModel, Qt
 import ipynb
 import import_ipynb
 import py_migriere_zip_handling_Entwicklung
-from ipynb.fs.full.py_migriere_zip_handling_Entwicklung import main
+from ipynb.fs.full.py_migriere_zip_handling_Entwicklung import main, handling_export_warenkorb
 
 
 class Fenster(QWidget):
@@ -93,10 +93,19 @@ class Fenster(QWidget):
         self.txt_suche=QLineEdit(self) 
         self.txt_suche.setGeometry(50,100,900,25)
 
-        self.btn_map_warenkorb=QPushButton("Katalog Mapping starten",self)
+        self.btn_map_warenkorb=QPushButton("Katalog Mapping starten (ecl@ss)",self)
         self.btn_map_warenkorb.setGeometry(950,70,200,25) 
         self.btn_map_warenkorb.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen.")
-        # self.btn_map_warenkorb.clicked.connect() # ETL Warenkorbmapping DEF anbinden
+        self.btn_map_warenkorb.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb) # ETL Warenkorbmapping DEF anbinden
+        self.btn_map_warenkorb.clicked.connect(self._call_msg_katalog_map)
+
+        self.btn_map_warenkorb_gtin=QPushButton("Katalog Mapping starten (ecl@ss)",self)
+        self.btn_map_warenkorb_gtin.setGeometry(1250,70,200,25) 
+        self.btn_map_warenkorb_gtin.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen.\n"
+                                          "Mapping erfolgt via Key Lieferant_ArtikelNr_NOU_UOM.\n"
+                                          "Stelle daher bitte sicher, dass NOU & UOM im EDIFACT-Format\n"
+                                          "im Warenkorb eingetragen sind.")
+        self.btn_map_warenkorb_gtin.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb_gtin) # ETL Warenkorbmapping DEF anbinden
 
         self.lstbox_hcsr.setHorizontalHeaderItem(0,QTableWidgetItem("Lieferant"))
         self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)
@@ -121,6 +130,12 @@ class Fenster(QWidget):
     def _call_msg(self):
         QMessageBox.information(self,"HCSR-Importer",
                                 "\nImport wurde erfolgreich durchgeführt.")
+
+    def _call_msg_katalog_map(self):
+        QMessageBox.information(self,"Katalog-Mapping",
+                                "\nWarenkorb wurde erfolgreich gemappt.\n"
+                                "Das Resultat liegt im Exportordner ... bereit.")
+        
 
 
         
