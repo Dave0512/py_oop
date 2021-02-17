@@ -22,7 +22,7 @@ from PyQt5.QtCore import QAbstractTableModel, Qt
 import ipynb
 import import_ipynb
 import py_migriere_zip_handling_Entwicklung
-from ipynb.fs.full.py_migriere_zip_handling_Entwicklung import main, handling_export_warenkorb
+from ipynb.fs.full.py_migriere_zip_handling_Entwicklung import handling_export_warenkorb, handling_export_warenkorb_gtin
 
 
 class Fenster(QWidget):
@@ -61,7 +61,7 @@ class Fenster(QWidget):
     def initMe(self):
         self.lstbox_hcsr=QTableWidget(self)
         self.lstbox_hcsr.setColumnCount(4) 
-        self.lstbox_hcsr.setGeometry(50,150,700,700) 
+        self.lstbox_hcsr.setGeometry(50,150,1500,700) 
 
 
         self.btn_show_hcsr_in_tbl=QPushButton("Zeige HCSR",self) 
@@ -86,7 +86,6 @@ class Fenster(QWidget):
         self.setWindowIcon(QIcon("agkamed.jpg")) 
 
         self.btn_exit=QPushButton("Tool schließen",self) 
-        # self.btn_exit.move(50,1000) 
         self.btn_exit.clicked.connect(QtCore.QCoreApplication.instance().quit)
         self.btn_exit.setGeometry(50,900,200,25)
 
@@ -95,17 +94,21 @@ class Fenster(QWidget):
 
         self.btn_map_warenkorb=QPushButton("Katalog Mapping starten (ecl@ss)",self)
         self.btn_map_warenkorb.setGeometry(950,70,200,25) 
-        self.btn_map_warenkorb.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen.")
+        self.btn_map_warenkorb.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen."
+                                          "Mapping erfolgt via Key Lieferant_ArtikelNr\n"
+                                          "Stelle daher bitte sicher, dass Lieferant_ArtikelNr\n"
+                                          "im Warenkorb eingetragen sind.")
         self.btn_map_warenkorb.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb) # ETL Warenkorbmapping DEF anbinden
         self.btn_map_warenkorb.clicked.connect(self._call_msg_katalog_map)
 
-        self.btn_map_warenkorb_gtin=QPushButton("Katalog Mapping starten (ecl@ss)",self)
+        self.btn_map_warenkorb_gtin=QPushButton("Katalog Mapping starten (GTIN)",self)
         self.btn_map_warenkorb_gtin.setGeometry(1250,70,200,25) 
         self.btn_map_warenkorb_gtin.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen.\n"
                                           "Mapping erfolgt via Key Lieferant_ArtikelNr_NOU_UOM.\n"
                                           "Stelle daher bitte sicher, dass NOU & UOM im EDIFACT-Format\n"
                                           "im Warenkorb eingetragen sind.")
         self.btn_map_warenkorb_gtin.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb_gtin) # ETL Warenkorbmapping DEF anbinden
+        self.btn_map_warenkorb_gtin.clicked.connect(self._call_msg_katalog_map)
 
         self.lstbox_hcsr.setHorizontalHeaderItem(0,QTableWidgetItem("Lieferant"))
         self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)
