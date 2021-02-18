@@ -16,19 +16,6 @@ from openpyxlHandling import ExcelTable, XlsxDatenSauger
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
-# #################################
-# 1) Liste potentielle HCSR Dateien
-# #################################
-
-Lister = FileList()
-lstHCSR = Lister.filterFileList()
-# print(len(lstHCSR)) # Alle Dateien
-# print(len(Lister.createFileList())) # Alle Dateien die eingespielt werden
-
-# fehlerhafteDateien = list(set(Lister.createFileList()) - set(lstHCSR))
-# for file in fehlerhafteDateien: # Ausgeschlossene Dateien
-#     print(file)
-
 
 # #################################
 # 2) SQL Abruf
@@ -51,6 +38,18 @@ server_verbindung = datenBank.create_server_conn()
 # dfKopfdatenValues = pd.DataFrame()
 
 def ausfuehren():
+    # #################################
+    # 1) Liste potentielle HCSR Dateien
+    # #################################
+
+    Lister = FileList()
+    lstHCSR = Lister.filterFileList()
+    # print(len(lstHCSR)) # Alle Dateien
+    # print(len(Lister.createFileList())) # Alle Dateien die eingespielt werden
+    # fehlerhafteDateien = list(set(Lister.createFileList()) - set(lstHCSR))
+    # for file in fehlerhafteDateien: # Ausgeschlossene Dateien
+    #     print(file)
+
     # #################################
     # 3) Erstelle DataFrames aus identifizierten HCSR Dateien
     # #################################
@@ -107,10 +106,14 @@ def dfFromSQLHcsrFilesImported():
     Output:
         Pandas DataFrame of the sql-query results
     """
-    df_of_resultproxy = datenBank.sqlExecuterResultProxyToDF(sql_gui_tab_hcsr_import_erfolgreich)
-    return df_of_resultproxy
+    try:
+        df_of_resultproxy = datenBank.sqlExecuterResultProxyToDF(sql_gui_tab_hcsr_import_erfolgreich)
+    except AttributeError:
+        print("Tabelle nicht vorhanden - in MAIN Funktion aufgerufen")
+    else:
+        return df_of_resultproxy
 
-ausfuehren()
+# ausfuehren()
 
 
 # print(type(datenBank.create_cursor()))
