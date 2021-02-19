@@ -9,15 +9,26 @@ headLieferanten = """SELECT TOP (5) [LieferantenNr]
   FROM [Vorlauf_DB].[dbo].[tbl_lieferanten]"""
 
 
-sql_gui_tab_hcsr_import_erfolgreich = """ select distinct [L_Quelle_Name_MUSS_FELD_]
-                                         ,[_DateiName_]
-				                         ,COUNT(*) Anzahl_Datensätze_je_Lieferant
-				                         ,CAST(_date_inload_ as date) Einladedatum
-FROM [Vorlauf_DB].[dbo].[hcsr]
-WHERE CAST(_date_inload_ as date) =  CAST(GETDATE() AS DATE)
-and [L_Quelle_Name_MUSS_FELD_] is not null
-GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_
-ORDER BY Einladedatum DESC, Anzahl_Datensätze_je_Lieferant DESC """
+sql_gui_tab_hcsr_import_erfolgreich = """ IF (EXISTS(
+    SELECT *
+    FROM Vorlauf_DB.INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_NAME = 'hcsr'
+    ))
+    BEGIN
+		SELECT DISTINCT [L_Quelle_Name_MUSS_FELD_]
+				,[_DateiName_]
+		,COUNT(*) Anzahl_Datensätze_je_Lieferant
+		,CAST(_date_inload_ as date) Einladedatum
+		FROM [Vorlauf_DB].[dbo].[hcsr]
+		WHERE CAST(_date_inload_ as date) =  CAST(GETDATE() AS DATE)
+		and [L_Quelle_Name_MUSS_FELD_] is not null
+		GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_
+		ORDER BY Einladedatum DESC, Anzahl_Datensätze_je_Lieferant DESC 
+	END
+ELSE
+	BEGIN
+		PRINT 'Nicht vorhanden'
+	END"""
 
 sql_gui_tab_hcsr_import_fehlerhaft = """ select distinct _AusgeschlDateiPfad_
 				                        ,CAST(_date_inload_ as date) Einladedatum
@@ -98,4 +109,23 @@ sql_wasserflasche = """
   ,AnzahlPreisstufen desc
   ,AnzahlGtin desc
   ,AnzahlEclass desc
+"""
+
+sql_abruf_vorh_hcsr_dateien = """
+IF (EXISTS(
+    SELECT *
+    FROM Vorlauf_DB.INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_NAME = 'hcsrKopfdaten'
+    ))
+BEGIN
+
+SELECT [_LieferantCompKey_]
+  FROM [Vorlauf_DB].[dbo].[hcsrKopfdaten]
+  GROUP BY [_LieferantCompKey_]
+END
+
+ELSE
+BEGIN
+PRINT 'Tabelle nicht vorhanden'
+END
 """
