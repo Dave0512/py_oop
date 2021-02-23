@@ -1,3 +1,6 @@
+
+## VORLAGE DATENBANK KLASSE
+
 import pyodbc
 
 class Database:
