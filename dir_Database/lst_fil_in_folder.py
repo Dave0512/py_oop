@@ -143,12 +143,32 @@ class FileList(list): # Basis
                     lstTabsError.append(file)
                 
             return lstTabsOk, lstTabsError 
-
+    ## ##################################
+    ## 2) Prüfschritt: Datumswerte Vergleich
+    ## ##################################
     def _filterDatumsWerte(self):
         lstTabsOk = self._filterTabs()[0]
+        lstDatOk = []
+        lstDatError = []
+        for file in lstTabsOk:
+            blattKopfdaten = ExcelTable(file,self._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
+            gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
+            boolInit = CompareCellValues(gesaugtesDict["datumVon"],gesaugtesDict["datumBis"])
+
+            datumsVgl = boolInit._compare() # Datumswerte Vergleich
+            if datumsVgl:
+                # dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
+                lstDatOk.append(file)
+            else:
+                lstDatError.append(file)
+
+        return lstDatOk, lstDatError
+
+    # 3) 
+    def _filterUeberschriften(self):
+        lstDatOk = self._filterDatumsWerte()[0]
         pass
-
-
+        
 
                 
     # # 2) 
@@ -182,16 +202,16 @@ class FileList(list): # Basis
         #     print(e)
         #     # pass # oder sys.exc_clear()
 
-    def excludedFiles(self):
-        """
+    # def excludedFiles(self):
+    #     """
 
-        Output: List of files with hcsr excluded
-        """
-        lstExcludedFiles = list(set(self.createFileList()) - set(self.filterFileList()))
-        if lstExcludedFiles:
-            return lstExcludedFiles
-        else:
-            print("Liste ist leer, da keine \nfehlerhaften Dateien vorhanden sind.")
+    #     Output: List of files with hcsr excluded
+    #     """
+    #     lstExcludedFiles = list(set(self.createFileList()) - set(self.filterFileList()))
+    #     if lstExcludedFiles:
+    #         return lstExcludedFiles
+    #     else:
+    #         print("Liste ist leer, da keine \nfehlerhaften Dateien vorhanden sind.")
 
     def designFilteredFileList(self):
         pass
@@ -199,7 +219,7 @@ class FileList(list): # Basis
 # #########################################
 # Identifikation Nicht eingeladener Dateien
 # #########################################
-Lister = FileList()
+# Lister = FileList()
 
 # # # TEST 1
 # ergebnis1 = Lister._filterTabs()
@@ -214,8 +234,8 @@ Lister = FileList()
 # print(ergebnis1TabsAusgeschl)
 
 # # Test 2
-ergebnis2 = Lister._filterDatumsWerte()
-print(ergebnis2)
+# ergebnis2 = Lister._filterDatumsWerte()
+# print(ergebnis2)
 
 
 # ergebnisAusschluss = Lister.excludedFiles()
