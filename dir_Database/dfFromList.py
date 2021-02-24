@@ -28,32 +28,36 @@ class ListToDF:
         lstTabsError = self._lstTabsError
         lstDatError = self._lstDatError
         lstUebError = self._lstUebError
+        frames = []
 
         if lstTabsError:
             seriesExclFiles = pd.Series(lstTabsError)
             dfTabs = pd.DataFrame({'_AusgeschlDateiPfad_': seriesExclFiles
                                ,'_FehlerCode_': "Error: Tabellen"
                                ,'_date_inload_': str(dt.datetime.now())})
+            frames.append(dfTabs)
 
         if lstDatError:
             seriesExclFiles = pd.Series(lstDatError)
             dfDat = pd.DataFrame({'_AusgeschlDateiPfad_': seriesExclFiles
                                ,'_FehlerCode_': "Error: Datum"
                                ,'_date_inload_': str(dt.datetime.now())})
+            frames.append(dfDat)
 
         if lstUebError:
             seriesExclFiles = pd.Series(lstUebError)
             dfUeb = pd.DataFrame({'_AusgeschlDateiPfad_': seriesExclFiles
                             ,'_FehlerCode_': "Error: Ueberschrift"
                             ,'_date_inload_': str(dt.datetime.now())}) 
- 
-        ## TODO:    Umgang, wenn Listen leer sind. 
-        ##          Zusammenführung in Frames nur wenn FehlerListen vorhanden.
-                # #    frames.append(dfUeb)
- 
-        frames = [dfTabs, dfDat, dfUeb]
-        dfErrorFinal = pd.concat(frames)
-        return dfErrorFinal
+            frames.append(dfUeb)
+        print(type(frames))
+        # frames = [dfTabs, dfDat, dfUeb]
+        try:
+            dfErrorFinal = pd.concat(frames)
+        except ValueError:
+            print("Nix fehlerhaft.")
+        else:
+            return dfErrorFinal
 
         # excludFiles = self._excludFiles 
         # if excludFiles: # Check if faulty files a
