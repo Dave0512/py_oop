@@ -1,6 +1,8 @@
 from glob import glob
 import os
 import glob
+import openpyxl
+from openpyxl import load_workbook
 import pandas as pd
 import datetime as dt
 import sys
@@ -51,66 +53,122 @@ class FileList(list): # Basis
 
         return fileList
 
-    def filterFileList(self):
-        """
-        Create a list of, which meets the following specifications:
-            - Tables Bewegungsdaten, Kopfdaten exist
-            - Table Kopfdaten: datumBis > datumVon
-            - Table Bewegungsdaten: Überschrift 'L_Quelle_Name*'exists
-        input: 
-            List of files in folder-tree
-        output: 
-            Filtered list of files. Condition is the file has a Sheet named = "wichtigesBlatt"
-        """
-        # 3) Identify tables "Bewegungsdaten / Kopfdaten" in file
+    # def filterFileList(self):
+    #     """
+    #     Create a list of, which meets the following specifications:
+    #         - Tables Bewegungsdaten, Kopfdaten exist
+    #         - Table Kopfdaten: datumBis > datumVon
+    #         - Table Bewegungsdaten: Überschrift 'L_Quelle_Name*'exists
+    #     input: 
+    #         List of files in folder-tree
+    #     output: 
+    #         Filtered list of files. Condition is the file has a Sheet named = "wichtigesBlatt"
+    #     """
+    #     # 3) Identify tables "Bewegungsdaten / Kopfdaten" in file
+    #     try:
+    #         filterKriterien = self._criteriasToIdentifyFile
+    #         lstAllg = self.createFileList()
+    #     except:
+    #         print("Irgendwas stimmt mit den angegebenen Daten in criteriasToIdentifyFile nicht.\nOder die Gesamtliste der Dateien fehlerhaft.")
+    #     else:
+    #         lstxls = []
+    #         lstxlsBinary = []
+            
+    #         for file in lstAllg:
+
+    #             # if file[-1] == "b":
+    #             #     xl = pd.read_excel(file,sheet_name=None)
+    #             #     lstWs = xl.keys()
+    #             #     dfWs = pd.DataFrame.from_dict(lstWs)
+    #             #     wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
+    #             #     if wsTest:
+    #             #         dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str,engine='pyxlsb')
+    #             #         valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
+    #             #         if valueTest == True:
+    #             #             lstxlsBinary.append(file)
+    #             # else: 
+    #     ## ###############################
+    #     ## Prüfschritt: Tabellen vorhanden
+    #     ## ###############################
+    #             xl = pd.read_excel(file,sheet_name=None) # Datei in dataFrame
+    #             lstWs = xl.keys() # wenn sheet_name = None, dann keys() = Tabellenblätter
+
+    #             dfWs = pd.DataFrame.from_dict(lstWs)
+    #             wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden  
+    #             if wsTest:
+    #                 blattKopfdaten = ExcelTable(file,self._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
+    #                 gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
+    #                 boolInit = CompareCellValues(gesaugtesDict["datumVon"],gesaugtesDict["datumBis"])
+    #     ## ##################################
+    #     ## Prüfschritt: Datumswerte Vergleich
+    #     ## ##################################
+    #                 datumsVgl = boolInit._compare() # Datumswerte Vergleich
+    #                 if datumsVgl:
+    #                     dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
+    #     ## #################################################
+    #     ## Prüfschritt: Prüfe, ob 'L_Quelle_Name*' vorhanden
+    #     ## #################################################
+    #                     valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() 
+    #                     if valueTest == True:
+    #                         lstxls.append(file) 
+
+    #         return lstxlsBinary + lstxls
+
+    
+    # # ###################################################
+    # # Überführung def filterFileList in einzelne Schritte
+    # # ###################################################
+    
+    # # 1)
+    def _filterTabs(self):
         try:
             filterKriterien = self._criteriasToIdentifyFile
             lstAllg = self.createFileList()
         except:
             print("Irgendwas stimmt mit den angegebenen Daten in criteriasToIdentifyFile nicht.\nOder die Gesamtliste der Dateien fehlerhaft.")
         else:
-            lstxls = []
-            lstxlsBinary = []
+            lstTabsOk = []
+            lstTabsError = []
             
             for file in lstAllg:
+                xl = pd.read_excel(file,sheet_name=None) # Datei in dataFrame
+                lstWs = xl.keys() # wenn sheet_name = None, dann keys() = Tabellenblätter
 
-                # if file[-1] == "b":
-                #     xl = pd.read_excel(file,sheet_name=None)
-                #     lstWs = xl.keys()
-                #     dfWs = pd.DataFrame.from_dict(lstWs)
-                #     wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
-                #     if wsTest:
-                #         dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str,engine='pyxlsb')
-                #         valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
-                #         if valueTest == True:
-                #             lstxlsBinary.append(file)
-                # else: 
-                xl = pd.read_excel(file,sheet_name=None)
-                lstWs = xl.keys()
                 dfWs = pd.DataFrame.from_dict(lstWs)
-        ## ###############################
-        ## Prüfschritt: Tabellen vorhanden
-        ## ###############################
-                wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
-                if wsTest:
-                    blattKopfdaten = ExcelTable(file,self._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
-                    gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
-                    boolInit = CompareCellValues(gesaugtesDict["datumVon"],gesaugtesDict["datumBis"])
-        ## ##################################
-        ## Prüfschritt: Datumswerte Vergleich
-        ## ##################################
-                    datumsVgl = boolInit._compare() # Datumswerte Vergleich
-                    if datumsVgl:
-                        dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
-        ## #################################################
-        ## Prüfschritt: Prüfe, ob 'L_Quelle_Name*' vorhanden
-        ## #################################################
-                        valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() 
-                        if valueTest == True:
-                            lstxls.append(file) 
+                wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden  
+                if wsTest == True:
+                    lstTabsOk.append(file)
 
-            return lstxlsBinary + lstxls
+                else:
+                    lstTabsError.append(file)
+                
+            return lstTabsOk, lstTabsError 
 
+    def _filterDatumsWerte(self):
+        lstTabsOk = self._filterTabs()[0]
+        pass
+
+
+
+                
+    # # 2) 
+    # def _filterDatumsWerte(self):
+
+    #         blattKopfdaten = ExcelTable(file,self._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
+    #         gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
+    #         boolInit = CompareCellValues(gesaugtesDict["datumVon"],gesaugtesDict["datumBis"])
+    # ## ##################################
+    # ## Prüfschritt: Datumswerte Vergleich
+    # ## ##################################
+    #         datumsVgl = boolInit._compare() # Datumswerte Vergleich
+    #         if datumsVgl:
+
+    
+    # # 3) 
+    # def _filterUeberschriften(self):
+#         pass
+
+        
 
         # except ValueError as val:
         #     return "Error while returning the list."
@@ -141,10 +199,23 @@ class FileList(list): # Basis
 # #########################################
 # Identifikation Nicht eingeladener Dateien
 # #########################################
-# Lister = FileList()
-# ergebnis = Lister.filterFileList()
+Lister = FileList()
 
-# print(ergebnis)
+# # # TEST 1
+# ergebnis1 = Lister._filterTabs()
+# ergebnis1TabsOk = ergebnis1[0]
+# ergebnis1TabsAusgeschl = ergebnis1[1]
+
+# print(type(ergebnis1))
+# print(type(ergebnis1TabsOk))
+# print(ergebnis1TabsOk)
+
+# print(type(ergebnis1TabsAusgeschl))
+# print(ergebnis1TabsAusgeschl)
+
+# # Test 2
+ergebnis2 = Lister._filterDatumsWerte()
+print(ergebnis2)
 
 
 # ergebnisAusschluss = Lister.excludedFiles()
