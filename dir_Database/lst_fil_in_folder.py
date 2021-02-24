@@ -119,7 +119,9 @@ class FileList(list): # Basis
     # # Überführung def filterFileList in einzelne Schritte
     # # ###################################################
     
-    # # 1)
+    ## ##################################
+    ## 1) Prüfschritt: Tabellen vorhanden
+    ## ##################################
     def _filterTabs(self):
         try:
             filterKriterien = self._criteriasToIdentifyFile
@@ -143,9 +145,9 @@ class FileList(list): # Basis
                     lstTabsError.append(file)
                 
             return lstTabsOk, lstTabsError 
-    ## ##################################
+    ## #####################################
     ## 2) Prüfschritt: Datumswerte Vergleich
-    ## ##################################
+    ## #####################################
     def _filterDatumsWerte(self):
         lstTabsOk = self._filterTabs()[0]
         lstDatOk = []
@@ -157,38 +159,29 @@ class FileList(list): # Basis
 
             datumsVgl = boolInit._compare() # Datumswerte Vergleich
             if datumsVgl:
-                # dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
                 lstDatOk.append(file)
             else:
                 lstDatError.append(file)
 
         return lstDatOk, lstDatError
 
-    # 3) 
+    ## ####################################################
+    ## 3) Prüfschritt: Prüfe, ob 'L_Quelle_Name*' vorhanden
+    ## ####################################################
     def _filterUeberschriften(self):
         lstDatOk = self._filterDatumsWerte()[0]
-        pass
-        
+        lstUebOk = []
+        lstUebError = []
 
-                
-    # # 2) 
-    # def _filterDatumsWerte(self):
+        for file in lstDatOk:
+            dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
+            valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() 
+            if valueTest == True:
+                lstUebOk.append(file)   
+            else:
+                lstUebError.append(file)
 
-    #         blattKopfdaten = ExcelTable(file,self._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
-    #         gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
-    #         boolInit = CompareCellValues(gesaugtesDict["datumVon"],gesaugtesDict["datumBis"])
-    # ## ##################################
-    # ## Prüfschritt: Datumswerte Vergleich
-    # ## ##################################
-    #         datumsVgl = boolInit._compare() # Datumswerte Vergleich
-    #         if datumsVgl:
-
-    
-    # # 3) 
-    # def _filterUeberschriften(self):
-#         pass
-
-        
+        return lstUebOk, lstUebError 
 
         # except ValueError as val:
         #     return "Error while returning the list."
