@@ -43,7 +43,7 @@ def ausfuehren():
     # #################################
 
     Lister = FileList()
-    lstHCSR = Lister.filterFileList()
+    lstHCSR = Lister._gefilterte_hcsr_liste_uebergeben() # Ersetzt Lister.filterFileList()
     # print(len(lstHCSR)) # Alle Dateien
     # print(len(Lister.createFileList())) # Alle Dateien die eingespielt werden
     # fehlerhafteDateien = list(set(Lister.createFileList()) - set(lstHCSR))
