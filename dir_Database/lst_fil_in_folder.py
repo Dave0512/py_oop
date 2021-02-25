@@ -183,6 +183,10 @@ class FileList(list): # Basis
 
         return lstUebOk, lstUebError 
 
+    def _gefilterte_hcsr_liste_uebergeben(self):
+        lst_hcsr_final = self._filterUeberschriften()[0]
+        return lst_hcsr_final
+        
         # except ValueError as val:
         #     return "Error while returning the list."
         
