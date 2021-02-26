@@ -35,7 +35,7 @@ class CellIdentifier:
                                     ,'Steuersatz*'
                                     ,'Umsatz*'
                                     ,'Bonusrelevant*']
-                                    
+
     def _tabToDf(self):
         try:
             df = pd.DataFrame(self._tableAsDF)
@@ -90,7 +90,6 @@ class CellIdentifier:
             else:
                 return None
         
-
     def _valueExists(self):
         if self._locateCellByValue() is not None:
             return True
@@ -103,28 +102,9 @@ class CellIdentifier:
 # TEST
 # #####################
 
-pdTest = pd.read_excel("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm"
-                      ,sheet_name="Bewegungsdaten"
-                      ,dtype=str) #,header=1)
+# pdTest = pd.read_excel("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGKAMED.xlsm"
+#                       ,sheet_name="Bewegungsdaten"
+#                       ,dtype=str)
 
-# # print(pdTest.columns)
-
-CellIdentObject = CellIdentifier(pdTest,"L_Quelle_Name*")
-# print(CellIdentObject._locateCellByValue())
-# # ueberschriften = CellIdentObject._lstBewegungsdatenCols
-# # [print(c) for c in ueberschriften]
-
-
-print(CellIdentObject._lstValuesExists())
-# print(CellIdentObject._valueExists())
-
-# # print(type(CellIdentObject._tableAsDF))
-# # print(CellIdentObject._tableAsDF.info())
-
-# Zelle = CellIdentObject._locateCellByValue()
-# print(type(Zelle))
-# print(Zelle)
-
-# WahrFalsch = CellIdentObject._valueExists()
-# print(WahrFalsch)
-
+# CellIdentObject = CellIdentifier(pdTest,"L_Quelle_Name*")
+# print(CellIdentObject._lstValuesExists())
