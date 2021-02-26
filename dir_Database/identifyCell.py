@@ -1,4 +1,5 @@
 
+from typing import ItemsView
 import pandas as pd
 
 class CellIdentifier:
@@ -34,7 +35,7 @@ class CellIdentifier:
                                     ,'Steuersatz*'
                                     ,'Umsatz*'
                                     ,'Bonusrelevant*']
-
+                                    
     def _tabToDf(self):
         try:
             df = pd.DataFrame(self._tableAsDF)
@@ -63,25 +64,31 @@ class CellIdentifier:
             print(e)
             print("Value not found in first column of table / dataFrame.")
 
+    def _tabToDf_WithNewHeader(self):
+        """ Set first row as header. Desired for col check in _lstValuesExists """
+        try:
+            rowToDel = self._locateCellByValue() 
+            df = pd.DataFrame(self._tableAsDF) 
+            df.columns = df.iloc[rowToDel] # Erste Zeile als Überschriftenzeile setzen
+            df.drop(df.index[rowToDel],inplace=True) # Erste Zeile löschen
+        except:
+            print("Df aus Tbl erstellen nicht erfolgreich.")
+        else:
+            return df   
+
     def _lstValuesExists(self):
-        # try:
-        if self._locateCellByValue() is not None:
-            row_start = self._locateCellByValue()   
-            print(row_start)    
+        """ Check if Überschriften in DF stimmen """
+        try:
+            if self._locateCellByValue() is not None:
+                row_start = self._locateCellByValue()      
+                df = self._tabToDf_WithNewHeader()
+        except: 
+            return None    
         else: 
-            print("Überschrift nicht vorhanden")          
-        # _headerRow = row_start
-        # df = pd.read_excel(self._tableAsDF,header=_headerRow)
-        # print(df.columns)
-        # # [i for i, j in zip(a, b) if i == j] # Gibt die Daten aus die übereinstimmen
-        # # except:
-        # #     return None
-        # # else: 
-        # #     print(df.columns)
-        # #     # if all([item in df.columns for item in self._lstBewegungsdatenCols]) is not None:
-        # #     #     return True
-        # #     # else:
-        # #     #     return None
+            if set(df.columns) == set(self._lstBewegungsdatenCols):
+                return True
+            else:
+                return None
         
 
     def _valueExists(self):
@@ -103,7 +110,7 @@ pdTest = pd.read_excel("01_2020_Health Care Sales Report V2.1_Abbott Medical_AGK
 # # print(pdTest.columns)
 
 CellIdentObject = CellIdentifier(pdTest,"L_Quelle_Name*")
-print(CellIdentObject._locateCellByValue())
+# print(CellIdentObject._locateCellByValue())
 # # ueberschriften = CellIdentObject._lstBewegungsdatenCols
 # # [print(c) for c in ueberschriften]
 
