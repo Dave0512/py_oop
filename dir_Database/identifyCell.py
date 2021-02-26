@@ -8,6 +8,32 @@ class CellIdentifier:
     def __init__(self,tableAsDF,desiredCellValue):
         self._tableAsDF = tableAsDF
         self._desiredCellValue = desiredCellValue
+        self._lstBewegungsdatenCols = ['L_Quelle_Name*'
+                                    ,'L_Quelle_IDTyp_Auswahl*'
+                                    ,'L_Quelle_ID*'
+                                    ,'H_Quelle_Name'
+                                    ,'H_Quelle_IDTyp_Auswahl'
+                                    ,'H_Quelle_ID'
+                                    ,'Einrichtung*'
+                                    ,'Organisation_ID_Auswahl*'
+                                    ,'Organisation_ID*'
+                                    ,'L_Art_Nr*'
+                                    ,'L_Art_IDTyp_Auswahl'
+                                    ,'L_Art_ID*'
+                                    ,'H_Art_Nr*'
+                                    ,'H_Art_IDTyp_Auswahl'
+                                    ,'H_Art_ID*'
+                                    ,'L_Art_Txt*'
+                                    ,'L_WGRP_Intern'
+                                    ,'L_WGRP_Merkmale_Intern'
+                                    ,'L_VPE_Auswahl*'
+                                    ,'L_VPE_Menge*'
+                                    ,'Faktor_BASISME_VPE*'
+                                    ,'BASISME_Auswahl*'
+                                    ,'Steuersatz Landescode*'
+                                    ,'Steuersatz*'
+                                    ,'Umsatz*'
+                                    ,'Bonusrelevant*']
 
     def _locateCellByValue(self):
         """
@@ -19,9 +45,9 @@ class CellIdentifier:
         try:
             df = pd.DataFrame(self._tableAsDF)
 
-            for row in range(df.shape[0]):
+            for row in range(df.shape[0]): 
                 for col in range(df.shape[1]):
-                    if df.iat[row,col] == self._desiredCellValue:
+                    if df.iat[row,col] == self._desiredCellValue: # Variabel nach Zellinhalt suchen, um Überschrift zu lokalisieren
                         row_start = row
                         return row_start
                         break
@@ -29,6 +55,20 @@ class CellIdentifier:
         except Exception as e:
             print(e)
             print("Value not found in first column of table / dataFrame.")
+
+    def _lstValuesExists(self):
+        try:
+            row_start = self._locateCellByValue()
+            _headerRow = row_start
+            df = pd.DataFrame(self._tableAsDF,header=_headerRow)
+        except:
+            return None
+        else: 
+            if all([item in df.columns for item in self._lstBewegungsdatenCols]) is not None:
+                return True
+            else:
+                return False
+        
 
     def _valueExists(self):
         if self._locateCellByValue() is not None:
