@@ -33,22 +33,14 @@ datenBank = Conn_DB(driver="{SQL Server Native Client 11.0}",
 
 server_verbindung = datenBank.create_server_conn()
 
-# SQlAusf = datenBank.sqlExecuter(sql_gui_tab_hcsr_import_erfolgreich)
-
-# dfKopfdatenValues = pd.DataFrame()
-
 def ausfuehren():
+
     # #################################
     # 1) Liste potentielle HCSR Dateien
     # #################################
 
     Lister = FileList()
     lstHCSR = Lister._gefilterte_hcsr_liste_uebergeben() # Ersetzt Lister.filterFileList()
-    # print(len(lstHCSR)) # Alle Dateien
-    # print(len(Lister.createFileList())) # Alle Dateien die eingespielt werden
-    # fehlerhafteDateien = list(set(Lister.createFileList()) - set(lstHCSR))
-    # for file in fehlerhafteDateien: # Ausgeschlossene Dateien
-    #     print(file)
 
     # #################################
     # 3) Erstelle DataFrames aus identifizierten HCSR Dateien
@@ -66,8 +58,6 @@ def ausfuehren():
         # # Inheritance
         dfCoreErbe = DfDesignerPiv(fileToTransform=fileToTransform,sheetName=sheetName,headerCell=headerCell)
         DFErbe = dfCoreErbe._extractTables()
-        # print(hcsrFile)
-        # print(dfHcsr._extractTables().info())
 
         blattKopfdaten = ExcelTable(hcsrFile,Lister._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
         gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
@@ -78,7 +68,6 @@ def ausfuehren():
         gesaugtesDf['_DateiNameCompKey_'] = gesaugtesDf['_DateiName_'].astype(str) + "°" + gesaugtesDf['_date_inload_'].astype(str)
         dfKopfdatenValues = dfKopfdatenValues.append(gesaugtesDf,ignore_index=True)
 
-
 # #################################
 # 5) SQLImport
 # #################################
@@ -86,10 +75,10 @@ def ausfuehren():
         datenBank.tblImporter(DFErbe,"hcsrAggr")
         datenBank.tblImporter(dfKopfdatenValues,"hcsrKopfdaten")
 
-dfCoreExcluded = ListToDF()
-dfExcluded = dfCoreExcluded._extractTables()
+        dfCoreExcluded = ListToDF()
+        dfExcluded = dfCoreExcluded._extractTables()
+        datenBank.tblImporter(dfExcluded,"hcsrFilesExcluded")
 
-datenBank.tblImporter(dfExcluded,"hcsrFilesExcluded")
 
 # ######################################
 # Entgegennahme der SQL Query Ergebnisse
@@ -103,7 +92,7 @@ def dfFromSQLHcsrFilesImported():
     Recieves SQLAlchemy ResultProxy Object of SQL Query
     Input: 
         ResultProxy Object (SQl Query) in dict / list-format
-    Output:
+    Output: 
         Pandas DataFrame of the sql-query results
     """
     try:
@@ -112,16 +101,6 @@ def dfFromSQLHcsrFilesImported():
         print("Tabelle nicht vorhanden - in MAIN Funktion aufgerufen")
     else:
         return df_of_resultproxy
-
-# ausfuehren()
-
-
-# print(type(datenBank.create_cursor()))
-
-
-# # Test: Als DF formatiertes Query Ergebnis 
-# df = dfFromSQLHcsrFilesImported()
-# print(type(dfFromSQLHcsrFilesImported()))
 
 
 
