@@ -32,8 +32,6 @@ class FileList(list): # Basis
         pfad= "Z:\\1_AGKAMED_Arbeit\\0_GIT_REPOS\\1_ETL\\"
         suffix= "xls"
     """
-    # Tabellen-Indentifikation: Wenn nicht Bewegungsdaten & Kopfdaten
-    # Dann prüfe auf Feldnamen in allen Tabellen 'CC01_S01'
     def __init__(self,pfad="", suffix="xls",criteriasToIdentifyFile=["Bewegungsdaten","Kopfdaten"],headerCell='L_Quelle_Name*'): # Bewegungsdaten
         """
         Constructor Method
@@ -54,23 +52,6 @@ class FileList(list): # Basis
         return fileList
 
     # def filterFileList(self):
-    #     """
-    #     Create a list of, which meets the following specifications:
-    #         - Tables Bewegungsdaten, Kopfdaten exist
-    #         - Table Kopfdaten: datumBis > datumVon
-    #         - Table Bewegungsdaten: Überschrift 'L_Quelle_Name*'exists
-    #     input: 
-    #         List of files in folder-tree
-    #     output: 
-    #         Filtered list of files. Condition is the file has a Sheet named = "wichtigesBlatt"
-    #     """
-    #     # 3) Identify tables "Bewegungsdaten / Kopfdaten" in file
-    #     try:
-    #         filterKriterien = self._criteriasToIdentifyFile
-    #         lstAllg = self.createFileList()
-    #     except:
-    #         print("Irgendwas stimmt mit den angegebenen Daten in criteriasToIdentifyFile nicht.\nOder die Gesamtliste der Dateien fehlerhaft.")
-    #     else:
     #         lstxls = []
     #         lstxlsBinary = []
             
@@ -83,42 +64,8 @@ class FileList(list): # Basis
     #             #     wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden
     #             #     if wsTest:
     #             #         dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str,engine='pyxlsb')
-    #             #         valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() # Prüfe, ob 'L_Quelle_Name*' vorhanden
-    #             #         if valueTest == True:
-    #             #             lstxlsBinary.append(file)
-    #             # else: 
-    #     ## ###############################
-    #     ## Prüfschritt: Tabellen vorhanden
-    #     ## ###############################
-    #             xl = pd.read_excel(file,sheet_name=None) # Datei in dataFrame
-    #             lstWs = xl.keys() # wenn sheet_name = None, dann keys() = Tabellenblätter
-
-    #             dfWs = pd.DataFrame.from_dict(lstWs)
-    #             wsTest = dfWs.isin([filterKriterien[0]]).any().any() & dfWs.isin([filterKriterien[1]]).any().any() # Prüfe, ob beide Tabellenblätter vorhanden  
-    #             if wsTest:
-    #                 blattKopfdaten = ExcelTable(file,self._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
-    #                 gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
-    #                 boolInit = CompareCellValues(gesaugtesDict["datumVon"],gesaugtesDict["datumBis"])
-    #     ## ##################################
-    #     ## Prüfschritt: Datumswerte Vergleich
-    #     ## ##################################
-    #                 datumsVgl = boolInit._compare() # Datumswerte Vergleich
-    #                 if datumsVgl:
-    #                     dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
-    #     ## #################################################
-    #     ## Prüfschritt: Prüfe, ob 'L_Quelle_Name*' vorhanden
-    #     ## #################################################
-    #                     valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() 
-    #                     if valueTest == True:
-    #                         lstxls.append(file) 
-
     #         return lstxlsBinary + lstxls
 
-    
-    # # ###################################################
-    # # Überführung def filterFileList in einzelne Schritte
-    # # ###################################################
-    
     ## ##################################
     ## 1) Prüfschritt: Tabellen vorhanden
     ## ##################################
@@ -175,7 +122,7 @@ class FileList(list): # Basis
 
         for file in lstDatOk:
             dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
-            valueTest = CellIdentifier(dfData,self._headerCell)._valueExists() 
+            valueTest = CellIdentifier(dfData,self._headerCell)._lstValuesExists()
             if valueTest == True:
                 lstUebOk.append(file)   
             else:
@@ -186,63 +133,4 @@ class FileList(list): # Basis
     def _gefilterte_hcsr_liste_uebergeben(self):
         lst_hcsr_final = self._filterUeberschriften()[0]
         return lst_hcsr_final
-        
-        # except ValueError as val:
-        #     return "Error while returning the list."
-        
-        # except PermissionError as per: 
-        #     print(per)
-        #     print("Eine ExcelDatei ist geöffnet. Bitte schließen und neu starten.")
-        #     sys.exit("\nSys: Programm wurde abgrochen, damit Neustart eingeleitet werden kann.")
-
-        # except Exception as e:
-        #     print(e)
-        #     # pass # oder sys.exc_clear()
-
-    # def excludedFiles(self):
-    #     """
-
-    #     Output: List of files with hcsr excluded
-    #     """
-    #     lstExcludedFiles = list(set(self.createFileList()) - set(self.filterFileList()))
-    #     if lstExcludedFiles:
-    #         return lstExcludedFiles
-    #     else:
-    #         print("Liste ist leer, da keine \nfehlerhaften Dateien vorhanden sind.")
-
-    def designFilteredFileList(self):
-        pass
-
-# #########################################
-# Identifikation Nicht eingeladener Dateien
-# #########################################
-# Lister = FileList()
-
-# # # TEST 1
-# ergebnis1 = Lister._filterTabs()
-# ergebnis1TabsOk = ergebnis1[0]
-# ergebnis1TabsAusgeschl = ergebnis1[1]
-
-# print(type(ergebnis1))
-# print(type(ergebnis1TabsOk))
-# print(ergebnis1TabsOk)
-
-# print(type(ergebnis1TabsAusgeschl))
-# print(ergebnis1TabsAusgeschl)
-
-# # Test 2
-# ergebnis2 = Lister._filterDatumsWerte()
-# print(ergebnis2)
-
-
-# ergebnisAusschluss = Lister.excludedFiles()
-# print(ergebnisAusschluss)
-
-# 1) Liste Exceldateien in spezifischen Ordner - ERLEDIGT
-# 2) Öffne Excel (Oder xml, csv)
-# 3) Identifiziere Tabelle "Bewegungsdaten" - ERLEDIGT
-# 3.1) Erstelle Liste mit HCSR Dateien
-# 4) Identifiziere Überschriftenzeile 
-# 5) Wenn alles vorhanden - Schreibe in liste (DB Tabelle) und übertrage in SQL DB
-# 6) Wenn nicht alles vorhanden - liste Excelfiles auf bei denen es fehlt
 
