@@ -133,7 +133,7 @@ class Fenster(QWidget):
         # self.lstbox_hcsr.setHorizontalHeaderItem(4,QTableWidgetItem("Umsatz"))
         # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(4,QHeaderView.ResizeToContents)
 
-        self.show()
+        self.showMaximized()
 
     def _importHCSR(self):
         main.ausfuehren()
