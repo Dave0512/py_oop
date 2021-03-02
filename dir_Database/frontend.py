@@ -11,7 +11,7 @@ from PyQt5.QtGui import *
 import main
 from main import ausfuehren, dfFromSQLHcsrFilesImported #, pandasModel
 
-from PyQt5.QtWidgets import QTableView
+from PyQt5.QtWidgets import QTableView, QProgressBar
 from PyQt5.QtCore import QAbstractTableModel, Qt
 
 # ####################
@@ -26,7 +26,7 @@ from ipynb.fs.full.py_migriere_zip_handling_Entwicklung import handling_export_w
 
 
 class Fenster(QWidget):
-    
+
     def __init__(self):
         super().__init__()
         self.initMe()
@@ -63,6 +63,8 @@ class Fenster(QWidget):
         self.lstbox_hcsr.setColumnCount(4) 
         self.lstbox_hcsr.setGeometry(50,150,1500,700) 
 
+        self.progress = QProgressBar(self)
+        self.progress.setGeometry(50,25,950,25)  
 
         self.btn_show_hcsr_in_tbl=QPushButton("Zeige HCSR",self) 
         self.btn_show_hcsr_in_tbl.setGeometry(650,70,200,25)   
@@ -71,9 +73,11 @@ class Fenster(QWidget):
         self.btn_import=QPushButton("HCSR Import starten",self) 
         self.btn_import.move(50,110)
         self.btn_import.setGeometry(50,70,200,25) 
-
-        self.btn_import.clicked.connect(self._importHCSR)
+        self.btn_import.clicked.connect(self._download)
+        self.btn_import.clicked.connect(self._importHCSR)   
+        self.btn_import.clicked.connect(self._download)     
         self.btn_import.clicked.connect(self._call_msg)
+
 
         self.btn_import=QPushButton("HCSR Export starten",self) 
         self.btn_import.setGeometry(350,70,200,25) 
@@ -93,7 +97,7 @@ class Fenster(QWidget):
         self.txt_suche.setGeometry(50,100,900,25)
 
         self.btn_map_warenkorb=QPushButton("Katalog Mapping starten (ecl@ss)",self)
-        self.btn_map_warenkorb.setGeometry(950,70,200,25) 
+        self.btn_map_warenkorb.setGeometry(1650,100,200,25) 
         self.btn_map_warenkorb.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen."
                                           "Mapping erfolgt via Key Lieferant_ArtikelNr\n"
                                           "Stelle daher bitte sicher, dass Lieferant_ArtikelNr\n"
@@ -102,13 +106,17 @@ class Fenster(QWidget):
         self.btn_map_warenkorb.clicked.connect(self._call_msg_katalog_map)
 
         self.btn_map_warenkorb_gtin=QPushButton("Katalog Mapping starten (GTIN)",self)
-        self.btn_map_warenkorb_gtin.setGeometry(1250,70,200,25) 
+        self.btn_map_warenkorb_gtin.setGeometry(1650,70,200,25) 
         self.btn_map_warenkorb_gtin.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen.\n"
                                           "Mapping erfolgt via Key Lieferant_ArtikelNr_NOU_UOM.\n"
                                           "Stelle daher bitte sicher, dass NOU & UOM im EDIFACT-Format\n"
                                           "im Warenkorb eingetragen sind.")
         self.btn_map_warenkorb_gtin.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb_gtin) # ETL Warenkorbmapping DEF anbinden
         self.btn_map_warenkorb_gtin.clicked.connect(self._call_msg_katalog_map)
+        # ################
+        self.btn_import_lief=QPushButton("Lieferantenliste (CH) Import",self)
+        self.btn_import_lief.setGeometry(1650,300,200,25) 
+
 
         self.lstbox_hcsr.setHorizontalHeaderItem(0,QTableWidgetItem("Lieferant"))
         self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)
@@ -138,7 +146,14 @@ class Fenster(QWidget):
         QMessageBox.information(self,"Katalog-Mapping",
                                 "\nWarenkorb wurde erfolgreich gemappt.\n"
                                 "Das Resultat liegt im Exportordner ... bereit.")
+
         
+    def _download(self):
+        self.completed = 0
+        while self.completed < 100:
+            self.completed += 0.0001
+            # self.completed += 0.0001
+            self.progress.setValue(self.completed) # Set Value of ProgressBar       
 
 
         
@@ -148,7 +163,6 @@ if __name__ == "__main__":
     sys.exit(app.exec_())
   
 
-    # print(df)
 
 
 
