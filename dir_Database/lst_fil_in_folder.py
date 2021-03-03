@@ -78,8 +78,10 @@ class FileList(list): # Basis
         else:
             lstTabsOk = []
             lstTabsError = []
+
             
             for file in lstAllg:
+                # if file[-1] != "b":
                 xl = pd.read_excel(file,sheet_name=None) # Datei in dataFrame
                 lstWs = xl.keys() # wenn sheet_name = None, dann keys() = Tabellenblätter
 
@@ -121,6 +123,7 @@ class FileList(list): # Basis
         lstUebError = []
 
         for file in lstDatOk:
+            # if file[-1] != "b":
             dfData = pd.read_excel(file,sheet_name=self._criteriasToIdentifyFile[0],dtype=str)
             valueTest = CellIdentifier(dfData,self._headerCell)._lstValuesExists()
             if valueTest == True:
