@@ -38,8 +38,7 @@ ORDER BY Einladedatum DESC
 """
 
 sql_wasserflasche = """
-
- with cteArtikel as ( 
+with cteArtikel as ( 
 	  select distinct
 	  subqueryghxKatArt.[SUPPLIERNAME]
 	 ,COUNT(*) AnzahlArtikel
@@ -75,10 +74,70 @@ sql_wasserflasche = """
   cteEclass as (
   select subqueryghxKateclass.SUPPLIERNAME
 		 ,COUNT(*) AnzahlEclass
+		 
   from (select SUPPLIERNAME
 		,CATNAME
 		from [Vorlauf_DB].[dbo].[tbl_ghx_kataloge_roh]
-		where _prio_flag_ = '1' and CATNAME like 'eCl@ss' and [CATLEVEL1] not like '%Lief%') as subqueryghxKateclass
+	where _prio_flag_ = '1' 
+	and CATNAME like 'eCl@ss' 
+	and [CATLEVEL1] not like '%Lief%'
+	and CATCODE is not null
+	or [CATCODE] = '3410%'
+	or [CATCODE] = '3414%'
+	or [CATCODE] = '3415%'
+	or [CATCODE] = '3418%'
+	or [CATCODE] = '3419%'
+	or [CATCODE] = '3421%'
+	or [CATCODE] = '3422%'
+	or [CATCODE] = '3423%'
+	or [CATCODE] = '3424%'
+	or [CATCODE] = '3425%'
+	or [CATCODE] = '3429%'
+	or [CATCODE] = '3432%'
+	or [CATCODE] = '3433%'
+	or [CATCODE] = '3435%'
+	or [CATCODE] = '3436%'
+	or [CATCODE] = '3437%'
+	or [CATCODE] = '3438%'
+	or [CATCODE] = '3441%'
+	or [CATCODE] = '3442%'
+	or [CATCODE] = '3459%'
+	or [CATCODE] = '34260703'
+	or [CATCODE] = '34260704'
+	or [CATCODE] = '34260705'
+	or [CATCODE] = '34270112'
+	or [CATCODE] = '34090100'
+	or [CATCODE] = '34090101'
+	or [CATCODE] = '34090102'
+	or [CATCODE] = '34090103'
+	or [CATCODE] = '34090104'
+	or [CATCODE] = '34090190'
+	or [CATCODE] = '34090191'
+	or [CATCODE] = '34090192'
+	or [CATCODE] = '34090200'
+	or [CATCODE] = '34090201'
+	or [CATCODE] = '34090202'
+	or [CATCODE] = '34090203'
+	or [CATCODE] = '34090204'
+	or [CATCODE] = '34090205'
+	or [CATCODE] = '34090290'
+	or [CATCODE] = '34090291'
+	or [CATCODE] = '34090292'
+	or [CATCODE] = '34090300'
+	or [CATCODE] = '34090301'
+	or [CATCODE] = '34090302'
+	or [CATCODE] = '34090390'
+	or [CATCODE] = '34090391'
+	or [CATCODE] = '34090392'
+	or [CATCODE] = '34090400'
+	or [CATCODE] = '34090401'
+	or [CATCODE] = '34090402'
+	or [CATCODE] = '34090490'
+	or [CATCODE] = '34090491'
+	or [CATCODE] = '34090492'
+	or [CATCODE] = '34090500'
+	or [CATCODE] = '34090703'
+				) as subqueryghxKateclass
   group by subqueryghxKateclass.SUPPLIERNAME
   ),
 
@@ -95,7 +154,70 @@ sql_wasserflasche = """
 		,cteArtikel.AnzahlArtikel 'Anzahl aktive Artikel'
 		,cteGtin.AnzahlGtin 'Anzahl aktive GTIN'
 		,cteEclass.AnzahlEclass 'Anzahl aktive ecl@ss'
-
+		,cast(cteEclass.AnzahlEclass as float) / cast((
+select COUNT(*) anzahl_eclass_relevant
+from (select SUPPLIERNAME
+	,CATNAME
+	from [Vorlauf_DB].[dbo].[tbl_ghx_kataloge_roh]
+	where _prio_flag_ = '1' and CATNAME like 'eCl@ss' and [CATLEVEL1] not like '%Lief%'
+	  and CATCODE is not null
+		or [CATCODE] = '3410%'
+		or [CATCODE] = '3414%'
+		or [CATCODE] = '3415%'
+		or [CATCODE] = '3418%'
+		or [CATCODE] = '3419%'
+		or [CATCODE] = '3421%'
+		or [CATCODE] = '3422%'
+		or [CATCODE] = '3423%'
+		or [CATCODE] = '3424%'
+		or [CATCODE] = '3425%'
+		or [CATCODE] = '3429%'
+		or [CATCODE] = '3432%'
+		or [CATCODE] = '3433%'
+		or [CATCODE] = '3435%'
+		or [CATCODE] = '3436%'
+		or [CATCODE] = '3437%'
+		or [CATCODE] = '3438%'
+		or [CATCODE] = '3441%'
+		or [CATCODE] = '3442%'
+		or [CATCODE] = '3459%'
+		or [CATCODE] = '34260703'
+		or [CATCODE] = '34260704'
+		or [CATCODE] = '34260705'
+		or [CATCODE] = '34270112'
+		or [CATCODE] = '34090100'
+		or [CATCODE] = '34090101'
+		or [CATCODE] = '34090102'
+		or [CATCODE] = '34090103'
+		or [CATCODE] = '34090104'
+		or [CATCODE] = '34090190'
+		or [CATCODE] = '34090191'
+		or [CATCODE] = '34090192'
+		or [CATCODE] = '34090200'
+		or [CATCODE] = '34090201'
+		or [CATCODE] = '34090202'
+		or [CATCODE] = '34090203'
+		or [CATCODE] = '34090204'
+		or [CATCODE] = '34090205'
+		or [CATCODE] = '34090290'
+		or [CATCODE] = '34090291'
+		or [CATCODE] = '34090292'
+		or [CATCODE] = '34090300'
+		or [CATCODE] = '34090301'
+		or [CATCODE] = '34090302'
+		or [CATCODE] = '34090390'
+		or [CATCODE] = '34090391'
+		or [CATCODE] = '34090392'
+		or [CATCODE] = '34090400'
+		or [CATCODE] = '34090401'
+		or [CATCODE] = '34090402'
+		or [CATCODE] = '34090490'
+		or [CATCODE] = '34090491'
+		or [CATCODE] = '34090492'
+		or [CATCODE] = '34090500'
+		or [CATCODE] = '34090703'
+	) as subqueryghxKateclass
+)	as float) as 'Anzahl aktive ecl@ss in % (Covin 207)'
   from ctePreisstufen
   left join cteArtikel
   on cteArtikel.SUPPLIERNAME = ctePreisstufen.SUPPLIERNAME
@@ -105,10 +227,8 @@ sql_wasserflasche = """
   on cteArtikel.SUPPLIERNAME = cteEclass.SUPPLIERNAME
   right join cteLiefGlobalTPShort
   on cteArtikel.SUPPLIERNAME = cteLiefGlobalTPShort.SUPPLIERNAME
-  order by AnzahlArtikel desc
-  ,AnzahlPreisstufen desc
-  ,AnzahlGtin desc
-  ,AnzahlEclass desc
+  order by AnzahlEclass desc
+
 """
 
 sql_abruf_vorh_hcsr_dateien = """
