@@ -11,7 +11,7 @@ from PyQt5.QtGui import *
 import main
 from main import ausfuehren, dfFromSQLHcsrFilesImported #, pandasModel
 
-from PyQt5.QtWidgets import QTableView, QProgressBar
+from PyQt5.QtWidgets import QTableView, QProgressBar, QLabel
 from PyQt5.QtCore import QAbstractTableModel, Qt
 
 # ####################
@@ -59,9 +59,13 @@ class Fenster(QWidget):
             self.lstbox_hcsr.resizeRowsToContents()
  
     def initMe(self):
+        self.label = QLabel("Dashboard")
+        self.label.setGeometry(200,25,500,25)
+
         self.lstbox_hcsr=QTableWidget(self)
         self.lstbox_hcsr.setColumnCount(4) 
         self.lstbox_hcsr.setGeometry(50,150,1500,700) 
+        self.lstbox_hcsr.setSortingEnabled(True)
 
         self.progress = QProgressBar(self)
         self.progress.setGeometry(50,25,950,25)  
@@ -152,14 +156,49 @@ class Fenster(QWidget):
         self.completed = 0
         while self.completed < 100:
             self.completed += 0.0001
-            # self.completed += 0.0001
+            # self.completed += 0.00001
             self.progress.setValue(self.completed) # Set Value of ProgressBar       
 
+style = '''
+
+QWidget {
+    background-color: #fcfdff;
+} 
+
+QLabel {
+    font: medium Ubuntu;
+    font-size: 20px;
+    color: #006325;     
+}        
+
+QPushButton {
+    background-color: #edeef0;
+    color: black;
+
+}
+QPushButton:hover {
+    background-color: #808080;
+}
+QPushButton:pressed {
+    background-color: #80c342;
+}    
+
+'''
 
         
 if __name__ == "__main__":
+
+    
+    
+        
     app=QApplication(sys.argv) 
-    w=Fenster() 
+    app.setStyleSheet(style)
+    w=Fenster()
+    # p = w.palette() 
+    # # p.setColor(w.backgroundRole(), Qt.lightGray) # Hintergrundfarbe
+    # # w.setStyleSheet("color: rgb(255, 0, 0);") # Schriftfarbe
+    
+    # w.setPalette(p) 
     sys.exit(app.exec_())
   
 
