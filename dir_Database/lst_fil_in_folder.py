@@ -133,7 +133,23 @@ class FileList(list): # Basis
 
         return lstUebOk, lstUebError 
 
+    def _filterUstID(self):
+        lstUebOk = self._filterUeberschriften()[0]
+        lstUstIDOk = []
+        lstUstIDError = []   
+
+        for file in lstUebOk:
+            blattKopfdaten = ExcelTable(file,self._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
+            gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
+            USTID_Test = gesaugtesDict["senderId"]
+            if USTID_Test == "USTID":
+                lstUstIDOk.append(file)
+            else:
+                lstUstIDError.append(file)
+                
+
     def _gefilterte_hcsr_liste_uebergeben(self):
-        lst_hcsr_final = self._filterUeberschriften()[0]
+        # lst_hcsr_final = self._filterUeberschriften()[0]
+        lst_hcsr_final = self._filterUstID()[0]
         return lst_hcsr_final
 
