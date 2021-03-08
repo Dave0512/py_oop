@@ -146,7 +146,8 @@ class FileList(list): # Basis
                 lstUstIDOk.append(file)
             else:
                 lstUstIDError.append(file)
-                
+        
+        return lstUstIDOk, lstUstIDError
 
     def _gefilterte_hcsr_liste_uebergeben(self):
         # lst_hcsr_final = self._filterUeberschriften()[0]

@@ -18,7 +18,12 @@ class ListToDF:
         self._lstTabsError = FileList()._filterTabs()[1]
         self._lstDatError = FileList()._filterDatumsWerte()[1]
         self._lstUebError = FileList()._filterUeberschriften()[1]
-
+        self._filterUstIDError = FileList().__filterUstID()[1]
+        # ################################################################
+        # # Prüfung: UstId - Abgleich mit LieferantenListe UstId in CH Datei
+        # # Wenn True: UstId vorhanden = obligatorisch 
+        # # Wenn False: FehlerMeldung Lieferant nicht bekannt
+        # ################################################################
 
     def _extractTables(self):
         """
@@ -28,6 +33,7 @@ class ListToDF:
         lstTabsError = self._lstTabsError
         lstDatError = self._lstDatError
         lstUebError = self._lstUebError
+        lstUstIdError = self._filterUstIDError
         frames = []
 
         if lstTabsError:
@@ -50,13 +56,22 @@ class ListToDF:
                             ,'_FehlerCode_': "Error: Ueberschrift"
                             ,'_date_inload_': str(dt.datetime.now())}) 
             frames.append(dfUeb)
+
+        if lstUstIdError:
+            seriesExclFiles = pd.Series(lstUstIdError)
+            dfUstID = pd.DataFrame({'_AusgeschlDateiPfad_': seriesExclFiles
+                            ,'_FehlerCode_': "Error: SenderID (UstID)"
+                            ,'_date_inload_': str(dt.datetime.now())}) 
+            frames.append(dfUstID)
+
+
         print(type(frames))
-        # frames = [dfTabs, dfDat, dfUeb]
+
         try:
             dfErrorFinal = pd.concat(frames)
         except ValueError:
-            print("Nix fehlerhaft.")
-        else:
+            print("Super, keine Datei fehlerhaft! - None / str wird uebergeben.") # Es wird None übergeben! - Umgang in weiteren Klassen
+        else:         
             return dfErrorFinal
 
         # excludFiles = self._excludFiles 
@@ -67,10 +82,11 @@ class ListToDF:
         #     return df
         # else:
         #     print("Jiiieehhhaaa - Keine fehlerhaften Dateien vorhanden.")
+    
 
 ## TEST
 
-dfCore = ListToDF()
-df = dfCore._extractTables()
-print(df.info())
-print(df.head())
+# dfCore = ListToDF()
+# df = dfCore._extractTables()
+# print(df.info())
+# print(df.head())
