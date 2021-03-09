@@ -143,7 +143,7 @@ class Fenster(QWidget):
         self.txt_suche.setGeometry(50,105,900,35)
         # self.txt_suche.setStyleSheet('font-size: 35 px; height: 60px')
 
-        self.btn_map_warenkorb=QPushButton("ecl@ss",self)
+        self.btn_map_warenkorb=QPushButton("ECL@SS",self)
         self.btn_map_warenkorb.setGeometry(1650,100,200,25) 
         self.btn_map_warenkorb.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen."
                                           "Mapping erfolgt via Key Lieferant_ArtikelNr\n"
@@ -155,7 +155,14 @@ class Fenster(QWidget):
         self.lbl_map_warenkorb=QLabel("Katalog Map",self)
         self.lbl_map_warenkorb.setGeometry(1650,70,200,25) 
         self.lbl_map_warenkorb.setAlignment(Qt.AlignCenter)
-        self.lbl_map_warenkorb.setStyleSheet("background-color: #80c342")
+        self.lbl_map_warenkorb.setStyleSheet("background-color: lightgrey;"
+                                            "font: QlikView Sans;"
+                                            "font-size:17px;"
+                                            "border-style: outset;"
+                                            "border-width: 2px;"
+                                            "border-radius: 5px;"
+                                            "border-color: grey;"
+                                            "padding: 1px;")
 
         self.btn_map_warenkorb_gtin=QPushButton("GTIN",self)
         self.btn_map_warenkorb_gtin.setGeometry(1650,130,200,25) 
@@ -195,8 +202,7 @@ class Fenster(QWidget):
     def _download(self):
         self.completed = 0
         while self.completed < 100:
-            self.completed += 0.001
-            # self.completed += 0.00001
+            self.completed += 0.0001
             self.progress.setValue(self.completed) # Set Value of ProgressBar       
 
 style = '''
@@ -207,8 +213,7 @@ QWidget {
 
 QLabel {
     font: QlikView Sans;
-    font-size:17px;
-    background-color: grey;
+    font-size:16px;
     border-style: outset;
     border-width: 2px;
     border-radius: 5px;
@@ -226,7 +231,6 @@ QPushButton {
     border-radius: 5px;
     border-color: grey;
     padding: 1px;
-
 
 }
 QPushButton:hover {
