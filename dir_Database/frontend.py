@@ -12,7 +12,7 @@ import main
 from main import ausfuehren, dfFromSQLHcsrFilesImported #, pandasModel
 
 from PyQt5.QtWidgets import QTableView, QProgressBar, QLabel
-from PyQt5.QtCore import QAbstractTableModel, Qt
+from PyQt5.QtCore import QAbstractTableModel, QSortFilterProxyModel, Qt
 
 # ####################
 # Import eigene Klasse
@@ -31,7 +31,6 @@ class Fenster(QWidget):
         super().__init__()
         self.initMe()
 
-
     def _loadDataFromDB(self):
         """
         Displays DB Informations in GUI Table
@@ -47,25 +46,36 @@ class Fenster(QWidget):
                                     "\nInfos angezeigt werden können.")
         else:
             rngDictsInList = range(len(result)) # Dicts are DB values with headers
-            self.lstbox_hcsr.setRowCount(0)
-
+            # self.lstbox_hcsr.setRowCount(0)
+            while self.lstbox_hcsr.rowCount() > 0:
+                self.lstbox_hcsr.removeRow(0)
+            self.lstbox_hcsr.setSortingEnabled(False)
+            header_labels = ["Lieferant", "Dateiname", "Anzahl Artikel", "Einladedatum"]
+            self.lstbox_hcsr.setColumnCount(len(header_labels)) 
+            self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
+            # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)            
             for d in result:
                 for x in rngDictsInList:
                     x-=len(result)-1 # Dynamisch: Die Anzahl der zu "löschenden" Zeilen, damit die Zeilen ohne Leerzeilen angezeigt werden
                     self.lstbox_hcsr.insertRow(x)                
                 for column_number, data in enumerate(d.values()):
                     self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
+
             self.lstbox_hcsr.resizeColumnsToContents()
             self.lstbox_hcsr.resizeRowsToContents()
+            self.lstbox_hcsr.setSortingEnabled(True)
  
     def initMe(self):
         self.label = QLabel("Dashboard")
         self.label.setGeometry(200,25,500,25)
 
         self.lstbox_hcsr=QTableWidget(self)
-        self.lstbox_hcsr.setColumnCount(4) 
         self.lstbox_hcsr.setGeometry(50,150,1500,700) 
         self.lstbox_hcsr.setSortingEnabled(True)
+        header_labels = ["Lieferant", "Dateiname", "Anzahl Artikel", "Einladedatum"]
+        self.lstbox_hcsr.setColumnCount(len(header_labels)) 
+        self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
+        # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)
 
         self.progress = QProgressBar(self)
         self.progress.setGeometry(50,25,950,25)  
@@ -99,6 +109,7 @@ class Fenster(QWidget):
 
         self.txt_suche=QLineEdit(self) 
         self.txt_suche.setGeometry(50,100,900,25)
+        self.txt_suche.setStyleSheet('font-size: 35 px; height: 60px')
 
         self.btn_map_warenkorb=QPushButton("Katalog Mapping starten (ecl@ss)",self)
         self.btn_map_warenkorb.setGeometry(1650,100,200,25) 
@@ -121,22 +132,6 @@ class Fenster(QWidget):
         self.btn_import_lief=QPushButton("Lieferantenliste (CH) Import",self)
         self.btn_import_lief.setGeometry(1650,300,200,25) 
 
-
-        self.lstbox_hcsr.setHorizontalHeaderItem(0,QTableWidgetItem("Lieferant"))
-        self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)
-
-        self.lstbox_hcsr.setHorizontalHeaderItem(1,QTableWidgetItem("Dateiname"))
-        self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(1,QHeaderView.ResizeToContents)
-
-        self.lstbox_hcsr.setHorizontalHeaderItem(2,QTableWidgetItem("Anzahl Artikel"))
-        self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(2,QHeaderView.ResizeToContents)
-
-        self.lstbox_hcsr.setHorizontalHeaderItem(3,QTableWidgetItem("Einladedatum"))
-        self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(3,QHeaderView.ResizeToContents)
-
-        # self.lstbox_hcsr.setHorizontalHeaderItem(4,QTableWidgetItem("Umsatz"))
-        # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(4,QHeaderView.ResizeToContents)
-
         self.showMaximized()
 
     def _importHCSR(self):
@@ -151,7 +146,15 @@ class Fenster(QWidget):
                                 "\nWarenkorb wurde erfolgreich gemappt.\n"
                                 "Das Resultat liegt im Exportordner ... bereit.")
 
-        
+
+    def _suche(self,value):
+        value = self.txt_suche.text()
+
+        if value == 0:
+            QMessageBox.information(self,"Warning","Search query can not be empty!")
+        else:
+            self.txt_suche.setText("")
+
     def _download(self):
         self.completed = 0
         while self.completed < 100:
