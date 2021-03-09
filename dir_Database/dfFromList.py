@@ -18,7 +18,7 @@ class ListToDF:
         self._lstTabsError = FileList()._filterTabs()[1]
         self._lstDatError = FileList()._filterDatumsWerte()[1]
         self._lstUebError = FileList()._filterUeberschriften()[1]
-        self._filterUstIDError = FileList().__filterUstID()[1]
+        self._filterUstIDError = FileList()._filterUstID()[1]
         # ################################################################
         # # Prüfung: UstId - Abgleich mit LieferantenListe UstId in CH Datei
         # # Wenn True: UstId vorhanden = obligatorisch 
@@ -60,7 +60,7 @@ class ListToDF:
         if lstUstIdError:
             seriesExclFiles = pd.Series(lstUstIdError)
             dfUstID = pd.DataFrame({'_AusgeschlDateiPfad_': seriesExclFiles
-                            ,'_FehlerCode_': "Error: SenderID (UstID)"
+                            ,'_FehlerCode_': "Error: senderIdAuswahl (UstID)"
                             ,'_date_inload_': str(dt.datetime.now())}) 
             frames.append(dfUstID)
 
