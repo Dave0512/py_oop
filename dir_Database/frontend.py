@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QListWidget, QLi
 from PyQt5.QtGui import *
 
 import main
-from main import ausfuehren, dfFromSQLHcsrFilesImported #, pandasModel
+from main import ausfuehren, dfFromSQLHcsrFilesImported, dfFromSQLHcsrFilesError #, pandasModel
 
 from PyQt5.QtWidgets import QTableView, QProgressBar, QLabel
 from PyQt5.QtCore import QAbstractTableModel, QSortFilterProxyModel, Qt
@@ -46,7 +46,6 @@ class Fenster(QWidget):
                                     "\nInfos angezeigt werden können.")
         else:
             rngDictsInList = range(len(result)) # Dicts are DB values with headers
-            # self.lstbox_hcsr.setRowCount(0)
             while self.lstbox_hcsr.rowCount() > 0:
                 self.lstbox_hcsr.removeRow(0)
             self.lstbox_hcsr.setSortingEnabled(False)
@@ -64,7 +63,41 @@ class Fenster(QWidget):
             self.lstbox_hcsr.resizeColumnsToContents()
             self.lstbox_hcsr.resizeRowsToContents()
             self.lstbox_hcsr.setSortingEnabled(True)
- 
+
+    def _loadErrorDataFromDB(self):
+        """
+        Displays DB Informations in GUI Table
+        Input: List of Dicts of DB result of SQL Query
+        Output: Values in QTableWidget 
+        """
+        try:
+            result = dfFromSQLHcsrFilesError()
+        except:         
+            QMessageBox.information(self,"HCSR-Importer",
+                                    "Tabelle 'HCSR' existiert noch nicht."                                
+                                    "\nBitte zunächst Daten importieren, damit"
+                                    "\nInfos angezeigt werden können.")
+        else:
+            rngDictsInList = range(len(result)) # Dicts are DB values with headers
+            while self.lstbox_hcsr.rowCount() > 0:
+                self.lstbox_hcsr.removeRow(0)
+            self.lstbox_hcsr.setSortingEnabled(False)
+            header_labels = ["Ausgeschlossene_Datei", "FehlerCode", "Einladedatum"]
+            self.lstbox_hcsr.setColumnCount(len(header_labels)) 
+            self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
+            # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)            
+            for d in result:
+                for x in rngDictsInList:
+                    x-=len(result)-1 # Dynamisch: Die Anzahl der zu "löschenden" Zeilen, damit die Zeilen ohne Leerzeilen angezeigt werden
+                    self.lstbox_hcsr.insertRow(x)                
+                for column_number, data in enumerate(d.values()):
+                    self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
+
+            self.lstbox_hcsr.resizeColumnsToContents()
+            self.lstbox_hcsr.resizeRowsToContents()
+            self.lstbox_hcsr.setSortingEnabled(True)
+
+
     def initMe(self):
         self.label = QLabel("Dashboard")
         self.label.setGeometry(200,25,500,25)
@@ -72,10 +105,6 @@ class Fenster(QWidget):
         self.lstbox_hcsr=QTableWidget(self)
         self.lstbox_hcsr.setGeometry(50,150,1500,700) 
         self.lstbox_hcsr.setSortingEnabled(True)
-        header_labels = ["Lieferant", "Dateiname", "Anzahl Artikel", "Einladedatum"]
-        self.lstbox_hcsr.setColumnCount(len(header_labels)) 
-        self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
-        # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)
 
         self.progress = QProgressBar(self)
         self.progress.setGeometry(50,25,950,25)  
@@ -84,6 +113,10 @@ class Fenster(QWidget):
         self.btn_show_hcsr_in_tbl.setGeometry(650,70,200,25)   
         self.btn_show_hcsr_in_tbl.clicked.connect(self._loadDataFromDB)
 
+        self.btn_show_Error_in_tbl=QPushButton("Zeige fehlerhafte HCSR",self) 
+        self.btn_show_Error_in_tbl.setGeometry(950,70,200,25)   
+        self.btn_show_Error_in_tbl.clicked.connect(self._loadErrorDataFromDB)
+
         self.btn_import=QPushButton("HCSR Import starten",self) 
         self.btn_import.move(50,110)
         self.btn_import.setGeometry(50,70,200,25) 
@@ -91,7 +124,6 @@ class Fenster(QWidget):
         self.btn_import.clicked.connect(self._importHCSR)   
         self.btn_import.clicked.connect(self._download)     
         self.btn_import.clicked.connect(self._call_msg)
-
 
         self.btn_import=QPushButton("HCSR Export starten",self) 
         self.btn_import.setGeometry(350,70,200,25) 
@@ -158,7 +190,7 @@ class Fenster(QWidget):
     def _download(self):
         self.completed = 0
         while self.completed < 100:
-            self.completed += 0.0001
+            self.completed += 0.001
             # self.completed += 0.00001
             self.progress.setValue(self.completed) # Set Value of ProgressBar       
 

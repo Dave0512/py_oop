@@ -4,7 +4,7 @@ import urllib
 
 import sqlalchemy
 from sqlalchemy import create_engine
-from sqlStrings import headLieferanten, sql_gui_tab_hcsr_import_erfolgreich
+from sqlStrings import headLieferanten, sql_gui_tab_hcsr_import_erfolgreich, sql_gui_tab_hcsr_import_fehlerhaft
 import pandas as pd
 import datetime as dt
 
@@ -102,7 +102,17 @@ def dfFromSQLHcsrFilesImported():
     else:
         return df_of_resultproxy
 
-
-
-
-
+def dfFromSQLHcsrFilesError():
+    """
+    Recieves SQLAlchemy ResultProxy Object of SQL Query
+    Input: 
+        ResultProxy Object (SQl Query) in dict / list-format
+    Output: 
+        Pandas DataFrame of the sql-query results
+    """
+    try:
+        df_of_resultproxy = datenBank.sqlExecuterResultProxyToDF(sql_gui_tab_hcsr_import_fehlerhaft)
+    except AttributeError:
+        print("Tabelle nicht vorhanden - in MAIN Funktion aufgerufen")
+    else:
+        return df_of_resultproxy
