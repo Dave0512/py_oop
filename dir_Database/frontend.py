@@ -107,7 +107,7 @@ class Fenster(QWidget):
         self.lstbox_hcsr.setSortingEnabled(True)
 
         self.progress = QProgressBar(self)
-        self.progress.setGeometry(50,25,950,25)  
+        self.progress.setGeometry(50,25,500,25)  
 
         self.btn_show_hcsr_in_tbl=QPushButton("Zeige HCSR",self) 
         self.btn_show_hcsr_in_tbl.setGeometry(650,70,200,25)   
@@ -125,8 +125,8 @@ class Fenster(QWidget):
         self.btn_import.clicked.connect(self._download)     
         self.btn_import.clicked.connect(self._call_msg)
 
-        self.btn_import=QPushButton("HCSR Export starten",self) 
-        self.btn_import.setGeometry(350,70,200,25) 
+        # self.btn_import=QPushButton("HCSR Export starten",self) 
+        # self.btn_import.setGeometry(350,70,200,25) 
 
         # self.btn_Katalog_import=QPushButton("Katalog Import starten",self) 
         # self.btn_Katalog_import.setGeometry(650,70,200,25)   
@@ -140,10 +140,10 @@ class Fenster(QWidget):
         self.btn_exit.setGeometry(50,900,200,25)
 
         self.txt_suche=QLineEdit(self) 
-        self.txt_suche.setGeometry(50,100,900,25)
-        self.txt_suche.setStyleSheet('font-size: 35 px; height: 60px')
+        self.txt_suche.setGeometry(50,105,900,35)
+        # self.txt_suche.setStyleSheet('font-size: 35 px; height: 60px')
 
-        self.btn_map_warenkorb=QPushButton("Katalog Mapping starten (ecl@ss)",self)
+        self.btn_map_warenkorb=QPushButton("ecl@ss",self)
         self.btn_map_warenkorb.setGeometry(1650,100,200,25) 
         self.btn_map_warenkorb.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen."
                                           "Mapping erfolgt via Key Lieferant_ArtikelNr\n"
@@ -152,8 +152,13 @@ class Fenster(QWidget):
         self.btn_map_warenkorb.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb) # ETL Warenkorbmapping DEF anbinden
         self.btn_map_warenkorb.clicked.connect(self._call_msg_katalog_map)
 
-        self.btn_map_warenkorb_gtin=QPushButton("Katalog Mapping starten (GTIN)",self)
-        self.btn_map_warenkorb_gtin.setGeometry(1650,70,200,25) 
+        self.lbl_map_warenkorb=QLabel("Katalog Map",self)
+        self.lbl_map_warenkorb.setGeometry(1650,70,200,25) 
+        self.lbl_map_warenkorb.setAlignment(Qt.AlignCenter)
+        self.lbl_map_warenkorb.setStyleSheet("background-color: #80c342")
+
+        self.btn_map_warenkorb_gtin=QPushButton("GTIN",self)
+        self.btn_map_warenkorb_gtin.setGeometry(1650,130,200,25) 
         self.btn_map_warenkorb_gtin.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen.\n"
                                           "Mapping erfolgt via Key Lieferant_ArtikelNr_NOU_UOM.\n"
                                           "Stelle daher bitte sicher, dass NOU & UOM im EDIFACT-Format\n"
@@ -161,7 +166,7 @@ class Fenster(QWidget):
         self.btn_map_warenkorb_gtin.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb_gtin) # ETL Warenkorbmapping DEF anbinden
         self.btn_map_warenkorb_gtin.clicked.connect(self._call_msg_katalog_map)
         # ################
-        self.btn_import_lief=QPushButton("Lieferantenliste (CH) Import",self)
+        self.btn_import_lief=QPushButton("Lieferanten CH Import",self)
         self.btn_import_lief.setGeometry(1650,300,200,25) 
 
         self.showMaximized()
@@ -197,26 +202,81 @@ class Fenster(QWidget):
 style = '''
 
 QWidget {
-    background-color: #fcfdff;
+    background-color: white;
 } 
 
 QLabel {
-    font: medium Ubuntu;
-    font-size: 20px;
-    color: #006325;     
+    font: QlikView Sans;
+    font-size:17px;
+    background-color: grey;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: grey;
+    padding: 1px;  
 }        
 
 QPushButton {
-    background-color: #edeef0;
-    color: black;
+    
+    font: QlikView Sans;
+    font-size:17px;
+    background-color: white;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: grey;
+    padding: 1px;
+
 
 }
 QPushButton:hover {
-    background-color: #808080;
+    background-color: lightgrey;
 }
 QPushButton:pressed {
     background-color: #80c342;
+
 }    
+
+QFrame {
+    background-color: None;
+    font: QlikView Sans;
+    font-size:19px;
+    vertical-align:super;
+    frameShape:NoFrame;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: grey;
+    padding: 1px;
+}
+
+QLineEdit {
+    background-color: None;
+    font: QlikView Sans;
+    font-size:19px;
+    vertical-align:super;
+    frameShape:NoFrame;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: grey;
+    padding: 1px;
+
+}
+
+QProgressBar {
+    background-color: None;
+    font: QlikView Sans;
+    font-size:19px;
+    vertical-align:super;
+    frameShape:NoFrame;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: grey;
+    padding: 1px;
+
+}
 
 '''
 
