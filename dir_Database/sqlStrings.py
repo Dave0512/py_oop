@@ -42,7 +42,7 @@ BEGIN
 	-- WHERE CAST(_date_inload_ as date) =  CAST(GETDATE() AS DATE)
 	WHERE [L_Quelle_Name_MUSS_FELD_] is not null
 	GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_
-	ORDER BY Einladedatum DESC, Anzahl_Datensätze_je_Lieferant DESC 
+	ORDER BY Einladedatum ASC, [L_Quelle_Name_MUSS_FELD_] ASC 
 END
 ELSE
 BEGIN
@@ -51,9 +51,9 @@ END
 	"""
 
 sql_gui_tab_hcsr_import_fehlerhaft = """ select distinct _AusgeschlDateiPfad_
-				                        ,CAST(_date_inload_ as date) Einladedatum
+				,_FehlerCode_
+				,CAST(_date_inload_ as date) Einladedatum
 FROM [Vorlauf_DB].[dbo].hcsrFilesExcluded
-WHERE CAST(_date_inload_ as date) =  CAST(GETDATE() AS DATE)
 ORDER BY Einladedatum DESC
 """
 
@@ -290,4 +290,20 @@ ELSE
 BEGIN
 PRINT 'Tabelle nicht vorhanden'
 END
+"""
+
+sql_delete_aus_hcsrEx_in_hcsr_vorhandene_dateien = """
+delete
+from [Vorlauf_DB].[dbo].[hcsrFilesExcluded]
+where substring(right([_AusgeschlDateiPfad_],(CHARINDEX('\',reverse([_AusgeschlDateiPfad_])))),2,LEN([_AusgeschlDateiPfad_]))  =
+(select distinct  
+		hcsr._DateiName_
+from
+(SELECT [_AusgeschlDateiPfad_]
+		,substring(right([_AusgeschlDateiPfad_],(CHARINDEX('\',reverse([_AusgeschlDateiPfad_])))),2,LEN([_AusgeschlDateiPfad_])) as _DateiName_
+		,[_FehlerCode_]
+		,[_date_inload_]
+	FROM [Vorlauf_DB].[dbo].[hcsrFilesExcluded]) hcsrEx
+inner join [Vorlauf_DB].[dbo].[hcsr]
+on hcsr.[_DateiName_] = hcsrEx._DateiName_) 
 """
