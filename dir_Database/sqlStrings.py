@@ -50,7 +50,8 @@ BEGIN
 END
 	"""
 
-sql_gui_tab_hcsr_import_fehlerhaft = """ select distinct _AusgeschlDateiPfad_
+sql_gui_tab_hcsr_import_fehlerhaft = """ select _AusgeschlDateiPfad_
+				,_DateiName_
 				,_FehlerCode_
 				,CAST(_date_inload_ as date) Einladedatum
 FROM [Vorlauf_DB].[dbo].hcsrFilesExcluded
@@ -306,4 +307,95 @@ from
 	FROM [Vorlauf_DB].[dbo].[hcsrFilesExcluded]) hcsrEx
 inner join [Vorlauf_DB].[dbo].[hcsr]
 on hcsr.[_DateiName_] = hcsrEx._DateiName_) 
+"""
+
+sql_datenModell = """
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects
+			  WHERE ID = OBJECT_ID(N'[dbo].[hcsr]')
+			  AND OBJECTPROPERTY(ID, N'IsUserTable') = 1)
+CREATE TABLE Vorlauf_DB.dbo.hcsr (
+[L_Quelle_Name_MUSS_FELD_] [varchar] (MAX)
+,[L_Quelle_IDTyp_Auswahl_MUSS_FELD_] [varchar] (MAX)
+,[L_Quelle_ID_MUSS_FELD_] [varchar] (MAX)
+,[H_Quelle_Name] [varchar] (MAX)
+,[H_Quelle_IDTyp_Auswahl] [varchar] (MAX)
+,[H_Quelle_ID] [varchar] (MAX)
+,[Einrichtung_MUSS_FELD_] [varchar] (MAX)
+,[Organisation_ID_Auswahl_MUSS_FELD_] [varchar] (MAX)
+,[Organisation_ID_MUSS_FELD_] [varchar] (MAX)
+,[L_Art_Nr_MUSS_FELD_] [varchar] (MAX)
+,[L_Art_IDTyp_Auswahl] [varchar] (MAX)
+,[L_Art_ID_MUSS_FELD_] [varchar] (MAX)
+,[H_Art_Nr_MUSS_FELD_] [varchar] (MAX)
+,[H_Art_IDTyp_Auswahl] [varchar] (MAX)
+,[H_Art_ID_MUSS_FELD_] [varchar] (MAX)
+,[L_Art_Txt_MUSS_FELD_] [varchar] (MAX)
+,[L_WGRP_Intern] [varchar] (MAX)
+,[L_WGRP_Merkmale_Intern] [varchar] (MAX)
+,[L_VPE_Auswahl_MUSS_FELD_] [varchar] (MAX)
+,[L_VPE_Menge_MUSS_FELD_] [float]
+,[Faktor_BASISME_VPE_MUSS_FELD_] [varchar] (MAX)
+,[BASISME_Auswahl_MUSS_FELD_] [varchar] (MAX)
+,[Steuersatz Landescode_MUSS_FELD_] [varchar] (MAX)
+,[Steuersatz_MUSS_FELD_] [varchar] (MAX)
+,[Umsatz_MUSS_FELD_] [float]
+,[Bonusrelevant_MUSS_FELD_] [varchar] (MAX)
+,[_date_inload_] [varchar] (MAX)
+,[_DateiName_] [varchar] (MAX)
+,[L_Quelle_ID_MUSS_FELD__NORMALIZED] [varchar] (MAX)
+,[L_Quelle_Name_MUSS_FELD__NORMALIZED] [varchar] (MAX)
+,[L_Art_ID_MUSS_FELD__NORMALIZED] [varchar] (MAX)
+,[H_Quelle_ID_NORMALIZED] [varchar] (MAX)
+,[H_Art_Nr_MUSS_FELD__NORMALIZED] [varchar] (MAX)
+,[H_Art_ID_MUSS_FELD__NORMALIZED] [varchar] (MAX)
+,[_prio_flag_] [varchar] (MAX)
+,[tbl_index] [int] IDENTITY (1,1) NOT NULL
+) 
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects
+			  WHERE ID = OBJECT_ID(N'[dbo].[hcsrAggr]')
+			  AND OBJECTPROPERTY(ID, N'IsUserTable') = 1)
+CREATE TABLE Vorlauf_DB.dbo.hcsrAggr (
+
+[L_Quelle_Name_MUSS_FELD_] [varchar] (MAX)
+,[L_Quelle_ID_MUSS_FELD_] [varchar] (MAX)
+,[Einrichtung_MUSS_FELD_] [varchar] (MAX)
+,[L_Art_Nr_MUSS_FELD_] [varchar] (MAX)
+,[L_Art_Txt_MUSS_FELD_] [varchar] (MAX)
+,[L_VPE_Menge_MUSS_FELD_] [varchar] (MAX)
+,[Umsatz_MUSS_FELD_] [float]
+,[tbl_index] [int] IDENTITY (1,1) NOT NULL)
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects
+			  WHERE ID = OBJECT_ID(N'[dbo].[hcsrKopfdaten]')
+			  AND OBJECTPROPERTY(ID, N'IsUserTable') = 1)
+CREATE TABLE Vorlauf_DB.dbo.hcsrKopfdaten (
+
+[datumVon] [datetime]
+,[datumBis] [datetime]
+,[datumMeldung] [varchar] (MAX)
+,[senderName] [varchar] (MAX)
+,[senderIdAuswahl] [varchar] (MAX)
+,[senderId] [varchar] (MAX)
+,[_date_inload_] [datetime]
+,[_DateiName_] [varchar] (MAX)
+,[_LieferantCompKey_] [varchar] (MAX)
+,[_DateiNameCompKey_] [varchar] (MAX)
+,[tbl_index] [int] IDENTITY (1,1) NOT NULL)
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects
+			  WHERE ID = OBJECT_ID(N'[dbo].[hcsrFilesExcluded]')
+			  AND OBJECTPROPERTY(ID, N'IsUserTable') = 1)
+CREATE TABLE Vorlauf_DB.dbo.hcsrFilesExcluded (
+
+[_AusgeschlDateiPfad_] [varchar] (MAX)
+,[_DateiName_] [varchar] (MAX)
+,[_FehlerCode_] [varchar] (MAX)
+,[_date_inload_] [varchar] (MAX)-- WARUM KEIN DATETIME? 
+,[tbl_index] [int] IDENTITY (1,1) NOT NULL)
+GO
+
 """
