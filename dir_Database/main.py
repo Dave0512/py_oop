@@ -75,9 +75,9 @@ def ausfuehren():
         datenBank.tblImporter(DFErbe,"hcsrAggr")
         datenBank.tblImporter(dfKopfdatenValues,"hcsrKopfdaten")
 
-        dfCoreExcluded = ListToDF()
-        dfExcluded = dfCoreExcluded._extractTables()
-        datenBank.tblImporter(dfExcluded,"hcsrFilesExcluded")
+    dfCoreExcluded = ListToDF()
+    dfExcluded = dfCoreExcluded._extractTables()
+    datenBank.tblImporter(dfExcluded,"hcsrFilesExcluded")
 
 
 # ######################################
