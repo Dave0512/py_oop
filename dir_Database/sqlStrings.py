@@ -398,4 +398,12 @@ CREATE TABLE Vorlauf_DB.dbo.hcsrFilesExcluded (
 ,[tbl_index] [int] IDENTITY (1,1) NOT NULL)
 GO
 
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects
+			  WHERE ID = OBJECT_ID(N'[dbo].[hcsrFiles]')
+			  AND OBJECTPROPERTY(ID, N'IsUserTable') = 1)
+CREATE TABLE Vorlauf_DB.dbo.hcsrFiles (
+[_DateiName_] [varchar] (MAX)
+,[_FehlerCode_] [varchar] (MAX)
+,hcsr_file_id  [int] IDENTITY (1,1) NOT NULL)
+GO
 """
