@@ -311,6 +311,15 @@ on hcsr.[_DateiName_] = hcsrEx._DateiName_)
 
 sql_datenModell = """
 IF NOT EXISTS (SELECT * FROM dbo.sysobjects
+			  WHERE ID = OBJECT_ID(N'[dbo].[hcsrFiles]')
+			  AND OBJECTPROPERTY(ID, N'IsUserTable') = 1)
+CREATE TABLE Vorlauf_DB.dbo.hcsrFiles (
+[_DateiName_] [varchar] (MAX)
+,[_FehlerCode_] [varchar] (MAX)
+,[hcsr_file_id] [int] IDENTITY (1,1) PRIMARY KEY NOT NULL)
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects
 			  WHERE ID = OBJECT_ID(N'[dbo].[hcsr]')
 			  AND OBJECTPROPERTY(ID, N'IsUserTable') = 1)
 CREATE TABLE Vorlauf_DB.dbo.hcsr (
@@ -349,6 +358,7 @@ CREATE TABLE Vorlauf_DB.dbo.hcsr (
 ,[H_Art_Nr_MUSS_FELD__NORMALIZED] [varchar] (MAX)
 ,[H_Art_ID_MUSS_FELD__NORMALIZED] [varchar] (MAX)
 ,[_prio_flag_] [varchar] (MAX)
+,[hcsr_file_id] [int] FOREIGN KEY REFERENCES Vorlauf_DB.dbo.hcsrFiles([hcsr_file_id])
 ,[tbl_index] [int] IDENTITY (1,1) NOT NULL
 ) 
 GO
@@ -396,14 +406,5 @@ CREATE TABLE Vorlauf_DB.dbo.hcsrFilesExcluded (
 ,[_FehlerCode_] [varchar] (MAX)
 ,[_date_inload_] [varchar] (MAX)-- WARUM KEIN DATETIME? 
 ,[tbl_index] [int] IDENTITY (1,1) NOT NULL)
-GO
-
-IF NOT EXISTS (SELECT * FROM dbo.sysobjects
-			  WHERE ID = OBJECT_ID(N'[dbo].[hcsrFiles]')
-			  AND OBJECTPROPERTY(ID, N'IsUserTable') = 1)
-CREATE TABLE Vorlauf_DB.dbo.hcsrFiles (
-[_DateiName_] [varchar] (MAX)
-,[_FehlerCode_] [varchar] (MAX)
-,hcsr_file_id  [int] IDENTITY (1,1) NOT NULL)
 GO
 """
