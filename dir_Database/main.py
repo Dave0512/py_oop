@@ -4,7 +4,7 @@ import urllib
 
 import sqlalchemy
 from sqlalchemy import create_engine
-from sqlStrings import headLieferanten, sql_gui_tab_hcsr_import_erfolgreich, sql_gui_tab_hcsr_import_fehlerhaft
+from sqlStrings import headLieferanten, sql_gui_tab_hcsr_import_erfolgreich, sql_gui_tab_hcsr_import_fehlerhaft, sql_datenModell
 import pandas as pd
 import datetime as dt
 
@@ -32,13 +32,13 @@ datenBank = Conn_DB(driver="{SQL Server Native Client 11.0}",
                     Trusted_Connection="yes")
 
 server_verbindung = datenBank.create_server_conn()
-
+aufbauDatenbankMitAbhängigkeiten = datenBank.sqlExecuter(sql_datenModell)
 def ausfuehren():
 
     # #################################
     # 1) Liste potentielle HCSR Dateien
     # #################################
-
+    
     Lister = FileList()
     lstHCSR = Lister._gefilterte_hcsr_liste_uebergeben() # Ersetzt Lister.filterFileList()
 
@@ -75,7 +75,7 @@ def ausfuehren():
         datenBank.tblImporter(DFErbe,"hcsrAggr")
 
     datenBank.tblImporter(dfKopfdatenValues,"hcsrKopfdaten")
-    
+
     dfCoreExcluded = ListToDF()
     dfExcluded = dfCoreExcluded._extractTables()
     datenBank.tblImporter(dfExcluded,"hcsrFilesExcluded")
