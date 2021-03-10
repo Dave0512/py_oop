@@ -41,7 +41,7 @@ class Fenster(QWidget):
             result = dfFromSQLHcsrFilesImported()
         except:         
             QMessageBox.information(self,"HCSR-Importer",
-                                    "Tabelle 'HCSR' existiert noch nicht."                                
+                                    "Die Tabelle existiert noch nicht."                                
                                     "\nBitte zunächst Daten importieren, damit"
                                     "\nInfos angezeigt werden können.")
         else:
@@ -49,7 +49,8 @@ class Fenster(QWidget):
             while self.lstbox_hcsr.rowCount() > 0:
                 self.lstbox_hcsr.removeRow(0)
             self.lstbox_hcsr.setSortingEnabled(False)
-            header_labels = ["Lieferant", "Dateiname", "Anzahl Artikel", "Einladedatum"]
+            header_labels = ["Lieferantenname", "Originalname", "Anzahl Artikel", "Importiert am"]
+            # header_labels = ["Originalname", "Importiert am","Jahr", "Umsatz von", "Umsatz bis", "Lieferantenname", "Anzahl Artikel"]
             self.lstbox_hcsr.setColumnCount(len(header_labels)) 
             self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
             # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)            
@@ -82,7 +83,7 @@ class Fenster(QWidget):
             while self.lstbox_hcsr.rowCount() > 0:
                 self.lstbox_hcsr.removeRow(0)
             self.lstbox_hcsr.setSortingEnabled(False)
-            header_labels = ["Ausgeschlossene_Datei", "FehlerCode", "Einladedatum"]
+            header_labels = ["Originalname", "Meldung", "Importiert am"]
             self.lstbox_hcsr.setColumnCount(len(header_labels)) 
             self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
             # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)            
