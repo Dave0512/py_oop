@@ -32,7 +32,8 @@ datenBank = Conn_DB(driver="{SQL Server Native Client 11.0}",
                     Trusted_Connection="yes")
 
 server_verbindung = datenBank.create_server_conn()
-aufbauDatenbankMitAbhängigkeiten = datenBank.sqlExecuter(sql_datenModell)
+# aufbauDatenbankMitAbhängigkeiten = datenBank.sqlExecuter(sql_datenModell) 
+# aufbauDatenbankMitAbhängigkeiten
 def ausfuehren():
 
     # #################################
@@ -75,7 +76,6 @@ def ausfuehren():
         datenBank.tblImporter(DFErbe,"hcsrAggr")
 
     datenBank.tblImporter(dfKopfdatenValues,"hcsrKopfdaten")
-
     dfCoreExcluded = ListToDF()
     dfExcluded = dfCoreExcluded._extractTables()
     datenBank.tblImporter(dfExcluded,"hcsrFilesExcluded")
