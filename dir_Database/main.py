@@ -4,13 +4,13 @@ import urllib
 
 import sqlalchemy
 from sqlalchemy import create_engine
-from sqlStrings import headLieferanten, sql_gui_tab_hcsr_import_erfolgreich, sql_gui_tab_hcsr_import_fehlerhaft, sql_datenModell
+from sqlStrings import headLieferanten, sql_gui_tab_hcsr_import_erfolgreich, sql_gui_tab_hcsr_import_fehlerhaft, sql_add_prio_flag
 import pandas as pd
 import datetime as dt
 
 from queryTemplate import Conn_DB
 from lst_fil_in_folder import FileList
-from dfDesign import TableToDF, DfDesignerPiv
+from dfDesign import TableToDF, DfDesignerPiv, DFDesignerDistinctFiles
 from dfFromList import ListToDF
 from openpyxlHandling import ExcelTable, XlsxDatenSauger
 
@@ -32,10 +32,8 @@ datenBank = Conn_DB(driver="{SQL Server Native Client 11.0}",
                     Trusted_Connection="yes")
 
 server_verbindung = datenBank.create_server_conn()
-# aufbauDatenbankMitAbhängigkeiten = datenBank.sqlExecuter(sql_datenModell) 
-# aufbauDatenbankMitAbhängigkeiten
 def ausfuehren():
-
+    # aufbauDatenbankMitAbhängigkeiten = datenBank.sqlExecuter(sql_datenModell) 
     # #################################
     # 1) Liste potentielle HCSR Dateien
     # #################################
@@ -60,18 +58,24 @@ def ausfuehren():
         dfCoreErbe = DfDesignerPiv(fileToTransform=fileToTransform,sheetName=sheetName,headerCell=headerCell)
         DFErbe = dfCoreErbe._extractTables()
 
+        # # HCSR Dateien inkl. Inload Datum = Identifikation Datei + Übertrag in tab hcsrFiles 
+        dfCoreErbeDistinctFiles = DFDesignerDistinctFiles(fileToTransform=fileToTransform,sheetName=sheetName,headerCell=headerCell)
+        dfErbeDistinctFiles = dfCoreErbeDistinctFiles._extractTables()
+
         blattKopfdaten = ExcelTable(hcsrFile,Lister._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
         gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
         gesaugtesDf = pd.DataFrame(gesaugtesDict, index=[0])
         gesaugtesDf['_date_inload_'] = dt.datetime.now()
+        gesaugtesDf['_date_inload_hour_'] = dt.datetime.now().isoformat(' ', 'hours')
         gesaugtesDf['_DateiName_'] = hcsrFile.split("\\")[-1]
         gesaugtesDf['_LieferantCompKey_'] = gesaugtesDf['senderId'].astype(str) + "°" + gesaugtesDf['datumVon'].astype(str) + "°" + gesaugtesDf['datumBis'].astype(str)                                
-        gesaugtesDf['_DateiNameCompKey_'] = gesaugtesDf['_DateiName_'].astype(str) + "°" + gesaugtesDf['_date_inload_'].astype(str)
+        gesaugtesDf['_DateiNameCompKey_'] = gesaugtesDf['_DateiName_'].astype(str) + "°" + gesaugtesDf['_date_inload_hour_'].astype(str)
         dfKopfdatenValues = dfKopfdatenValues.append(gesaugtesDf,ignore_index=True)
 
 # #################################
 # 5) SQLImport
 # #################################
+        datenBank.tblImporter(dfErbeDistinctFiles,"hcsrFiles")
         datenBank.tblImporter(realDF,"hcsr")
         datenBank.tblImporter(DFErbe,"hcsrAggr")
 
@@ -79,6 +83,9 @@ def ausfuehren():
     dfCoreExcluded = ListToDF()
     dfExcluded = dfCoreExcluded._extractTables()
     datenBank.tblImporter(dfExcluded,"hcsrFilesExcluded")
+    
+    datenBank.sqlExecuter(sql_add_prio_flag)
+    # hcsrFiles = DIM Tabelle HCSR-Dateien
 
 
 # ######################################
