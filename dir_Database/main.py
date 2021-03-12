@@ -4,7 +4,7 @@ import urllib
 
 import sqlalchemy
 from sqlalchemy import create_engine
-from sqlStrings import headLieferanten, sql_gui_tab_hcsr_import_erfolgreich, sql_gui_tab_hcsr_import_fehlerhaft, sql_add_prio_flag
+from sqlStrings import headLieferanten, sql_gui_tab_hcsr_import_erfolgreich_2, sql_gui_tab_hcsr_import_fehlerhaft, sql_add_prio_flag, sql_add_prio_flag_test
 import pandas as pd
 import datetime as dt
 
@@ -66,10 +66,11 @@ def ausfuehren():
         gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
         gesaugtesDf = pd.DataFrame(gesaugtesDict, index=[0])
         gesaugtesDf['_date_inload_'] = dt.datetime.now()
+        gesaugtesDf['_date_inload_minute_'] = dt.datetime.now().isoformat(' ', 'minutes')
         gesaugtesDf['_date_inload_hour_'] = dt.datetime.now().isoformat(' ', 'hours')
         gesaugtesDf['_DateiName_'] = hcsrFile.split("\\")[-1]
         gesaugtesDf['_LieferantCompKey_'] = gesaugtesDf['senderId'].astype(str) + "°" + gesaugtesDf['datumVon'].astype(str) + "°" + gesaugtesDf['datumBis'].astype(str)                                
-        gesaugtesDf['_DateiNameCompKey_'] = gesaugtesDf['_DateiName_'].astype(str) + "°" + gesaugtesDf['_date_inload_hour_'].astype(str)
+        gesaugtesDf['_DateiNameCompKey_'] = gesaugtesDf['_DateiName_'].astype(str) + "°" + gesaugtesDf['_date_inload_minute_'].astype(str)
         dfKopfdatenValues = dfKopfdatenValues.append(gesaugtesDf,ignore_index=True)
 
 # #################################
@@ -83,9 +84,10 @@ def ausfuehren():
     dfCoreExcluded = ListToDF()
     dfExcluded = dfCoreExcluded._extractTables()
     datenBank.tblImporter(dfExcluded,"hcsrFilesExcluded")
-    
-    datenBank.sqlExecuter(sql_add_prio_flag)
-    # hcsrFiles = DIM Tabelle HCSR-Dateien
+
+# Datenbank Manipulation über SQL-Querys
+def sqlQueries():
+    datenBank.sqlExecuter(sql_add_prio_flag_test)
 
 
 # ######################################
@@ -104,7 +106,7 @@ def dfFromSQLHcsrFilesImported():
         Pandas DataFrame of the sql-query results
     """
     try:
-        df_of_resultproxy = datenBank.sqlExecuterResultProxyToDF(sql_gui_tab_hcsr_import_erfolgreich)
+        df_of_resultproxy = datenBank.sqlExecuterResultProxyToDF(sql_gui_tab_hcsr_import_erfolgreich_2)
     except AttributeError:
         print("Tabelle nicht vorhanden - in MAIN Funktion aufgerufen")
     else:

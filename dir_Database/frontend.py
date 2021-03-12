@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QListWidget, QLi
 from PyQt5.QtGui import *
 
 import main
-from main import ausfuehren, dfFromSQLHcsrFilesImported, dfFromSQLHcsrFilesError #, pandasModel
+from main import ausfuehren, dfFromSQLHcsrFilesImported, dfFromSQLHcsrFilesError, sqlQueries #, pandasModel
 
 from PyQt5.QtWidgets import QTableView, QProgressBar, QLabel
 from PyQt5.QtCore import QAbstractTableModel, QSortFilterProxyModel, Qt
@@ -49,7 +49,7 @@ class Fenster(QWidget):
             while self.lstbox_hcsr.rowCount() > 0:
                 self.lstbox_hcsr.removeRow(0)
             self.lstbox_hcsr.setSortingEnabled(False)
-            header_labels = ["Lieferantenname", "Originalname", "Anzahl Artikel", "Importiert am"]
+            header_labels = ["Lieferantenname", "Originalname", "Anzahl Datensätze", "Importiert am", "Umsatz von", "Umsatz bis"]
             # header_labels = ["Originalname", "Importiert am","Jahr", "Umsatz von", "Umsatz bis", "Lieferantenname", "Anzahl Artikel"]
             self.lstbox_hcsr.setColumnCount(len(header_labels)) 
             self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
@@ -75,7 +75,7 @@ class Fenster(QWidget):
             result = dfFromSQLHcsrFilesError()
         except:         
             QMessageBox.information(self,"HCSR-Importer",
-                                    "Tabelle 'HCSR' existiert noch nicht."                                
+                                    "Die Tabelle existiert noch nicht."                                
                                     "\nBitte zunächst Daten importieren, damit"
                                     "\nInfos angezeigt werden können.")
         else:
@@ -83,7 +83,7 @@ class Fenster(QWidget):
             while self.lstbox_hcsr.rowCount() > 0:
                 self.lstbox_hcsr.removeRow(0)
             self.lstbox_hcsr.setSortingEnabled(False)
-            header_labels = ["Originalname", "Meldung", "Importiert am"]
+            header_labels = ["Pfad","Originalname", "Meldung", "Importiert am"]
             self.lstbox_hcsr.setColumnCount(len(header_labels)) 
             self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
             # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)            
@@ -122,7 +122,8 @@ class Fenster(QWidget):
         self.btn_import.move(50,110)
         self.btn_import.setGeometry(50,70,200,25) 
         self.btn_import.clicked.connect(self._download)
-        self.btn_import.clicked.connect(self._importHCSR)   
+        self.btn_import.clicked.connect(self._importHCSR)  
+        self.btn_import.clicked.connect(self._sqlQueriesAusfuehren) 
         self.btn_import.clicked.connect(self._download)     
         self.btn_import.clicked.connect(self._call_msg)
 
@@ -181,6 +182,10 @@ class Fenster(QWidget):
 
     def _importHCSR(self):
         main.ausfuehren()
+
+    
+    def _sqlQueriesAusfuehren(self):
+        main.sqlQueries()
 
     def _call_msg(self):
         QMessageBox.information(self,"HCSR-Importer",
