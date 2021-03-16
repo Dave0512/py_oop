@@ -47,20 +47,25 @@ def ausfuehren():
     sheetName=Lister._criteriasToIdentifyFile[0]
 
     dfKopfdatenValues = pd.DataFrame()
+    index_count=0 
     for hcsrFile in lstHCSR:
+        index_count += 1
         fileToTransform=hcsrFile
         headerCell='L_Quelle_Name*'
         # # BaseClass
         dfHcsr = TableToDF(fileToTransform=fileToTransform,sheetName=sheetName,headerCell=headerCell)
         realDF = dfHcsr._createFinalDf() # Erstellung modifizierter DF
+        realDF['datei_id_counter'] = index_count
 
         # # Inheritance
         dfCoreErbe = DfDesignerPiv(fileToTransform=fileToTransform,sheetName=sheetName,headerCell=headerCell)
         DFErbe = dfCoreErbe._extractTables()
+        DFErbe['datei_id_counter'] = index_count
 
         # # HCSR Dateien inkl. Inload Datum = Identifikation Datei + Übertrag in tab hcsrFiles 
         dfCoreErbeDistinctFiles = DFDesignerDistinctFiles(fileToTransform=fileToTransform,sheetName=sheetName,headerCell=headerCell)
         dfErbeDistinctFiles = dfCoreErbeDistinctFiles._extractTables()
+        dfErbeDistinctFiles['datei_id_counter'] = index_count
 
         blattKopfdaten = ExcelTable(hcsrFile,Lister._criteriasToIdentifyFile[1])._ladeBlatt() # Blatt "Kopfdaten" laden
         gesaugtesDict = XlsxDatenSauger(blattKopfdaten)._erstelleZielDict() # Zellinhalte aus Kopfdaten laden
@@ -68,26 +73,28 @@ def ausfuehren():
         gesaugtesDf['_date_inload_'] = dt.datetime.now()
         gesaugtesDf['_date_inload_minute_'] = dt.datetime.now().isoformat(' ', 'minutes')
         gesaugtesDf['_date_inload_hour_'] = dt.datetime.now().isoformat(' ', 'hours')
-        gesaugtesDf['_DateiName_'] = hcsrFile.split("\\")[-1]
+        gesaugtesDf['_DateiName_'] = hcsrFile.split("\\")[-1] 
         gesaugtesDf['_LieferantCompKey_'] = gesaugtesDf['senderId'].astype(str) + "°" + gesaugtesDf['datumVon'].astype(str) + "°" + gesaugtesDf['datumBis'].astype(str)                                
         gesaugtesDf['_DateiNameCompKey_'] = gesaugtesDf['_DateiName_'].astype(str) + "°" + gesaugtesDf['_date_inload_minute_'].astype(str)
         dfKopfdatenValues = dfKopfdatenValues.append(gesaugtesDf,ignore_index=True)
-
+        dfKopfdatenValues['datei_id_counter'] = index_count
+        datenBank.tblImporter(dfKopfdatenValues,"hcsrKopfdaten")
 # #################################
 # 5) SQLImport
 # #################################
-        datenBank.tblImporter(dfErbeDistinctFiles,"hcsrFiles")
+        datenBank.tblImporter(dfErbeDistinctFiles,"hcsrFiles")  
         datenBank.tblImporter(realDF,"hcsr")
         datenBank.tblImporter(DFErbe,"hcsrAggr")
 
-    datenBank.tblImporter(dfKopfdatenValues,"hcsrKopfdaten")
+        
+        # datenBank.tblImporter(dfKopfdatenValues,"hcsrKopfdaten")
     dfCoreExcluded = ListToDF()
     dfExcluded = dfCoreExcluded._extractTables()
     datenBank.tblImporter(dfExcluded,"hcsrFilesExcluded")
 
 # Datenbank Manipulation über SQL-Querys
 def sqlQueries():
-    datenBank.sqlExecuter(sql_add_prio_flag_test)
+    datenBank.sqlExecuter(sql_add_prio_flag)
 
 
 # ######################################
