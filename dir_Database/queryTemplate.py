@@ -3,6 +3,7 @@ import sqlalchemy
 from sqlalchemy import create_engine
 import urllib
 import pandas as pd
+from sqlalchemy import text
 
 
 class Conn_DB:
@@ -41,8 +42,9 @@ class Conn_DB:
                                                                                 ,self._server
                                                                                 ,self._database
                                                                                 ,self._Trusted_Connection))   
+                                                                                # "autocommit=True;"
         return login_string
-
+ 
     def create_server_conn(self):
         """
         Create SQLAlchemy Engine 
@@ -51,6 +53,12 @@ class Conn_DB:
         server_engine = sqlalchemy.create_engine("mssql+pyodbc:///?odbc_connect={}".format(server_login))    
         server_verbindung = server_engine.connect()
         return server_verbindung
+
+    # def conn_commit(self):
+    #     dbVerb = self.create_server_conn()
+    #     dbCommitment = dbVerb.commit()
+    #     return dbCommitment
+
 
     # def create_cursor(self):
     #     """
@@ -69,10 +77,16 @@ class Conn_DB:
         Run SQL Querys 
         """
         dbVerb = self.create_server_conn()
-        sqlExecution = dbVerb.execute(sqlString)
+        sqlExecution = dbVerb.execute(text(sqlString))
         return sqlExecution
 
-    def sqlExecuterResultProxyToDF(self,sqlString): # sqlExecuterResultProxyToDF
+    def sqlExecuterMany(self,sqlString):
+        dbVerb = self.create_server_conn()
+        dbVerb.fast_executemany = True
+        sqlExecution = dbVerb.executemany(sqlString)
+        return sqlExecution        
+
+    def sqlExecuterResultProxyToDF(self,sqlString): 
         """
 
         The db_session.execute(query) (sqlExecuter) returns a ResultProxy object
