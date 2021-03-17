@@ -37,11 +37,11 @@ BEGIN
 	SELECT DISTINCT [L_Quelle_Name_MUSS_FELD_]
 			,[_DateiName_]
 	,COUNT(*) Anzahl_Datensätze_je_Lieferant
-	,CAST(_date_inload_ as date) Einladedatum
+	,_date_inload_minute_ Einladedatum --,CAST(_date_inload_ as date) Einladedatum
 	FROM [Vorlauf_DB].[dbo].[hcsr]
 	-- WHERE CAST(_date_inload_ as date) =  CAST(GETDATE() AS DATE)
 	WHERE [L_Quelle_Name_MUSS_FELD_] is not null
-	GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_
+	GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_minute_
 	ORDER BY Einladedatum ASC, [L_Quelle_Name_MUSS_FELD_] ASC 
 END
 ELSE
@@ -55,11 +55,12 @@ with ctehcsr as (
 	SELECT DISTINCT [L_Quelle_Name_MUSS_FELD_]
 			,[_DateiName_]
 	,COUNT(*) Anzahl_Datensätze_je_Lieferant
-	,CAST(_date_inload_ as date) Einladedatum
+	,_date_inload_minute_ Einladedatum --,CAST(_date_inload_ as date) Einladedatum
+	,sum([Umsatz_MUSS_FELD_]) Umsatz
 	FROM [Vorlauf_DB].[dbo].[hcsr]
 	-- WHERE CAST(_date_inload_ as date) =  CAST(GETDATE() AS DATE)
 	WHERE [L_Quelle_Name_MUSS_FELD_] is not null
-	GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_
+	GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_minute_
 	--ORDER BY Einladedatum ASC, [L_Quelle_Name_MUSS_FELD_] ASC 
 ) 
 select distinct ctehcsr.* 
@@ -68,7 +69,7 @@ select distinct ctehcsr.*
 from ctehcsr
 left join hcsrKopfdaten kopf
 on ctehcsr._DateiName_ = kopf._DateiName_
-order by ctehcsr.Einladedatum desc
+order by ctehcsr.Einladedatum desc, ctehcsr.Umsatz desc
 """
 
 
@@ -345,7 +346,38 @@ sql_add_primary_key = """
     ADD tbl_index INT NOT NULL IDENTITY (1,1)
 """
 
-sql_add_prio_flag = """ with cte_1_Anzahl as (select distinct
+# sql_add_prio_flag_part_1 = """ with cte_1_Anzahl as (select distinct
+# [_LieferantCompKey_]
+# ,COUNT(*) Anz_Key_Handling_Prio
+# FROM [Vorlauf_DB].[dbo].[hcsrKopfdaten]
+# group by  [_LieferantCompKey_]),  cte_2_MaxTime as (
+# SELECT distinct [_LieferantCompKey_]
+# ,MAX(_date_inload_minute_) _aktuellster_inload_
+# FROM [Vorlauf_DB].[dbo].[hcsrKopfdaten]
+# GROUP BY [_LieferantCompKey_]), cte_3_Case as (
+# SELECT distinct kopf.*
+# ,CASE WHEN cte_1_Anzahl.Anz_Key_Handling_Prio > 1 
+# AND kopf.[_date_inload_minute_] = cte_2_MaxTime._aktuellster_inload_ THEN '1' 
+# WHEN cte_1_Anzahl.Anz_Key_Handling_Prio = 1 THEN '1'
+# ELSE '0' END AS _prio_flag_	
+# FROM [Vorlauf_DB].[dbo].[hcsrKopfdaten] kopf
+# JOIN cte_1_Anzahl
+# ON cte_1_Anzahl.[_LieferantCompKey_] = kopf._LieferantCompKey_
+# JOIN cte_2_MaxTime
+# ON cte_2_MaxTime._LieferantCompKey_ = kopf._LieferantCompKey_) """
+
+# sql_add_prio_flag_part_4 = """ UPDATE [Vorlauf_DB].[dbo].[hcsr]
+# SET [Vorlauf_DB].[dbo].[hcsr]._prio_flag_ = cte_3_Case._prio_flag_
+# FROM cte_3_Case
+# RIGHT JOIN [Vorlauf_DB].[dbo].[hcsr] h
+# on h._DateiName_ = cte_3_Case._DateiName_ and
+# CONVERT(datetime,h._date_inload_minute_,102) between DATEADD(minute,-1,CONVERT(datetime,cte_3_Case.[_date_inload_minute_],102)) and DATEADD(minute,+1,CONVERT(datetime,cte_3_Case.[_date_inload_minute_],102))
+# and h.[datei_id_counter] = cte_3_Case.[datei_id_counter] """
+
+
+sql_stored_proc_add_prio_flag = """ exec PRIO_FLAG; """
+
+sql_add_prio_flag_gesamt = """with cte_1_Anzahl as (select distinct
 [_LieferantCompKey_]
 ,COUNT(*) Anz_Key_Handling_Prio
 FROM [Vorlauf_DB].[dbo].[hcsrKopfdaten]
@@ -353,12 +385,10 @@ group by  [_LieferantCompKey_]), cte_2_MaxTime as (
 SELECT distinct [_LieferantCompKey_]
 ,MAX(_date_inload_minute_) _aktuellster_inload_
 FROM [Vorlauf_DB].[dbo].[hcsrKopfdaten]
-GROUP BY [_LieferantCompKey_]),
-cte_3_Case as (
+GROUP BY [_LieferantCompKey_]), cte_3_Case as (
 SELECT distinct kopf.*
 ,CASE WHEN cte_1_Anzahl.Anz_Key_Handling_Prio > 1 
-AND kopf.[_date_inload_minute_] = cte_2_MaxTime._aktuellster_inload_
-THEN '1' 
+AND kopf.[_date_inload_minute_] = cte_2_MaxTime._aktuellster_inload_ THEN '1' 
 WHEN cte_1_Anzahl.Anz_Key_Handling_Prio = 1 THEN '1'
 ELSE '0' END AS _prio_flag_	
 FROM [Vorlauf_DB].[dbo].[hcsrKopfdaten] kopf
@@ -368,12 +398,10 @@ JOIN cte_2_MaxTime
 ON cte_2_MaxTime._LieferantCompKey_ = kopf._LieferantCompKey_) UPDATE [Vorlauf_DB].[dbo].[hcsr]
 SET [Vorlauf_DB].[dbo].[hcsr]._prio_flag_ = cte_3_Case._prio_flag_
 FROM cte_3_Case
-RIGHT JOIN [Vorlauf_DB].[dbo].[hcsr]
-on [Vorlauf_DB].[dbo].[hcsr].[_DateiNameCompKey_] = cte_3_Case.[_DateiNameCompKey_]
-"""
-
-sql_add_prio_flag_test = """
-			UPDATE [Vorlauf_DB].[dbo].[hcsr] SET _prio_flag_ = 'sqlExecuter'
+RIGHT JOIN [Vorlauf_DB].[dbo].[hcsr] h
+on h._DateiName_ = cte_3_Case._DateiName_ and
+CONVERT(datetime,h._date_inload_minute_,102) between DATEADD(minute,-1,CONVERT(datetime,cte_3_Case.[_date_inload_minute_],102)) and DATEADD(minute,+1,CONVERT(datetime,cte_3_Case.[_date_inload_minute_],102))
+and h.[datei_id_counter] = cte_3_Case.[datei_id_counter]
 """
 
 
