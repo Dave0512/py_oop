@@ -4,7 +4,7 @@ import urllib
 
 import sqlalchemy
 from sqlalchemy import create_engine
-from sqlStrings import headLieferanten, sql_stored_proc_add_prio_flag, sql_add_prio_flag_gesamt, sql_add_prio_flag_part_final, sql_gui_tab_hcsr_import_erfolgreich_2, sql_gui_tab_hcsr_import_fehlerhaft, sql_add_prio_flag_part_1,  sql_add_prio_flag_part_4 # sql_add_prio_flag_part_2, sql_add_prio_flag_part_3,
+from sqlStrings import headLieferanten, sql_add_prio_flag_gesamt, sql_gui_tab_hcsr_import_erfolgreich_2, sql_gui_tab_hcsr_import_fehlerhaft
 import pandas as pd
 import datetime as dt
 
@@ -31,6 +31,46 @@ def verbinde_zu_server_und_db():
                                 "Trusted_Connection=yes;") as verb_db:
 
         return verb_db
+# # 1
+# with sqlite3.connect(db_path) as db:
+
+# # 2
+#     cur=db.cursor()
+
+# # 3
+# sql_gui_tab_hcsr_import_erfolgreich_2 = """
+# with ctehcsr as (
+# 	SELECT DISTINCT [L_Quelle_Name_MUSS_FELD_]
+# 			,[_DateiName_]
+# 	,COUNT(*) Anzahl_Datensätze_je_Lieferant
+# 	,_date_inload_minute_ Einladedatum --,CAST(_date_inload_ as date) Einladedatum
+# 	,sum([Umsatz_MUSS_FELD_]) Umsatz
+# 	FROM [Vorlauf_DB].[dbo].[hcsr]
+# 	-- WHERE CAST(_date_inload_ as date) =  CAST(GETDATE() AS DATE)
+# 	WHERE [L_Quelle_Name_MUSS_FELD_] is not null
+# 	GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_minute_
+# 	--ORDER BY Einladedatum ASC, [L_Quelle_Name_MUSS_FELD_] ASC 
+# ) 
+# select distinct ctehcsr.* 
+# 			,CAST(kopf.datumVon as date) 'Umsatz von'
+# 			,CAST(kopf.datumBis as date) 'Umsatz bis'
+# from ctehcsr
+# left join hcsrKopfdaten kopf
+# on ctehcsr._DateiName_ = kopf._DateiName_
+# order by ctehcsr.Einladedatum desc, ctehcsr.Umsatz desc
+# """
+
+# # 4
+# cur.execute(sql,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
+
+# # 5
+# results=cur.fetchall()
+# results = list(set(results)) # Drop Duplicates with SET
+
+# # 6
+                # if results == []:
+                #     QMessageBox.information(self,"Suche erfolglos.","Bitte die Eingabe anpassen.")
+                # else:
 
 def sql_executer(sql_string):
     db_verb = verbinde_zu_server_und_db()
