@@ -10,7 +10,7 @@ from PyQt5.QtGui import *
 import pyodbc
 import main
 from main import ausfuehren, dfFromSQLHcsrFilesImported, dfFromSQLHcsrFilesError # verbinde_zu_server_und_db
-from sqlStrings import sql_gui_tab_hcsr_import_erfolgreich_2, sql_gui_tab_hcsr_import_fehlerhaft
+from sqlStrings import sql_gui_tab_hcsr_import_erfolgreich_2, sql_gui_tab_hcsr_import_fehlerhaft, sql_hcsr_details
 from PyQt5.QtWidgets import QTableView, QProgressBar, QLabel
 from PyQt5.QtCore import QAbstractTableModel, QSortFilterProxyModel, Qt
 
@@ -38,6 +38,62 @@ class Fenster(QWidget):
     def __init__(self):
         super().__init__()
         self.initMe()
+
+    def suche_details(self,value):
+        value = self.txt_suche.text()
+        # # 6
+        if value == 0:
+            QMessageBox.information(self,"Warning","Search query can not be empty!")
+        else:
+            self.txt_suche.setText("")
+            while self.lstbox_hcsr.rowCount() > 0:
+                self.lstbox_hcsr.removeRow(0)
+            self.lstbox_hcsr.setSortingEnabled(False)
+            header_labels = ["Umsatz von","Umsatz bis","Lieferant_Quelle_Name","Lieferant_Quelle_IDTyp_Auswahl","Lieferant_Quelle_ID","Hersteller_Quelle_Name","Hersteller_Quelle_IDTyp_Auswahl","Hersteller_Quelle_ID","Einrichtung","Organisation_ID_Auswahl","Organisation_ID","Lieferant_Art_Nr","Lieferant_Art_IDTyp_Auswahl","Lieferant_Art_ID","Hersteller_Art_Nr","Hersteller_Art_IDTyp_Auswahl","Hersteller_Art_ID","Lieferant_Art_Txt","Lieferant_WGRP_Intern","Lieferant_WGRP_Merkmale_Intern","Lieferant_VPE_Auswahl","Lieferant_VPE_Menge","Faktor_BASISME_VPE","BASISME_Auswahl","Steuersatz Landescode","Steuersatz","Umsatz","Bonusrelevant","_date_inload_","_date_inload_minute_","_date_inload_hour_","_DateiName_","Lieferant_Quelle_ID_NORMALIZED","Lieferant_Quelle_Name_NORMALIZED","Lieferant_Art_ID_NORMALIZED","Hersteller_Quelle_ID_NORMALIZED","Hersteller_Art_Nr_NORMALIZED","Hersteller_Art_ID_NORMALIZED","_prio_flag_","_DateiNameCompKey_"]
+
+
+            self.lstbox_hcsr.setColumnCount(len(header_labels)) 
+            self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
+                # # 2
+            db_verb = verbinde_zu_server_und_db()
+            cur = db_verb.cursor()
+
+            # # 4
+            try:
+                # cur.execute(sql_hcsr_details)
+                cur.execute(sql_hcsr_details,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',
+                                              '%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))                
+                # cur.execute(sql_hcsr_details,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',
+                #                               '%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',
+                #                               '%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',
+                #                               '%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',
+                #                               '%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',
+                #                               '%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',
+                #                               '%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',
+                #                               '%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
+                result=cur.fetchall()
+            except:
+                QMessageBox.information(self,"HCSR-Importer",
+                                        "Die Tabelle existiert noch nicht."                                
+                                        "\nBitte zunächst Daten importieren, damit"
+                                        "\nInfos angezeigt werden können.")                
+            else:
+                if result == []:
+                    QMessageBox.information(self,"Suche erfolglos.","Bitte die Eingabe anpassen.")
+                else:
+                    for row_data in result:
+                        row_number=self.lstbox_hcsr.rowCount()
+                        self.lstbox_hcsr.insertRow(row_number)
+                        for column_number,data in enumerate(row_data):
+                            self.lstbox_hcsr.setItem(row_number,column_number,QTableWidgetItem(str(data)))
+                    if value == "":
+                        value = "allen erfolgreich importierten HCSR-Dateien auf Artikelebene"
+                        QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                    else:
+                        QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                    self.lstbox_hcsr.resizeColumnsToContents()
+                    self.lstbox_hcsr.resizeRowsToContents()
+                    self.lstbox_hcsr.setSortingEnabled(True) 
 
     def suche(self,value):
         value = self.txt_suche.text()
@@ -97,7 +153,7 @@ class Fenster(QWidget):
             header_labels = ["Pfad","Originalname", "Meldung", "Importiert am"]
             self.lstbox_hcsr.setColumnCount(len(header_labels)) 
             self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
-            
+
             db_verb = verbinde_zu_server_und_db()
             cur = db_verb.cursor()
 
@@ -212,23 +268,57 @@ class Fenster(QWidget):
         self.btn_suche_hcsr_fehler.setGeometry(1170,105,200,35) 
         self.btn_suche_hcsr_fehler.clicked.connect(self.suche_error)
 
+        self.btn_suche=QPushButton("HCSR Details",self)
+        self.btn_suche.setIcon(QIcon("lupe_2.jpg"))
+        self.btn_suche.setGeometry(1370,105,200,35) 
+        self.btn_suche.clicked.connect(self.suche_details)
+
         self.lstbox_hcsr=QTableWidget(self)
         self.lstbox_hcsr.setGeometry(50,150,1500,700) 
         self.lstbox_hcsr.setSortingEnabled(True)
 
         self.progress = QProgressBar(self)
-        self.progress.setGeometry(50,25,500,25)  
+        self.progress.setGeometry(50,25,500,25) 
 
-        self.btn_show_hcsr_in_tbl=QPushButton("Zeige HCSR",self) 
-        self.btn_show_hcsr_in_tbl.setGeometry(1650,160,200,25)   
+        self.lbl_progress=QLabel("data preparation",self) 
+        # self.lbl_map_warenkorb.setIcon(QIcon("hcsr.png"))
+        self.lbl_progress.setGeometry(550,25,200,25) 
+        self.lbl_progress.setAlignment(Qt.AlignCenter)
+        self.lbl_progress.setStyleSheet("background-color: None;"
+                                            "font: QlikView Sans;"
+                                            "font-size:17px;"
+                                            "border-style: outset;"
+                                            "border-width: 2px;"
+                                            "border-radius: 5px;"
+                                            "border-color: grey;"
+                                            "padding: 1px;") 
+
+        self.progress_2 = QProgressBar(self)
+        self.progress_2.setGeometry(50,50,500,25) 
+
+        self.lbl_progress_2=QLabel("data upload",self) 
+        # self.lbl_map_warenkorb.setIcon(QIcon("hcsr.png"))
+        self.lbl_progress_2.setGeometry(550,50,200,25) 
+        self.lbl_progress_2.setAlignment(Qt.AlignCenter)
+        self.lbl_progress_2.setStyleSheet("background-color: None;"
+                                            "font: QlikView Sans;"
+                                            "font-size:17px;"
+                                            "border-style: outset;"
+                                            "border-width: 2px;"
+                                            "border-radius: 5px;"
+                                            "border-color: grey;"
+                                            "padding: 1px;") 
+
+        # self.btn_show_hcsr_in_tbl=QPushButton("Zeige HCSR",self) 
+        # self.btn_show_hcsr_in_tbl.setGeometry(1650,160,200,25)   
         
-        # self.btn_show_hcsr_in_tbl.clicked.connect(self._loadDataFromDB)
+        # # self.btn_show_hcsr_in_tbl.clicked.connect(self._loadDataFromDB)
 
-        self.btn_show_Error_in_tbl=QPushButton("Zeige fehlerhafte HCSR",self) 
-        self.btn_show_Error_in_tbl.setGeometry(1650,190,200,25)   
-        # self.btn_show_Error_in_tbl.clicked.connect(self._loadErrorDataFromDB)
+        # self.btn_show_Error_in_tbl=QPushButton("Zeige fehlerhafte HCSR",self) 
+        # self.btn_show_Error_in_tbl.setGeometry(1650,190,200,25)   
+        # # self.btn_show_Error_in_tbl.clicked.connect(self._loadErrorDataFromDB)
 
-        self.btn_import=QPushButton("HCSR Import starten",self) 
+        self.btn_import=QPushButton("Dateien hinzufügen",self) 
         self.btn_import.setIcon(QIcon("data-import.png"))
         self.btn_import.move(50,110)
         self.btn_import.setGeometry(1650,115,200,35) 
@@ -236,7 +326,7 @@ class Fenster(QWidget):
         self.btn_import.clicked.connect(self._download)
         self.btn_import.clicked.connect(self._importHCSR)  
         # self.btn_import.clicked.connect(self._sqlQueriesAusfuehren) 
-        self.btn_import.clicked.connect(self._download)     
+        self.btn_import.clicked.connect(self._download_2)     
         self.btn_import.clicked.connect(self._call_msg)
 
         # self.btn_import=QPushButton("HCSR Export starten",self) 
@@ -246,12 +336,12 @@ class Fenster(QWidget):
         # self.btn_Katalog_import.setGeometry(650,70,200,25)   
         
         self.setGeometry(50,50, 2000, 1000)
-        self.setWindowTitle("Katalogmanagement / HCSR Import") 
+        self.setWindowTitle("HCSR-Importer") 
         self.setWindowIcon(QIcon("agkamed.jpg")) 
 
         self.btn_exit=QPushButton("Tool schließen",self) 
         self.btn_exit.clicked.connect(QtCore.QCoreApplication.instance().quit)
-        self.btn_exit.setGeometry(50,900,200,25)
+        self.btn_exit.setGeometry(50,900,200,35)
 
         self.txt_suche=QLineEdit(self) 
         self.txt_suche.setGeometry(50,105,900,35)
@@ -302,8 +392,8 @@ class Fenster(QWidget):
         self.btn_map_warenkorb_gtin.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb_gtin) # ETL Warenkorbmapping DEF anbinden
         self.btn_map_warenkorb_gtin.clicked.connect(self._call_msg_katalog_map)
         # ################
-        self.btn_import_lief=QPushButton("Lieferanten CH Import",self)
-        self.btn_import_lief.setGeometry(1650,300,200,25) 
+        # self.btn_import_lief=QPushButton("Lieferanten CH Import",self)
+        # self.btn_import_lief.setGeometry(1650,300,200,25) 
 
         self.showMaximized()
 
@@ -327,7 +417,13 @@ class Fenster(QWidget):
         self.completed = 0
         while self.completed < 100:
             self.completed += 0.0001
-            self.progress.setValue(self.completed) # Set Value of ProgressBar       
+            self.progress.setValue(self.completed) # Set Value of ProgressBar    
+
+    def _download_2(self):
+        self.completed = 0
+        while self.completed < 100:
+            self.completed += 0.0001
+            self.progress_2.setValue(self.completed) # Set Value of ProgressBar     
 
 style = '''
 
