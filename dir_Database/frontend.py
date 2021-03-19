@@ -184,6 +184,51 @@ class Fenster(QWidget):
                     self.lstbox_hcsr.resizeRowsToContents()
                     self.lstbox_hcsr.setSortingEnabled(True)            
 
+    def suche_lieferanten(self,value):
+        value = self.txt_suche.text()
+        # # 6
+        if value == 0:
+            QMessageBox.information(self,"Warning","Search query can not be empty!")
+        else:
+            self.txt_suche.setText("")
+            while self.lstbox_hcsr.rowCount() > 0:
+                self.lstbox_hcsr.removeRow(0)
+            self.lstbox_hcsr.setSortingEnabled(False)
+            header_labels = ["Lieferantenname", "Lieferant_ID", "Herstellername", "Hersteller_ID","Umsatz", "Von (Jahr)", "Von (Monat)","Bis (Jahr)","Bis (Monat)"]
+
+            self.lstbox_hcsr.setColumnCount(len(header_labels)) 
+            self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
+                # # 2
+            db_verb = verbinde_zu_server_und_db()
+            cur = db_verb.cursor()
+
+            # # 4
+            try:
+                # cur.execute(sql_lieferanten,('%'+value+'%',)) #'%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',)) #'%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
+                cur.execute(sql_lieferanten,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
+                result=cur.fetchall()
+            except:
+                QMessageBox.information(self,"HCSR-Importer",
+                                        "Die Tabelle existiert noch nicht."                                
+                                        "\nBitte zunächst Daten importieren, damit"
+                                        "\nInfos angezeigt werden können.")                
+            else:
+                if result == []:
+                    QMessageBox.information(self,"Suche erfolglos.","Bitte die Eingabe anpassen.")
+                else:
+                    for row_data in result:
+                        row_number=self.lstbox_hcsr.rowCount()
+                        self.lstbox_hcsr.insertRow(row_number)
+                        for column_number,data in enumerate(row_data):
+                            self.lstbox_hcsr.setItem(row_number,column_number,QTableWidgetItem(str(data)))
+                    if value == "":
+                        value = "allen erfolgreich importierten Lieferanten"
+                        QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                    else:
+                        QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                    self.lstbox_hcsr.resizeColumnsToContents()
+                    self.lstbox_hcsr.resizeRowsToContents()
+                    self.lstbox_hcsr.setSortingEnabled(True)  
 
     # def _loadDataFromDB(self):
     #     """
@@ -276,7 +321,7 @@ class Fenster(QWidget):
         self.btn_suche_lieferanten=QPushButton("Lieferanten",self)
         self.btn_suche_lieferanten.setIcon(QIcon("lupe_2.jpg"))
         self.btn_suche_lieferanten.setGeometry(1170,70,200,35) 
-        # self.btn_suche_lieferanten.clicked.connect(self.suche_einrichtungen)
+        self.btn_suche_lieferanten.clicked.connect(self.suche_lieferanten)
 
         self.lstbox_hcsr=QTableWidget(self)
         self.lstbox_hcsr.setGeometry(50,150,1520,700) 

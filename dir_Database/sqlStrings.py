@@ -8,53 +8,58 @@ headLieferanten = """SELECT TOP (5) [LieferantenNr]
       ,[tbl_index]
   FROM [Vorlauf_DB].[dbo].[tbl_lieferanten]"""
 
-sql_lieferanten = """ 
-with cte_Lief as (
+sql_lieferanten = """ with cte_Lief as (
 SELECT distinct
-		[L_Quelle_Name_MUSS_FELD_]
-      ,[L_Quelle_ID_MUSS_FELD_]
-      ,[H_Quelle_Name]
-      ,[H_Quelle_ID]
-	  ,_DateiName_
-	  ,_date_inload_minute_
-	  ,[datei_id_counter]
-      ,SUM([Umsatz_MUSS_FELD_]) Umsatz
-  FROM [Vorlauf_DB].[dbo].[hcsr]
-  where [_prio_flag_] = '1'
-  group by 		[L_Quelle_Name_MUSS_FELD_]
-      ,[L_Quelle_ID_MUSS_FELD_]
-      ,[H_Quelle_Name]
-      ,[H_Quelle_ID]
-	  ,_DateiName_
-	  ,_date_inload_minute_
-	  ,[datei_id_counter]),
-cteKopf as (
-SELECT [datumVon]
-      ,[datumBis]
-	  ,[_date_inload_]
-	  ,_date_inload_minute_
-	  ,[datei_id_counter]
-	  ,_DateiName_
-  FROM [Vorlauf_DB].[dbo].[hcsrKopfdaten]
-)
-
-select distinct 
-	  h.[L_Quelle_Name_MUSS_FELD_]
-      ,h.[L_Quelle_ID_MUSS_FELD_]
-      ,h.[H_Quelle_Name]
-      ,h.[H_Quelle_ID] 
-	  ,h.Umsatz
-	  ,format(kopf.[datumVon],N'yyyy') Jahr_Von
-      ,format(kopf.[datumVon],N'MMMM') Monat_Von
-	  ,format(kopf.[datumBis],N'yyyy') Jahr_Bis
-      ,format(kopf.[datumBis],N'MMMM') Monat_Bis
+[L_Quelle_Name_MUSS_FELD_]
+,[L_Quelle_ID_MUSS_FELD_]
+,[H_Quelle_Name]
+,[H_Quelle_ID]
+,_DateiName_
+,_date_inload_minute_
+,[datei_id_counter]
+,SUM([Umsatz_MUSS_FELD_]) Umsatz
+FROM [Vorlauf_DB].[dbo].[hcsr]
+where [_prio_flag_] = '1'
+group by 		[L_Quelle_Name_MUSS_FELD_]
+,[L_Quelle_ID_MUSS_FELD_]
+,[H_Quelle_Name]
+,[H_Quelle_ID]
+,_DateiName_
+,_date_inload_minute_
+,[datei_id_counter]),
+cteKopf as (SELECT [datumVon]
+,[datumBis]
+,[_date_inload_]
+,_date_inload_minute_
+,[datei_id_counter]
+,_DateiName_
+FROM [Vorlauf_DB].[dbo].[hcsrKopfdaten]
+)select distinct 
+h.[L_Quelle_Name_MUSS_FELD_]
+,h.[L_Quelle_ID_MUSS_FELD_]
+,h.[H_Quelle_Name]
+,h.[H_Quelle_ID] 
+,h.Umsatz
+,format(kopf.[datumVon],N'yyyy') Jahr_Von
+,format(kopf.[datumVon],N'MMMM') Monat_Von
+,format(kopf.[datumBis],N'yyyy') Jahr_Bis
+,format(kopf.[datumBis],N'MMMM') Monat_Bis
 from cte_Lief h
 JOIN cteKopf kopf
 on h._DateiName_ = kopf._DateiName_ and
 CONVERT(datetime,h._date_inload_minute_,102) between DATEADD(minute,-1,CONVERT(datetime,kopf.[_date_inload_minute_],102)) and DATEADD(minute,+1,CONVERT(datetime,kopf.[_date_inload_minute_],102))
 and h.[datei_id_counter] = kopf.[datei_id_counter]
-order by h.[L_Quelle_Name_MUSS_FELD_] asc, Jahr_Von desc, Monat_Von desc
+where h.[L_Quelle_Name_MUSS_FELD_] like ?
+or h.[L_Quelle_ID_MUSS_FELD_] like ?
+or h.[H_Quelle_Name] like ?
+or h.[H_Quelle_ID] like ?
+or h.Umsatz like ?
+or format(kopf.[datumVon],N'yyyy') like ?
+or format(kopf.[datumVon],N'MMMM') like ?
+or format(kopf.[datumBis],N'yyyy') like ?
+or format(kopf.[datumBis],N'MMMM') like ?
 """
+
 
 sql_abruf_vorh_hcsr_dateien_key = """
 IF (EXISTS(
