@@ -58,31 +58,35 @@ class Fenster(QWidget):
             cur = db_verb.cursor()
 
             # # 4
-            cur.execute(sql_gui_tab_hcsr_import_erfolgreich_2,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
-
-            # # 5
-            result=cur.fetchall()
-
-            if result == []:
-                QMessageBox.information(self,"Suche erfolglos.","Bitte die Eingabe anpassen.")
+            try:
+                cur.execute(sql_gui_tab_hcsr_import_erfolgreich_2,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
+                result=cur.fetchall()
+            except:
+                QMessageBox.information(self,"HCSR-Importer",
+                                        "Die Tabelle existiert noch nicht."                                
+                                        "\nBitte zunächst Daten importieren, damit"
+                                        "\nInfos angezeigt werden können.")                
             else:
-                for row_data in result:
-                    row_number=self.lstbox_hcsr.rowCount()
-                    self.lstbox_hcsr.insertRow(row_number)
-                    for column_number,data in enumerate(row_data):
-                        self.lstbox_hcsr.setItem(row_number,column_number,QTableWidgetItem(str(data)))
-                if value == "":
-                    value = "allen erfolgreich importierten HCSR-Dateien"
-                    QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                if result == []:
+                    QMessageBox.information(self,"Suche erfolglos.","Bitte die Eingabe anpassen.")
                 else:
-                    QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
-                self.lstbox_hcsr.resizeColumnsToContents()
-                self.lstbox_hcsr.resizeRowsToContents()
-                self.lstbox_hcsr.setSortingEnabled(True)            
+                    for row_data in result:
+                        row_number=self.lstbox_hcsr.rowCount()
+                        self.lstbox_hcsr.insertRow(row_number)
+                        for column_number,data in enumerate(row_data):
+                            self.lstbox_hcsr.setItem(row_number,column_number,QTableWidgetItem(str(data)))
+                    if value == "":
+                        value = "allen erfolgreich importierten HCSR-Dateien"
+                        QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                    else:
+                        QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                    self.lstbox_hcsr.resizeColumnsToContents()
+                    self.lstbox_hcsr.resizeRowsToContents()
+                    self.lstbox_hcsr.setSortingEnabled(True)            
 
     def suche_error(self,value):
         value = self.txt_suche.text()
-        # # 6
+
         if value == 0:
             QMessageBox.information(self,"Warning","Search query can not be empty!")
         else:
@@ -93,101 +97,105 @@ class Fenster(QWidget):
             header_labels = ["Pfad","Originalname", "Meldung", "Importiert am"]
             self.lstbox_hcsr.setColumnCount(len(header_labels)) 
             self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
-                # # 2
+            
             db_verb = verbinde_zu_server_und_db()
             cur = db_verb.cursor()
 
-            # # 4
-            cur.execute(sql_gui_tab_hcsr_import_fehlerhaft,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
-
-            # # 5
-            result=cur.fetchall()
-
-            if result == []:
-                QMessageBox.information(self,"Suche erfolglos.","Bitte die Eingabe anpassen.")
+            
+            try:
+                cur.execute(sql_gui_tab_hcsr_import_fehlerhaft,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
+                result=cur.fetchall()
+            except:
+                QMessageBox.information(self,"HCSR-Importer",
+                                        "Die Tabelle existiert noch nicht."                                
+                                        "\nBitte zunächst Daten importieren, damit"
+                                        "\nInfos angezeigt werden können.")
             else:
-                for row_data in result:
-                    row_number=self.lstbox_hcsr.rowCount()
-                    self.lstbox_hcsr.insertRow(row_number)
-                    for column_number,data in enumerate(row_data):
-                        self.lstbox_hcsr.setItem(row_number,column_number,QTableWidgetItem(str(data)))
-                if value == "":
-                    value = "allen fehlerhaften HCSR-Dateien"
-                    QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                if result == []:
+                    QMessageBox.information(self,"Suche erfolglos.","Bitte die Eingabe anpassen.")
                 else:
-                    QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
-                self.lstbox_hcsr.resizeColumnsToContents()
-                self.lstbox_hcsr.resizeRowsToContents()
-                self.lstbox_hcsr.setSortingEnabled(True)            
+                    for row_data in result:
+                        row_number=self.lstbox_hcsr.rowCount()
+                        self.lstbox_hcsr.insertRow(row_number)
+                        for column_number,data in enumerate(row_data):
+                            self.lstbox_hcsr.setItem(row_number,column_number,QTableWidgetItem(str(data)))
+                    if value == "":
+                        value = "allen fehlerhaften HCSR-Dateien"
+                        QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                    else:
+                        QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                    self.lstbox_hcsr.resizeColumnsToContents()
+                    self.lstbox_hcsr.resizeRowsToContents()
+                    self.lstbox_hcsr.setSortingEnabled(True)            
 
 
-    def _loadDataFromDB(self):
-        """
-        Displays DB Informations in GUI Table
-        Input: List of Dicts of DB result of SQL Query
-        Output: Values in QTableWidget 
-        """
-        try:
-            result = dfFromSQLHcsrFilesImported()
-        except:         
-            QMessageBox.information(self,"HCSR-Importer",
-                                    "Die Tabelle existiert noch nicht."                                
-                                    "\nBitte zunächst Daten importieren, damit"
-                                    "\nInfos angezeigt werden können.")
-        else:
-            rngDictsInList = range(len(result)) # Dicts are DB values with headers
-            while self.lstbox_hcsr.rowCount() > 0:
-                self.lstbox_hcsr.removeRow(0)
-            self.lstbox_hcsr.setSortingEnabled(False)
-            header_labels = ["Lieferantenname", "Originalname", "Anzahl Datensätze", "Importiert am","Umsatz", "Umsatz von", "Umsatz bis"]
-            # header_labels = ["Originalname", "Importiert am","Jahr", "Umsatz von", "Umsatz bis", "Lieferantenname", "Anzahl Artikel"]
-            self.lstbox_hcsr.setColumnCount(len(header_labels)) 
-            self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
-            # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)            
-            for d in result:
-                for x in rngDictsInList:
-                    x-=len(result)-1 # Dynamisch: Die Anzahl der zu "löschenden" Zeilen, damit die Zeilen ohne Leerzeilen angezeigt werden
-                    self.lstbox_hcsr.insertRow(x)                
-                for column_number, data in enumerate(d.values()):
-                    # if str(data) == '2021-03-17 16:33':
-                    self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
+    # def _loadDataFromDB(self):
+    #     """
+    #     Displays DB Informations in GUI Table
+    #     Input: List of Dicts of DB result of SQL Query
+    #     Output: Values in QTableWidget 
+    #     """
+    #     try:
+    #         result = dfFromSQLHcsrFilesImported()
+    #     except:         
+    #         QMessageBox.information(self,"HCSR-Importer",
+    #                                 "Die Tabelle existiert noch nicht."                                
+    #                                 "\nBitte zunächst Daten importieren, damit"
+    #                                 "\nInfos angezeigt werden können.")
+    #     else:
+    #         rngDictsInList = range(len(result)) # Dicts are DB values with headers
+    #         while self.lstbox_hcsr.rowCount() > 0:
+    #             self.lstbox_hcsr.removeRow(0)
+    #         self.lstbox_hcsr.setSortingEnabled(False)
+    #         header_labels = ["Lieferantenname", "Originalname", "Anzahl Datensätze", "Importiert am","Umsatz", "Umsatz von", "Umsatz bis"]
+    #         # header_labels = ["Originalname", "Importiert am","Jahr", "Umsatz von", "Umsatz bis", "Lieferantenname", "Anzahl Artikel"]
+    #         self.lstbox_hcsr.setColumnCount(len(header_labels)) 
+    #         self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
+    #         # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)            
+    #         for d in result:
+    #             for x in rngDictsInList:
+    #                 x-=len(result)-1 # Dynamisch: Die Anzahl der zu "löschenden" Zeilen, damit die Zeilen ohne Leerzeilen angezeigt werden
+    #                 self.lstbox_hcsr.insertRow(x)                
+    #             for column_number, data in enumerate(d.values()):
+    #                 # if str(data) == '2021-03-17 16:33':
+    #                 self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
 
-            self.lstbox_hcsr.resizeColumnsToContents()
-            self.lstbox_hcsr.resizeRowsToContents()
-            self.lstbox_hcsr.setSortingEnabled(True)
+    #         self.lstbox_hcsr.resizeColumnsToContents()
+    #         self.lstbox_hcsr.resizeRowsToContents()
+    #         self.lstbox_hcsr.setSortingEnabled(True)
 
-    def _loadErrorDataFromDB(self):
-        """
-        Displays DB Informations in GUI Table
-        Input: List of Dicts of DB result of SQL Query
-        Output: Values in QTableWidget 
-        """
-        try:
-            result = dfFromSQLHcsrFilesError()
-        except:         
-            QMessageBox.information(self,"HCSR-Importer",
-                                    "Die Tabelle existiert noch nicht."                                
-                                    "\nBitte zunächst Daten importieren, damit"
-                                    "\nInfos angezeigt werden können.")
-        else:
-            rngDictsInList = range(len(result)) # Dicts are DB values with headers
-            while self.lstbox_hcsr.rowCount() > 0:
-                self.lstbox_hcsr.removeRow(0)
-            self.lstbox_hcsr.setSortingEnabled(False)
-            header_labels = ["Pfad","Originalname", "Meldung", "Importiert am"]
-            self.lstbox_hcsr.setColumnCount(len(header_labels)) 
-            self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
-            # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)            
-            for d in result:
-                for x in rngDictsInList:
-                    x-=len(result)-1 # Dynamisch: Die Anzahl der zu "löschenden" Zeilen, damit die Zeilen ohne Leerzeilen angezeigt werden
-                    self.lstbox_hcsr.insertRow(x)                
-                for column_number, data in enumerate(d.values()):
-                    self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
+    # def _loadErrorDataFromDB(self):
+    #     """
+    #     Displays DB Informations in GUI Table
+    #     Input: List of Dicts of DB result of SQL Query
+    #     Output: Values in QTableWidget 
+    #     """
+    #     try:
+    #         result = dfFromSQLHcsrFilesError()
+    #     except:         
+    #         QMessageBox.information(self,"HCSR-Importer",
+    #                                 "Die Tabelle existiert noch nicht."                                
+    #                                 "\nBitte zunächst Daten importieren, damit"
+    #                                 "\nInfos angezeigt werden können.")
+    #     else:
+    #         rngDictsInList = range(len(result)) # Dicts are DB values with headers
+    #         while self.lstbox_hcsr.rowCount() > 0:
+    #             self.lstbox_hcsr.removeRow(0)
+    #         self.lstbox_hcsr.setSortingEnabled(False)
+    #         header_labels = ["Pfad","Originalname", "Meldung", "Importiert am"]
+    #         self.lstbox_hcsr.setColumnCount(len(header_labels)) 
+    #         self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
+    #         # self.lstbox_hcsr.horizontalHeader().setSectionResizeMode(0,QHeaderView.ResizeToContents)            
+    #         for d in result:
+    #             for x in rngDictsInList:
+    #                 x-=len(result)-1 # Dynamisch: Die Anzahl der zu "löschenden" Zeilen, damit die Zeilen ohne Leerzeilen angezeigt werden
+    #                 self.lstbox_hcsr.insertRow(x)                
+    #             for column_number, data in enumerate(d.values()):
+    #                 self.lstbox_hcsr.setItem(x,column_number,QtWidgets.QTableWidgetItem(str(data)))
 
-            self.lstbox_hcsr.resizeColumnsToContents()
-            self.lstbox_hcsr.resizeRowsToContents()
-            self.lstbox_hcsr.setSortingEnabled(True)
+    #         self.lstbox_hcsr.resizeColumnsToContents()
+    #         self.lstbox_hcsr.resizeRowsToContents()
+    #         self.lstbox_hcsr.setSortingEnabled(True)
 
 
     def initMe(self):
@@ -214,11 +222,11 @@ class Fenster(QWidget):
         self.btn_show_hcsr_in_tbl=QPushButton("Zeige HCSR",self) 
         self.btn_show_hcsr_in_tbl.setGeometry(1650,160,200,25)   
         
-        self.btn_show_hcsr_in_tbl.clicked.connect(self._loadDataFromDB)
+        # self.btn_show_hcsr_in_tbl.clicked.connect(self._loadDataFromDB)
 
         self.btn_show_Error_in_tbl=QPushButton("Zeige fehlerhafte HCSR",self) 
         self.btn_show_Error_in_tbl.setGeometry(1650,190,200,25)   
-        self.btn_show_Error_in_tbl.clicked.connect(self._loadErrorDataFromDB)
+        # self.btn_show_Error_in_tbl.clicked.connect(self._loadErrorDataFromDB)
 
         self.btn_import=QPushButton("HCSR Import starten",self) 
         self.btn_import.setIcon(QIcon("data-import.png"))
