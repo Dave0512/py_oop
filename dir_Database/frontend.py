@@ -10,7 +10,7 @@ from PyQt5.QtGui import *
 import pyodbc
 import main
 from main import ausfuehren, dfFromSQLHcsrFilesImported, dfFromSQLHcsrFilesError # verbinde_zu_server_und_db
-
+from sqlStrings import sql_gui_tab_hcsr_import_erfolgreich_2, sql_gui_tab_hcsr_import_fehlerhaft
 from PyQt5.QtWidgets import QTableView, QProgressBar, QLabel
 from PyQt5.QtCore import QAbstractTableModel, QSortFilterProxyModel, Qt
 
@@ -56,34 +56,6 @@ class Fenster(QWidget):
                 # # 2
             db_verb = verbinde_zu_server_und_db()
             cur = db_verb.cursor()
-            # # 3
-            sql_gui_tab_hcsr_import_erfolgreich_2 = """
-            with ctehcsr as (
-                SELECT DISTINCT [L_Quelle_Name_MUSS_FELD_]
-                        ,[_DateiName_]
-                ,COUNT(*) Anzahl_Datensätze_je_Lieferant
-                ,_date_inload_minute_ Einladedatum --,CAST(_date_inload_ as date) Einladedatum
-                ,sum([Umsatz_MUSS_FELD_]) Umsatz
-                FROM [Vorlauf_DB].[dbo].[hcsr]
-                -- WHERE CAST(_date_inload_ as date) =  CAST(GETDATE() AS DATE)
-                WHERE [L_Quelle_Name_MUSS_FELD_] is not null
-                GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_minute_
-                --ORDER BY Einladedatum ASC, [L_Quelle_Name_MUSS_FELD_] ASC 
-            ) 
-            select distinct ctehcsr.* 
-                        ,CAST(kopf.datumVon as date) 'Umsatz von'
-                        ,CAST(kopf.datumBis as date) 'Umsatz bis'
-            from ctehcsr
-            left join hcsrKopfdaten kopf
-            on ctehcsr._DateiName_ = kopf._DateiName_     
-            where ctehcsr.[L_Quelle_Name_MUSS_FELD_] like ?
-            or ctehcsr.[_DateiName_] like ?  
-            or ctehcsr.Anzahl_Datensätze_je_Lieferant like ?
-            or ctehcsr.Einladedatum like ?  
-            or ctehcsr.Umsatz like ? 
-            or kopf.datumVon like ? 
-            or kopf.datumBis like ?    
-            """
 
             # # 4
             cur.execute(sql_gui_tab_hcsr_import_erfolgreich_2,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
@@ -124,17 +96,7 @@ class Fenster(QWidget):
                 # # 2
             db_verb = verbinde_zu_server_und_db()
             cur = db_verb.cursor()
-            # # 3
-            sql_gui_tab_hcsr_import_fehlerhaft = """ select distinct _AusgeschlDateiPfad_
-            ,_DateiName_
-            ,_FehlerCode_
-            ,CAST(_date_inload_ as date) Einladedatum
-            FROM [Vorlauf_DB].[dbo].hcsrFilesExcluded hE
-            where hE._AusgeschlDateiPfad_ like ?
-            or hE._DateiName_ like ?
-            or hE._FehlerCode_ like ?
-            or hE._date_inload_ like ?
-            """    
+
             # # 4
             cur.execute(sql_gui_tab_hcsr_import_fehlerhaft,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
 
