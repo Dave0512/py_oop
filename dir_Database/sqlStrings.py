@@ -54,21 +54,22 @@ sql_gui_tab_hcsr_import_erfolgreich_2 = """
 with ctehcsr as (
 SELECT DISTINCT [L_Quelle_Name_MUSS_FELD_]
 		,[_DateiName_]
+		,_prio_flag_
 ,COUNT(*) Anzahl_Datensätze_je_Lieferant
-,_date_inload_minute_ Einladedatum --,CAST(_date_inload_ as date) Einladedatum
+,_date_inload_minute_ Einladedatum 
 ,sum([Umsatz_MUSS_FELD_]) Umsatz
 FROM [Vorlauf_DB].[dbo].[hcsr]
 -- WHERE CAST(_date_inload_ as date) =  CAST(GETDATE() AS DATE)
-WHERE [L_Quelle_Name_MUSS_FELD_] is not null
-GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_minute_
---ORDER BY Einladedatum ASC, [L_Quelle_Name_MUSS_FELD_] ASC 
+WHERE [L_Quelle_Name_MUSS_FELD_] is not null and _prio_flag_ = '1'
+GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_minute_,_prio_flag_
+
 ) 
 select distinct ctehcsr.* 
 ,CAST(kopf.datumVon as date) 'Umsatz von'
 ,CAST(kopf.datumBis as date) 'Umsatz bis'
 from ctehcsr
 left join hcsrKopfdaten kopf
-on ctehcsr._DateiName_ = kopf._DateiName_     
+on ctehcsr._DateiName_ = kopf._DateiName_      
 where ctehcsr.[L_Quelle_Name_MUSS_FELD_] like ?
 or ctehcsr.[_DateiName_] like ?  
 or ctehcsr.Anzahl_Datensätze_je_Lieferant like ?
@@ -78,8 +79,7 @@ or kopf.datumVon like ?
 or kopf.datumBis like ?    
 """
 
-sql_hcsr_details = """
-SELECT 
+sql_hcsr_details = """ SELECT 
 cast(kopf.datumVon as date) 'Umsatz von'
 ,cast(kopf.datumBis as date) 'Umsatz bis'
 ,h.[L_Quelle_Name_MUSS_FELD_]
@@ -121,50 +121,51 @@ cast(kopf.datumVon as date) 'Umsatz von'
 ,h.[_prio_flag_]
 ,h.[_DateiNameCompKey_]
 FROM [Vorlauf_DB].[dbo].[hcsr] h
-left join hcsrKopfdaten kopf
+left join [Vorlauf_DB].[dbo].[hcsrKopfdaten] kopf
 on h._DateiName_ = kopf._DateiName_ 
-where _prio_flag_ = 1
-or [L_Quelle_Name_MUSS_FELD_] like ?
-or [L_Quelle_IDTyp_Auswahl_MUSS_FELD_] like ?
-or [L_Quelle_ID_MUSS_FELD_] like ?
-or [H_Quelle_Name] like ?
-or [H_Quelle_IDTyp_Auswahl] like ?
-or [H_Quelle_ID] like ?
-or [Einrichtung_MUSS_FELD_] like ?
-or [Organisation_ID_Auswahl_MUSS_FELD_] like ?
-or [Organisation_ID_MUSS_FELD_] like ?
-or [L_Art_Nr_MUSS_FELD_] like ?
-or [L_Art_IDTyp_Auswahl] like ?
-or [L_Art_ID_MUSS_FELD_] like ?
-or [H_Art_Nr_MUSS_FELD_] like ?
-or [H_Art_IDTyp_Auswahl] like ?
-or [H_Art_ID_MUSS_FELD_] like ?
-or [L_Art_Txt_MUSS_FELD_] like ?
-or [L_WGRP_Intern] like ?
-or [L_WGRP_Merkmale_Intern] like ?
-or [L_VPE_Auswahl_MUSS_FELD_] like ?
-or [L_VPE_Menge_MUSS_FELD_] like ?
-or [Faktor_BASISME_VPE_MUSS_FELD_] like ?
-or [BASISME_Auswahl_MUSS_FELD_] like ?
-or [Steuersatz Landescode_MUSS_FELD_] like ?
-or [Steuersatz_MUSS_FELD_] like ?
-or [Umsatz_MUSS_FELD_] like ?
-or [Bonusrelevant_MUSS_FELD_] like ?
-or [_date_inload_] like ?
-or [_date_inload_minute_] like ?
-or [_date_inload_hour_] like ?
-or [_DateiName_] like ?
-or [L_Quelle_ID_MUSS_FELD__NORMALIZED] like ?
-or [L_Quelle_Name_MUSS_FELD__NORMALIZED] like ?
-or [L_Art_ID_MUSS_FELD__NORMALIZED] like ?
-or [H_Quelle_ID_NORMALIZED] like ?
-or [H_Art_Nr_MUSS_FELD__NORMALIZED] like ?
-or [H_Art_ID_MUSS_FELD__NORMALIZED] like ?
-or [_prio_flag_] like ?
-or [_DateiNameCompKey_] like ?
-or kopf.datumVon like ? 
-or kopf.datumBis like ? 
+where _prio_flag_ = '1'
+-- or h.[L_Quelle_Name_MUSS_FELD_] like ?
 """
+# cast(kopf.datumVon as date) 'Umsatz von'
+# ,cast(kopf.datumBis as date) 'Umsatz bis'
+# ,h.[L_Quelle_Name_MUSS_FELD_]
+# ,h.[L_Quelle_IDTyp_Auswahl_MUSS_FELD_]
+# ,h.[L_Quelle_ID_MUSS_FELD_]
+# ,h.[H_Quelle_Name]
+# ,h.[H_Quelle_IDTyp_Auswahl]
+# ,h.[H_Quelle_ID]
+# ,h.[Einrichtung_MUSS_FELD_]
+# ,h.[Organisation_ID_Auswahl_MUSS_FELD_]
+# ,h.[Organisation_ID_MUSS_FELD_]
+# ,h.[L_Art_Nr_MUSS_FELD_]
+# ,h.[L_Art_IDTyp_Auswahl]
+# ,h.[L_Art_ID_MUSS_FELD_]
+# ,h.[H_Art_Nr_MUSS_FELD_]
+# ,h.[H_Art_IDTyp_Auswahl]
+# ,h.[H_Art_ID_MUSS_FELD_]
+# ,h.[L_Art_Txt_MUSS_FELD_]
+# ,h.[L_WGRP_Intern]
+# ,h.[L_WGRP_Merkmale_Intern]
+# ,h.[L_VPE_Auswahl_MUSS_FELD_]
+# ,h.[L_VPE_Menge_MUSS_FELD_]
+# ,h.[Faktor_BASISME_VPE_MUSS_FELD_]
+# ,h.[BASISME_Auswahl_MUSS_FELD_]
+# ,h.[Steuersatz Landescode_MUSS_FELD_]
+# ,h.[Steuersatz_MUSS_FELD_]
+# ,h.[Umsatz_MUSS_FELD_]
+# ,h.[Bonusrelevant_MUSS_FELD_]
+# ,h.[_date_inload_]
+# ,h.[_date_inload_minute_]
+# ,h.[_date_inload_hour_]
+# ,h.[_DateiName_]
+# ,h.[L_Quelle_ID_MUSS_FELD__NORMALIZED]
+# ,h.[L_Quelle_Name_MUSS_FELD__NORMALIZED]
+# ,h.[L_Art_ID_MUSS_FELD__NORMALIZED]
+# ,h.[H_Quelle_ID_NORMALIZED]
+# ,h.[H_Art_Nr_MUSS_FELD__NORMALIZED]
+# ,h.[H_Art_ID_MUSS_FELD__NORMALIZED]
+# ,h.[_prio_flag_]
+# ,h.[_DateiNameCompKey_]
 
 sql_gui_tab_hcsr_import_fehlerhaft = """ select distinct _AusgeschlDateiPfad_
 ,_DateiName_
