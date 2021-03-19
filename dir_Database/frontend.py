@@ -10,7 +10,7 @@ from PyQt5.QtGui import *
 import pyodbc
 import main
 from main import ausfuehren, dfFromSQLHcsrFilesImported, dfFromSQLHcsrFilesError # verbinde_zu_server_und_db
-from sqlStrings import sql_gui_tab_hcsr_import_erfolgreich_2, sql_gui_tab_hcsr_import_fehlerhaft, sql_hcsr_details
+from sqlStrings import sql_gui_tab_hcsr_import_erfolgreich_2, sql_gui_tab_hcsr_import_fehlerhaft, sql_hcsr_details, sql_lieferanten
 from PyQt5.QtWidgets import QTableView, QProgressBar, QLabel
 from PyQt5.QtCore import QAbstractTableModel, QSortFilterProxyModel, Qt
 
@@ -268,10 +268,15 @@ class Fenster(QWidget):
         self.btn_suche_hcsr_fehler.setGeometry(1370,70,200,35) 
         self.btn_suche_hcsr_fehler.clicked.connect(self.suche_error)
 
-        self.btn_suche=QPushButton("Details",self)
-        self.btn_suche.setIcon(QIcon("lupe_2.jpg"))
-        self.btn_suche.setGeometry(970,105,200,35) 
-        self.btn_suche.clicked.connect(self.suche_details)
+        self.btn_suche_details=QPushButton("Details",self)
+        self.btn_suche_details.setIcon(QIcon("lupe_2.jpg"))
+        self.btn_suche_details.setGeometry(970,105,200,35) 
+        self.btn_suche_details.clicked.connect(self.suche_details)
+
+        self.btn_suche_lieferanten=QPushButton("Lieferanten",self)
+        self.btn_suche_lieferanten.setIcon(QIcon("lupe_2.jpg"))
+        self.btn_suche_lieferanten.setGeometry(1170,70,200,35) 
+        # self.btn_suche_lieferanten.clicked.connect(self.suche_einrichtungen)
 
         self.lstbox_hcsr=QTableWidget(self)
         self.lstbox_hcsr.setGeometry(50,150,1520,700) 
@@ -293,7 +298,7 @@ class Fenster(QWidget):
                                             "border-color: grey;"
                                             "padding: 1px;")
 
-        self.lbl_progress=QLabel("data preparation",self) 
+        self.lbl_progress=QLabel("Daten Vorbereitung",self) 
         # self.lbl_map_warenkorb.setIcon(QIcon("hcsr.png"))
         self.lbl_progress.setGeometry(550,25,200,25) 
         self.lbl_progress.setAlignment(Qt.AlignCenter)
@@ -309,7 +314,7 @@ class Fenster(QWidget):
         self.progress_2 = QProgressBar(self)
         self.progress_2.setGeometry(50,50,500,25) 
 
-        self.lbl_progress_2=QLabel("data upload",self) 
+        self.lbl_progress_2=QLabel("Daten Upload",self) 
         # self.lbl_map_warenkorb.setIcon(QIcon("hcsr.png"))
         self.lbl_progress_2.setGeometry(550,50,200,25) 
         self.lbl_progress_2.setAlignment(Qt.AlignCenter)
@@ -349,7 +354,7 @@ class Fenster(QWidget):
         # self.btn_Katalog_import.setGeometry(650,70,200,25)   
         
         self.setGeometry(50,50, 2000, 1000)
-        self.setWindowTitle("HCSR-Importer") 
+        self.setWindowTitle("HCSR IMPORTER") 
         self.setWindowIcon(QIcon("agkamed.jpg")) 
 
         self.btn_exit=QPushButton("Tool schließen",self) 
