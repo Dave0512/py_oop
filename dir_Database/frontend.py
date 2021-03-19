@@ -183,10 +183,15 @@ class Fenster(QWidget):
         self.label = QLabel("Dashboard")
         self.label.setGeometry(200,25,500,25)
 
-        self.btn_suche=QPushButton("",self)
+        self.btn_suche=QPushButton("HCSR erfolgreich",self)
         self.btn_suche.setIcon(QIcon("lupe_2.jpg"))
-        self.btn_suche.setGeometry(970,105,35,35) 
+        self.btn_suche.setGeometry(970,105,200,35) 
         self.btn_suche.clicked.connect(self.suche)
+
+        self.btn_suche_hcsr_fehler=QPushButton("HCSR fehlerhaft",self)
+        self.btn_suche_hcsr_fehler.setIcon(QIcon("lupe_2.jpg"))
+        self.btn_suche_hcsr_fehler.setGeometry(970,155,200,35) 
+        self.btn_suche_hcsr_fehler.clicked.connect(self.suche)
 
         self.lstbox_hcsr=QTableWidget(self)
         self.lstbox_hcsr.setGeometry(50,150,1500,700) 
