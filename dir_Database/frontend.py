@@ -108,6 +108,55 @@ class Fenster(QWidget):
                 self.lstbox_hcsr.resizeRowsToContents()
                 self.lstbox_hcsr.setSortingEnabled(True)            
 
+    def suche_error(self,value):
+        value = self.txt_suche.text()
+        # # 6
+        if value == 0:
+            QMessageBox.information(self,"Warning","Search query can not be empty!")
+        else:
+            self.txt_suche.setText("")
+            while self.lstbox_hcsr.rowCount() > 0:
+                self.lstbox_hcsr.removeRow(0)
+            self.lstbox_hcsr.setSortingEnabled(False)
+            header_labels = ["Pfad","Originalname", "Meldung", "Importiert am"]
+            self.lstbox_hcsr.setColumnCount(len(header_labels)) 
+            self.lstbox_hcsr.setHorizontalHeaderLabels(header_labels)
+                # # 2
+            db_verb = verbinde_zu_server_und_db()
+            cur = db_verb.cursor()
+            # # 3
+            sql_gui_tab_hcsr_import_fehlerhaft = """ select distinct _AusgeschlDateiPfad_
+            ,_DateiName_
+            ,_FehlerCode_
+            ,CAST(_date_inload_ as date) Einladedatum
+            FROM [Vorlauf_DB].[dbo].hcsrFilesExcluded hE
+            where hE._AusgeschlDateiPfad_ like ?
+            or hE._DateiName_ like ?
+            or hE._FehlerCode_ like ?
+            or hE._date_inload_ like ?
+            """    
+            # # 4
+            cur.execute(sql_gui_tab_hcsr_import_fehlerhaft,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
+
+            # # 5
+            result=cur.fetchall()
+
+            if result == []:
+                QMessageBox.information(self,"Suche erfolglos.","Bitte die Eingabe anpassen.")
+            else:
+                for row_data in result:
+                    row_number=self.lstbox_hcsr.rowCount()
+                    self.lstbox_hcsr.insertRow(row_number)
+                    for column_number,data in enumerate(row_data):
+                        self.lstbox_hcsr.setItem(row_number,column_number,QTableWidgetItem(str(data)))
+                if value == "":
+                    value = "allen fehlerhaften HCSR-Dateien"
+                    QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                else:
+                    QMessageBox.information(self,"Klasse!","Sie haben nach {} gesucht.\nDie Suche war erfolgreich!".format(value))
+                self.lstbox_hcsr.resizeColumnsToContents()
+                self.lstbox_hcsr.resizeRowsToContents()
+                self.lstbox_hcsr.setSortingEnabled(True)            
 
 
     def _loadDataFromDB(self):
@@ -190,8 +239,8 @@ class Fenster(QWidget):
 
         self.btn_suche_hcsr_fehler=QPushButton("HCSR fehlerhaft",self)
         self.btn_suche_hcsr_fehler.setIcon(QIcon("lupe_2.jpg"))
-        self.btn_suche_hcsr_fehler.setGeometry(970,155,200,35) 
-        self.btn_suche_hcsr_fehler.clicked.connect(self.suche)
+        self.btn_suche_hcsr_fehler.setGeometry(1170,105,200,35) 
+        self.btn_suche_hcsr_fehler.clicked.connect(self.suche_error)
 
         self.lstbox_hcsr=QTableWidget(self)
         self.lstbox_hcsr.setGeometry(50,150,1500,700) 
@@ -210,8 +259,9 @@ class Fenster(QWidget):
         self.btn_show_Error_in_tbl.clicked.connect(self._loadErrorDataFromDB)
 
         self.btn_import=QPushButton("HCSR Import starten",self) 
+        self.btn_import.setIcon(QIcon("data-import.png"))
         self.btn_import.move(50,110)
-        self.btn_import.setGeometry(1650,100,200,25) 
+        self.btn_import.setGeometry(1650,115,200,35) 
 
         self.btn_import.clicked.connect(self._download)
         self.btn_import.clicked.connect(self._importHCSR)  
@@ -238,7 +288,8 @@ class Fenster(QWidget):
         # self.txt_suche.setStyleSheet('font-size: 35 px; height: 60px')
 
         self.btn_map_warenkorb=QPushButton("ECL@SS",self)
-        self.btn_map_warenkorb.setGeometry(1650,630,200,25) 
+        self.btn_map_warenkorb.setIcon(QIcon("data-import.png"))
+        self.btn_map_warenkorb.setGeometry(1650,635,200,35) 
         self.btn_map_warenkorb.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen."
                                           "Mapping erfolgt via Key Lieferant_ArtikelNr\n"
                                           "Stelle daher bitte sicher, dass Lieferant_ArtikelNr\n"
@@ -247,7 +298,8 @@ class Fenster(QWidget):
         self.btn_map_warenkorb.clicked.connect(self._call_msg_katalog_map)
 
         self.lbl_map_warenkorb=QLabel("HCSR",self) 
-        self.lbl_map_warenkorb.setGeometry(1650,70,200,25) 
+        # self.lbl_map_warenkorb.setIcon(QIcon("hcsr.png"))
+        self.lbl_map_warenkorb.setGeometry(1650,80,200,35) 
         self.lbl_map_warenkorb.setAlignment(Qt.AlignCenter)
         self.lbl_map_warenkorb.setStyleSheet("background-color: lightgrey;"
                                             "font: QlikView Sans;"
@@ -259,7 +311,7 @@ class Fenster(QWidget):
                                             "padding: 1px;")
 
         self.lbl_map_warenkorb=QLabel("Kataloge",self) 
-        self.lbl_map_warenkorb.setGeometry(1650,600,200,25) 
+        self.lbl_map_warenkorb.setGeometry(1650,600,200,35) 
         self.lbl_map_warenkorb.setAlignment(Qt.AlignCenter)
         self.lbl_map_warenkorb.setStyleSheet("background-color: lightgrey;"
                                             "font: QlikView Sans;"
@@ -271,7 +323,8 @@ class Fenster(QWidget):
                                             "padding: 1px;")
 
         self.btn_map_warenkorb_gtin=QPushButton("GTIN",self)
-        self.btn_map_warenkorb_gtin.setGeometry(1650,660,200,25) 
+        self.btn_map_warenkorb_gtin.setIcon(QIcon("data-import.png"))
+        self.btn_map_warenkorb_gtin.setGeometry(1650,670,200,35) 
         self.btn_map_warenkorb_gtin.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen.\n"
                                           "Mapping erfolgt via Key Lieferant_ArtikelNr_NOU_UOM.\n"
                                           "Stelle daher bitte sicher, dass NOU & UOM im EDIFACT-Format\n"
