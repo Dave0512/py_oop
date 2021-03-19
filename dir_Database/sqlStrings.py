@@ -78,6 +78,93 @@ or kopf.datumVon like ?
 or kopf.datumBis like ?    
 """
 
+sql_hcsr_details = """
+SELECT 
+cast(kopf.datumVon as date) 'Umsatz von'
+,cast(kopf.datumBis as date) 'Umsatz bis'
+,h.[L_Quelle_Name_MUSS_FELD_]
+,h.[L_Quelle_IDTyp_Auswahl_MUSS_FELD_]
+,h.[L_Quelle_ID_MUSS_FELD_]
+,h.[H_Quelle_Name]
+,h.[H_Quelle_IDTyp_Auswahl]
+,h.[H_Quelle_ID]
+,h.[Einrichtung_MUSS_FELD_]
+,h.[Organisation_ID_Auswahl_MUSS_FELD_]
+,h.[Organisation_ID_MUSS_FELD_]
+,h.[L_Art_Nr_MUSS_FELD_]
+,h.[L_Art_IDTyp_Auswahl]
+,h.[L_Art_ID_MUSS_FELD_]
+,h.[H_Art_Nr_MUSS_FELD_]
+,h.[H_Art_IDTyp_Auswahl]
+,h.[H_Art_ID_MUSS_FELD_]
+,h.[L_Art_Txt_MUSS_FELD_]
+,h.[L_WGRP_Intern]
+,h.[L_WGRP_Merkmale_Intern]
+,h.[L_VPE_Auswahl_MUSS_FELD_]
+,h.[L_VPE_Menge_MUSS_FELD_]
+,h.[Faktor_BASISME_VPE_MUSS_FELD_]
+,h.[BASISME_Auswahl_MUSS_FELD_]
+,h.[Steuersatz Landescode_MUSS_FELD_]
+,h.[Steuersatz_MUSS_FELD_]
+,h.[Umsatz_MUSS_FELD_]
+,h.[Bonusrelevant_MUSS_FELD_]
+,h.[_date_inload_]
+,h.[_date_inload_minute_]
+,h.[_date_inload_hour_]
+,h.[_DateiName_]
+,h.[L_Quelle_ID_MUSS_FELD__NORMALIZED]
+,h.[L_Quelle_Name_MUSS_FELD__NORMALIZED]
+,h.[L_Art_ID_MUSS_FELD__NORMALIZED]
+,h.[H_Quelle_ID_NORMALIZED]
+,h.[H_Art_Nr_MUSS_FELD__NORMALIZED]
+,h.[H_Art_ID_MUSS_FELD__NORMALIZED]
+,h.[_prio_flag_]
+,h.[_DateiNameCompKey_]
+FROM [Vorlauf_DB].[dbo].[hcsr] h
+left join hcsrKopfdaten kopf
+on h._DateiName_ = kopf._DateiName_ 
+where _prio_flag_ = 1
+or [L_Quelle_Name_MUSS_FELD_] like ?
+or [L_Quelle_IDTyp_Auswahl_MUSS_FELD_] like ?
+or [L_Quelle_ID_MUSS_FELD_] like ?
+or [H_Quelle_Name] like ?
+or [H_Quelle_IDTyp_Auswahl] like ?
+or [H_Quelle_ID] like ?
+or [Einrichtung_MUSS_FELD_] like ?
+or [Organisation_ID_Auswahl_MUSS_FELD_] like ?
+or [Organisation_ID_MUSS_FELD_] like ?
+or [L_Art_Nr_MUSS_FELD_] like ?
+or [L_Art_IDTyp_Auswahl] like ?
+or [L_Art_ID_MUSS_FELD_] like ?
+or [H_Art_Nr_MUSS_FELD_] like ?
+or [H_Art_IDTyp_Auswahl] like ?
+or [H_Art_ID_MUSS_FELD_] like ?
+or [L_Art_Txt_MUSS_FELD_] like ?
+or [L_WGRP_Intern] like ?
+or [L_WGRP_Merkmale_Intern] like ?
+or [L_VPE_Auswahl_MUSS_FELD_] like ?
+or [L_VPE_Menge_MUSS_FELD_] like ?
+or [Faktor_BASISME_VPE_MUSS_FELD_] like ?
+or [BASISME_Auswahl_MUSS_FELD_] like ?
+or [Steuersatz Landescode_MUSS_FELD_] like ?
+or [Steuersatz_MUSS_FELD_] like ?
+or [Umsatz_MUSS_FELD_] like ?
+or [Bonusrelevant_MUSS_FELD_] like ?
+or [_date_inload_] like ?
+or [_date_inload_minute_] like ?
+or [_date_inload_hour_] like ?
+or [_DateiName_] like ?
+or [L_Quelle_ID_MUSS_FELD__NORMALIZED] like ?
+or [L_Quelle_Name_MUSS_FELD__NORMALIZED] like ?
+or [L_Art_ID_MUSS_FELD__NORMALIZED] like ?
+or [H_Quelle_ID_NORMALIZED] like ?
+or [H_Art_Nr_MUSS_FELD__NORMALIZED] like ?
+or [H_Art_ID_MUSS_FELD__NORMALIZED] like ?
+or [_prio_flag_] like ?
+or [_DateiNameCompKey_] like ?
+or kopf.datumVon like ? 
+or kopf.datumBis like ? 
+"""
 
 sql_gui_tab_hcsr_import_fehlerhaft = """ select distinct _AusgeschlDateiPfad_
 ,_DateiName_
