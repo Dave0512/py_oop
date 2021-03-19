@@ -258,27 +258,40 @@ class Fenster(QWidget):
         self.label = QLabel("Dashboard")
         self.label.setGeometry(200,25,500,25)
 
-        self.btn_suche=QPushButton("HCSR erfolgreich",self)
+        self.btn_suche=QPushButton("Überblick",self)
         self.btn_suche.setIcon(QIcon("lupe_2.jpg"))
-        self.btn_suche.setGeometry(970,105,200,35) 
+        self.btn_suche.setGeometry(970,70,200,35) 
         self.btn_suche.clicked.connect(self.suche)
 
-        self.btn_suche_hcsr_fehler=QPushButton("HCSR fehlerhaft",self)
+        self.btn_suche_hcsr_fehler=QPushButton("Fehler",self)
         self.btn_suche_hcsr_fehler.setIcon(QIcon("lupe_2.jpg"))
-        self.btn_suche_hcsr_fehler.setGeometry(1170,105,200,35) 
+        self.btn_suche_hcsr_fehler.setGeometry(1370,70,200,35) 
         self.btn_suche_hcsr_fehler.clicked.connect(self.suche_error)
 
-        self.btn_suche=QPushButton("HCSR Details",self)
+        self.btn_suche=QPushButton("Details",self)
         self.btn_suche.setIcon(QIcon("lupe_2.jpg"))
-        self.btn_suche.setGeometry(1370,105,200,35) 
+        self.btn_suche.setGeometry(970,105,200,35) 
         self.btn_suche.clicked.connect(self.suche_details)
 
         self.lstbox_hcsr=QTableWidget(self)
-        self.lstbox_hcsr.setGeometry(50,150,1500,700) 
+        self.lstbox_hcsr.setGeometry(50,150,1520,700) 
         self.lstbox_hcsr.setSortingEnabled(True)
 
         self.progress = QProgressBar(self)
         self.progress.setGeometry(50,25,500,25) 
+
+        self.lbl_filter=QLabel("ANALYSE",self) 
+        # self.lbl_map_warenkorb.setIcon(QIcon("hcsr.png"))
+        self.lbl_filter.setGeometry(970,25,600,35) 
+        self.lbl_filter.setAlignment(Qt.AlignCenter)
+        self.lbl_filter.setStyleSheet("background-color: lightgrey;"
+                                            "font: QlikView Sans;"
+                                            "font-size:17px;"
+                                            "border-style: outset;"
+                                            "border-width: 2px;"
+                                            "border-radius: 5px;"
+                                            "border-color: grey;"
+                                            "padding: 1px;")
 
         self.lbl_progress=QLabel("data preparation",self) 
         # self.lbl_map_warenkorb.setIcon(QIcon("hcsr.png"))
@@ -321,7 +334,7 @@ class Fenster(QWidget):
         self.btn_import=QPushButton("Dateien hinzufügen",self) 
         self.btn_import.setIcon(QIcon("data-import.png"))
         self.btn_import.move(50,110)
-        self.btn_import.setGeometry(1650,115,200,35) 
+        self.btn_import.setGeometry(1650,70,200,35) 
 
         self.btn_import.clicked.connect(self._download)
         self.btn_import.clicked.connect(self._importHCSR)  
@@ -357,9 +370,9 @@ class Fenster(QWidget):
         self.btn_map_warenkorb.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb) # ETL Warenkorbmapping DEF anbinden
         self.btn_map_warenkorb.clicked.connect(self._call_msg_katalog_map)
 
-        self.lbl_map_warenkorb=QLabel("HCSR",self) 
+        self.lbl_map_warenkorb=QLabel("IMPORT",self) 
         # self.lbl_map_warenkorb.setIcon(QIcon("hcsr.png"))
-        self.lbl_map_warenkorb.setGeometry(1650,80,200,35) 
+        self.lbl_map_warenkorb.setGeometry(1650,25,200,35) 
         self.lbl_map_warenkorb.setAlignment(Qt.AlignCenter)
         self.lbl_map_warenkorb.setStyleSheet("background-color: lightgrey;"
                                             "font: QlikView Sans;"
