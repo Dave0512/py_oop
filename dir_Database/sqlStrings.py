@@ -79,9 +79,9 @@ or kopf.datumVon like ?
 or kopf.datumBis like ?    
 """
 
-sql_hcsr_details = """ SELECT 
-cast(kopf.datumVon as date) 'Umsatz von'
-,cast(kopf.datumBis as date) 'Umsatz bis'
+sql_hcsr_details = """ with cte_hcsr_artikel as (SELECT distinct
+cast(kopf.datumVon as date) Umsatz_von
+,cast(kopf.datumBis as date) Umsatz_bis
 ,h.[L_Quelle_Name_MUSS_FELD_]
 ,h.[L_Quelle_IDTyp_Auswahl_MUSS_FELD_]
 ,h.[L_Quelle_ID_MUSS_FELD_]
@@ -123,59 +123,84 @@ cast(kopf.datumVon as date) 'Umsatz von'
 FROM [Vorlauf_DB].[dbo].[hcsr] h
 left join [Vorlauf_DB].[dbo].[hcsrKopfdaten] kopf
 on h._DateiName_ = kopf._DateiName_ 
-where _prio_flag_ = '1'
--- or h.[L_Quelle_Name_MUSS_FELD_] like ?
+where _prio_flag_ = '1')
+select *
+from cte_hcsr_artikel cteh
+where cteh.Umsatz_von like ?
+or cteh.Umsatz_bis like ?
+or cteh.[L_Quelle_Name_MUSS_FELD_] like ?
+or cteh.[H_Quelle_Name] like ?
+or cteh.[Einrichtung_MUSS_FELD_] like ?
+or cteh.[L_Art_Nr_MUSS_FELD_] like ?
+or cteh.[L_Art_Txt_MUSS_FELD_] like ?
+or cteh.[Umsatz_MUSS_FELD_] like ?
+or cteh.[_DateiName_] like ?
 """
-# cast(kopf.datumVon as date) 'Umsatz von'
-# ,cast(kopf.datumBis as date) 'Umsatz bis'
-# ,h.[L_Quelle_Name_MUSS_FELD_]
-# ,h.[L_Quelle_IDTyp_Auswahl_MUSS_FELD_]
-# ,h.[L_Quelle_ID_MUSS_FELD_]
-# ,h.[H_Quelle_Name]
-# ,h.[H_Quelle_IDTyp_Auswahl]
-# ,h.[H_Quelle_ID]
-# ,h.[Einrichtung_MUSS_FELD_]
-# ,h.[Organisation_ID_Auswahl_MUSS_FELD_]
-# ,h.[Organisation_ID_MUSS_FELD_]
-# ,h.[L_Art_Nr_MUSS_FELD_]
-# ,h.[L_Art_IDTyp_Auswahl]
-# ,h.[L_Art_ID_MUSS_FELD_]
-# ,h.[H_Art_Nr_MUSS_FELD_]
-# ,h.[H_Art_IDTyp_Auswahl]
-# ,h.[H_Art_ID_MUSS_FELD_]
-# ,h.[L_Art_Txt_MUSS_FELD_]
-# ,h.[L_WGRP_Intern]
-# ,h.[L_WGRP_Merkmale_Intern]
-# ,h.[L_VPE_Auswahl_MUSS_FELD_]
-# ,h.[L_VPE_Menge_MUSS_FELD_]
-# ,h.[Faktor_BASISME_VPE_MUSS_FELD_]
-# ,h.[BASISME_Auswahl_MUSS_FELD_]
-# ,h.[Steuersatz Landescode_MUSS_FELD_]
-# ,h.[Steuersatz_MUSS_FELD_]
-# ,h.[Umsatz_MUSS_FELD_]
-# ,h.[Bonusrelevant_MUSS_FELD_]
-# ,h.[_date_inload_]
-# ,h.[_date_inload_minute_]
-# ,h.[_date_inload_hour_]
-# ,h.[_DateiName_]
-# ,h.[L_Quelle_ID_MUSS_FELD__NORMALIZED]
-# ,h.[L_Quelle_Name_MUSS_FELD__NORMALIZED]
-# ,h.[L_Art_ID_MUSS_FELD__NORMALIZED]
-# ,h.[H_Quelle_ID_NORMALIZED]
-# ,h.[H_Art_Nr_MUSS_FELD__NORMALIZED]
-# ,h.[H_Art_ID_MUSS_FELD__NORMALIZED]
-# ,h.[_prio_flag_]
-# ,h.[_DateiNameCompKey_]
+# where cteh.Umsatz_von like ?
+# or cteh.Umsatz_bis like ?
+# or cteh.[L_Quelle_Name_MUSS_FELD_] like ?
+# or cteh.[L_Quelle_IDTyp_Auswahl_MUSS_FELD_] like ?
+# or cteh.[L_Quelle_ID_MUSS_FELD_] like ?
+# or cteh.[H_Quelle_Name] like ?
+# or cteh.[H_Quelle_IDTyp_Auswahl] like ?
+# or cteh.[H_Quelle_ID] like ?
+# or cteh.[Einrichtung_MUSS_FELD_] like ?
+# or cteh.[Organisation_ID_Auswahl_MUSS_FELD_] like ?
+# or cteh.[Organisation_ID_MUSS_FELD_] like ?
+# or cteh.[L_Art_Nr_MUSS_FELD_] like ?
+# or cteh.[L_Art_IDTyp_Auswahl] like ?
+# or cteh.[L_Art_ID_MUSS_FELD_] like ?
+# or cteh.[H_Art_Nr_MUSS_FELD_] like ?
+# or cteh.[H_Art_IDTyp_Auswahl] like ?
+# or cteh.[H_Art_ID_MUSS_FELD_] like ?
+# or cteh.[L_Art_Txt_MUSS_FELD_] like ?
+# or cteh.[L_WGRP_Intern] like ?
+# or cteh.[L_WGRP_Merkmale_Intern] like ?
+# or cteh.[L_VPE_Auswahl_MUSS_FELD_] like ?
+# or cteh.[L_VPE_Menge_MUSS_FELD_] like ?
+# or cteh.[Faktor_BASISME_VPE_MUSS_FELD_] like ?
+# or cteh.[BASISME_Auswahl_MUSS_FELD_] like ?
+# or cteh.[Steuersatz Landescode_MUSS_FELD_] like ?
+# or cteh.[Steuersatz_MUSS_FELD_] like ?
+# or cteh.[Umsatz_MUSS_FELD_] like ?
+# or cteh.[Bonusrelevant_MUSS_FELD_] like ?
+# or cteh.[_date_inload_] like ?
+# or cteh.[_date_inload_minute_] like ?
+# or cteh.[_date_inload_hour_] like ?
+# or cteh.[_DateiName_] like ?
+# or cteh.[L_Quelle_ID_MUSS_FELD__NORMALIZED] like ?
+# or cteh.[L_Quelle_Name_MUSS_FELD__NORMALIZED] like ?
+# or cteh.[L_Art_ID_MUSS_FELD__NORMALIZED] like ?
+# or cteh.[H_Quelle_ID_NORMALIZED] like ?
+# or cteh.[H_Art_Nr_MUSS_FELD__NORMALIZED] like ?
+# or cteh.[H_Art_ID_MUSS_FELD__NORMALIZED] like ?
+# or cteh.[_prio_flag_] like ?
+# or cteh.[_DateiNameCompKey_] like ?
 
-sql_gui_tab_hcsr_import_fehlerhaft = """ select distinct _AusgeschlDateiPfad_
-,_DateiName_
-,_FehlerCode_
-,CAST(_date_inload_ as date) Einladedatum
+sql_gui_tab_hcsr_import_fehlerhaft = """ 
+with cte_redundante_dateien as 
+(select distinct hE._AusgeschlDateiPfad_
+,hE.[_DateiName_]
+,hE._FehlerCode_
+,CAST(hE._date_inload_ as date) Einladedatum
 FROM [Vorlauf_DB].[dbo].hcsrFilesExcluded hE
-where hE._AusgeschlDateiPfad_ like ?
-or hE._DateiName_ like ?
-or hE._FehlerCode_ like ?
-or cast(hE._date_inload_ as date) like ?
+
+where hE.[_DateiName_] != (select distinct 
+							hE.[_DateiName_]
+							FROM [Vorlauf_DB].[dbo].hcsrFilesExcluded hE
+							join Vorlauf_DB.dbo.hcsr h
+							on h.[_DateiName_] = hE.[_DateiName_])
+							)
+select cte_redundante_dateien._AusgeschlDateiPfad_
+,cte_redundante_dateien.[_DateiName_]
+,cte_redundante_dateien._FehlerCode_
+,cte_redundante_dateien.Einladedatum
+from cte_redundante_dateien
+
+where cte_redundante_dateien._AusgeschlDateiPfad_ like ?
+or cte_redundante_dateien.[_DateiName_] like ?
+or cte_redundante_dateien._FehlerCode_ like ?
+or cte_redundante_dateien.Einladedatum like ?
 """
 
 sql_wasserflasche = """
