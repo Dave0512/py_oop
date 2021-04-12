@@ -116,7 +116,11 @@ WHERE [L_Quelle_Name_MUSS_FELD_] is not null and _prio_flag_ = '1'
 GROUP BY [L_Quelle_Name_MUSS_FELD_], [_DateiName_], _date_inload_minute_,_prio_flag_
 
 ) 
-select distinct ctehcsr.* 
+select distinct ctehcsr.[L_Quelle_Name_MUSS_FELD_]
+,ctehcsr.[_DateiName_] 
+,ctehcsr.Anzahl_Datensätze_je_Lieferant
+,ctehcsr.Einladedatum
+,ctehcsr.Umsatz	
 ,CAST(kopf.datumVon as date) 'Umsatz von'
 ,CAST(kopf.datumBis as date) 'Umsatz bis'
 from ctehcsr
@@ -237,7 +241,7 @@ with cte_redundante_dateien as
 ,CAST(hE._date_inload_ as date) Einladedatum
 FROM [Vorlauf_DB].[dbo].hcsrFilesExcluded hE
 
-where hE.[_DateiName_] != (select distinct 
+where not exists (select distinct 
 							hE.[_DateiName_]
 							FROM [Vorlauf_DB].[dbo].hcsrFilesExcluded hE
 							join Vorlauf_DB.dbo.hcsr h

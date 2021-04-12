@@ -204,7 +204,7 @@ class Fenster(QWidget):
 
             # # 4
             try:
-                # cur.execute(sql_lieferanten,('%'+value+'%',)) #'%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',)) #'%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
+                
                 cur.execute(sql_lieferanten,('%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%','%'+value+'%',))
                 result=cur.fetchall()
             except:
