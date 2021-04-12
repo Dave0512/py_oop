@@ -410,15 +410,6 @@ class Fenster(QWidget):
         self.txt_suche.setGeometry(50,105,900,35)
         # self.txt_suche.setStyleSheet('font-size: 35 px; height: 60px')
 
-        self.btn_map_warenkorb=QPushButton("ECL@SS",self)
-        self.btn_map_warenkorb.setIcon(QIcon("data-import.png"))
-        self.btn_map_warenkorb.setGeometry(1650,635,200,35) 
-        self.btn_map_warenkorb.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen."
-                                          "Mapping erfolgt via Key Lieferant_ArtikelNr\n"
-                                          "Stelle daher bitte sicher, dass Lieferant_ArtikelNr\n"
-                                          "im Warenkorb eingetragen sind.")
-        self.btn_map_warenkorb.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb) # ETL Warenkorbmapping DEF anbinden
-        self.btn_map_warenkorb.clicked.connect(self._call_msg_katalog_map)
 
         self.lbl_map_warenkorb=QLabel("IMPORT",self) 
         # self.lbl_map_warenkorb.setIcon(QIcon("hcsr.png"))
@@ -432,31 +423,43 @@ class Fenster(QWidget):
                                             "border-radius: 5px;"
                                             "border-color: grey;"
                                             "padding: 1px;")
+# # ################
+# # KATALOG HANDLING
+# # ################
+        # self.lbl_map_warenkorb=QLabel("Kataloge",self) 
+        # self.lbl_map_warenkorb.setGeometry(1650,600,200,35) 
+        # self.lbl_map_warenkorb.setAlignment(Qt.AlignCenter)
+        # self.lbl_map_warenkorb.setStyleSheet("background-color: lightgrey;"
+        #                                     "font: QlikView Sans;"
+        #                                     "font-size:17px;"
+        #                                     "border-style: outset;"
+        #                                     "border-width: 2px;"
+        #                                     "border-radius: 5px;"
+        #                                     "border-color: grey;"
+        #                                     "padding: 1px;")
 
-        self.lbl_map_warenkorb=QLabel("Kataloge",self) 
-        self.lbl_map_warenkorb.setGeometry(1650,600,200,35) 
-        self.lbl_map_warenkorb.setAlignment(Qt.AlignCenter)
-        self.lbl_map_warenkorb.setStyleSheet("background-color: lightgrey;"
-                                            "font: QlikView Sans;"
-                                            "font-size:17px;"
-                                            "border-style: outset;"
-                                            "border-width: 2px;"
-                                            "border-radius: 5px;"
-                                            "border-color: grey;"
-                                            "padding: 1px;")
+        # self.btn_map_warenkorb_gtin=QPushButton("GTIN",self)
+        # self.btn_map_warenkorb_gtin.setIcon(QIcon("data-import.png"))
+        # self.btn_map_warenkorb_gtin.setGeometry(1650,670,200,35) 
+        # self.btn_map_warenkorb_gtin.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen.\n"
+        #                                   "Mapping erfolgt via Key Lieferant_ArtikelNr_NOU_UOM.\n"
+        #                                   "Stelle daher bitte sicher, dass NOU & UOM im EDIFACT-Format\n"
+        #                                   "im Warenkorb eingetragen sind.")
+        # self.btn_map_warenkorb_gtin.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb_gtin) # ETL Warenkorbmapping DEF anbinden
+        # self.btn_map_warenkorb_gtin.clicked.connect(self._call_msg_katalog_map)
+        # # ################
+        # # self.btn_import_lief=QPushButton("Lieferanten CH Import",self)
+        # # self.btn_import_lief.setGeometry(1650,300,200,25) 
 
-        self.btn_map_warenkorb_gtin=QPushButton("GTIN",self)
-        self.btn_map_warenkorb_gtin.setIcon(QIcon("data-import.png"))
-        self.btn_map_warenkorb_gtin.setGeometry(1650,670,200,35) 
-        self.btn_map_warenkorb_gtin.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen.\n"
-                                          "Mapping erfolgt via Key Lieferant_ArtikelNr_NOU_UOM.\n"
-                                          "Stelle daher bitte sicher, dass NOU & UOM im EDIFACT-Format\n"
-                                          "im Warenkorb eingetragen sind.")
-        self.btn_map_warenkorb_gtin.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb_gtin) # ETL Warenkorbmapping DEF anbinden
-        self.btn_map_warenkorb_gtin.clicked.connect(self._call_msg_katalog_map)
-        # ################
-        # self.btn_import_lief=QPushButton("Lieferanten CH Import",self)
-        # self.btn_import_lief.setGeometry(1650,300,200,25) 
+        # self.btn_map_warenkorb=QPushButton("ECL@SS",self)
+        # self.btn_map_warenkorb.setIcon(QIcon("data-import.png"))
+        # self.btn_map_warenkorb.setGeometry(1650,635,200,35) 
+        # self.btn_map_warenkorb.setToolTip("Warenkorb für IT-Projekt in Importordner ablegen."
+        #                                   "Mapping erfolgt via Key Lieferant_ArtikelNr\n"
+        #                                   "Stelle daher bitte sicher, dass Lieferant_ArtikelNr\n"
+        #                                   "im Warenkorb eingetragen sind.")
+        # self.btn_map_warenkorb.clicked.connect(py_migriere_zip_handling_Entwicklung.handling_export_warenkorb) # ETL Warenkorbmapping DEF anbinden
+        # self.btn_map_warenkorb.clicked.connect(self._call_msg_katalog_map)
 
         self.showMaximized()
 
