@@ -234,29 +234,24 @@ or cteh.[_DateiName_] like ?
 # or cteh.[_DateiNameCompKey_] like ?
 
 sql_gui_tab_hcsr_import_fehlerhaft = """ 
-with cte_redundante_dateien as 
-(select distinct hE._AusgeschlDateiPfad_
+WITH cte_ausgeschlossene_gefiltert AS (
+SELECT DISTINCT hE.[_AusgeschlDateiPfad_]
 ,hE.[_DateiName_]
-,hE._FehlerCode_
+,hE.[_FehlerCode_]
 ,CAST(hE._date_inload_ as date) Einladedatum
-FROM [Vorlauf_DB].[dbo].hcsrFilesExcluded hE
-
-where not exists (select distinct 
-							hE.[_DateiName_]
-							FROM [Vorlauf_DB].[dbo].hcsrFilesExcluded hE
-							join Vorlauf_DB.dbo.hcsr h
-							on h.[_DateiName_] = hE.[_DateiName_])
-							)
-select cte_redundante_dateien._AusgeschlDateiPfad_
-,cte_redundante_dateien.[_DateiName_]
-,cte_redundante_dateien._FehlerCode_
-,cte_redundante_dateien.Einladedatum
-from cte_redundante_dateien
-
-where cte_redundante_dateien._AusgeschlDateiPfad_ like ?
-or cte_redundante_dateien.[_DateiName_] like ?
-or cte_redundante_dateien._FehlerCode_ like ?
-or cte_redundante_dateien.Einladedatum like ?
+FROM [Vorlauf_DB].[dbo].[hcsrFilesExcluded] hE
+LEFT JOIN Vorlauf_DB.dbo.hcsr h
+ON h.[_DateiName_] = hE.[_DateiName_] 
+WHERE h.[_DateiName_] IS NULL)
+SELECT cAG.[_AusgeschlDateiPfad_]
+,cAG.[_DateiName_]
+,cAG.[_FehlerCode_]
+,cAG.Einladedatum
+FROM cte_ausgeschlossene_gefiltert cAG
+WHERE cAG.[_AusgeschlDateiPfad_] like ?
+or cAG.[_DateiName_] like ?
+or cAG.[_FehlerCode_] like ?
+or cAG.Einladedatum like ?
 """
 
 sql_wasserflasche = """
